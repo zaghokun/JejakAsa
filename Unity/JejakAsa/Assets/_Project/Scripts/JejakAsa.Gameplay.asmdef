@@ -1,0 +1,5 @@
+{
+    "name": "JejakAsa.Gameplay",
+    "rootNamespace": "JejakAsa",
+    "references": ["Unity.InputSystem"]
+}

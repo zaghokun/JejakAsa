@@ -435,3 +435,40 @@ Paket final pada D21:
 8. Gunakan bentuk sementara dan UI sederhana yang berfungsi. Jangan menunggu aset final atau desain main menu untuk membuktikan loop.
 
 Keputusan penting: targetnya game kecil yang lengkap dalam tiga minggu, bukan banyak sistem setengah tersambung. Minggu keempat menjadi ruang aman untuk meningkatkan keandalan, bukan alasan menunda integrasi.
+
+## 13. Status implementasi U02 — Role A dan B
+
+U02 sudah diimplementasikan pada scene Kampung dan diverifikasi di Unity Editor 6000.3.27f1 melalui MCP. Role A mencakup controller, kamera, dan ruang navigasi; kontribusi Role B pada tahap ini adalah regresi serta uji penerimaan, bukan implementasi battle.
+
+### 13.1 Perubahan yang sudah tersedia
+
+- PlayerController memakai Input System yang sudah terpasang: WASD atau panah, gerak relatif yaw kamera, kecepatan 3,5 meter/detik, pembatas panjang input diagonal, gravitasi, dan CharacterController.
+- FixedIsometricCamera mengikuti posisi pemain tanpa ikut berputar saat pemain berbelok. Referensi kamera/target yang hilang dilaporkan sebagai error konfigurasi, bukan diam-diam diganti.
+- Kampung mempertahankan scene dan GUID yang sama. Plane awal diperluas, Cube awal digunakan kembali sebagai PosBantuan, lalu ditambahkan tiga rumah, batas area, gang utama, gang memutar, tiga penanda warga, dan titik spawn/kembali.
+- Player hanya memiliki satu collider, yaitu CharacterController. Jalan visual tidak memiliki collider tambahan yang bisa menyebabkan tersangkut.
+- Pembatas gang dibuat setinggi satu meter agar pemain terbaca dari kamera. Penanda intimidasi merah belum menjadi musuh aktif, dan penanda warga belum memiliki interaksi pengantaran.
+
+File utama: Assets/_Project/Scripts/PlayerController.cs dan Assets/_Project/Scripts/FixedIsometricCamera.cs. Regresi tersedia pada Assets/_Project/Tests/PlayMode/U02MovementTests.cs dan U02KampungRouteTests.cs. Assembly definition hanya menghubungkan runtime ke Input System dan tes ke Unity Test Framework; tidak menambah package.
+
+### 13.2 Bukti pengujian
+
+| Kasus Play Mode | Hasil |
+| --- | --- |
+| Kecepatan lurus/diagonal setara dan arah gerak mengikuti kamera; sudut/offset kamera tetap | Lulus. |
+| WASD dan panah yang searah tidak menambah kecepatan; arah berlawanan saling membatalkan | Lulus. |
+| Collider rumah menghentikan pemain dan lantai menopang pemain | Lulus. |
+| Pemain tetap bergerak menyusuri dinding saat input diagonal terhalang | Lulus. |
+| Input keyboard menelusuri jalur utama dan jalur memutar pada scene Kampung hingga pendekatan ketiga penerima | Lulus. |
+
+Suite terarah berisi lima tes lulus seluruhnya. Sesudah tinggi pembatas gang disesuaikan untuk keterbacaan, tes jalur pada scene aktual dijalankan kembali dan lulus. Tes input mengirim satu KeyboardState utuh per kombinasi tombol, agar simulasi tombol yang berada pada byte state yang sama tidak saling menimpa.
+
+Bukti visual runtime disimpan pada docs/visual/u02-kampung.png. Ini tangkapan Play Mode dari proyek, bukan render konsep PPT.
+
+### 13.3 Cara memeriksa sendiri dan batas tahap
+
+1. Buka Assets/_Project/Scenes/Kampung.unity, tekan Play, lalu fokuskan tab Game.
+2. Gunakan WASD atau panah; coba mendekati rumah, menyusuri dinding, melewati celah tengah, dan gang memutar di sebelah kiri pembatas.
+3. Untuk menjalankan regresi, buka Test Runner, pilih PlayMode, lalu jalankan class U02MovementTests dan U02KampungRouteTests. Tes memulihkan sistem input dan membongkar scene percobaan setelah selesai.
+4. Keluar dari Play Mode sebelum mengedit scene. Scene tersimpan tetap menempatkan pemain pada PlayerSpawn.
+
+Verifikasi ini belum membuat ulang build Windows dan belum mencakup U03/interaksi, timer misi, pengantaran, pause, main menu, atau battle. Build D1 yang sudah ada tidak otomatis memperoleh kode baru; buat build baru jika ingin menguji executable. Penyelesaian U02 tidak berarti seluruh pekerjaan D2 untuk arena Battle milik Role B sudah selesai.

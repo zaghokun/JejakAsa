@@ -1,0 +1,9 @@
+{
+    "name": "JejakAsa.PlayModeTests",
+    "references": [
+        "JejakAsa.Gameplay",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework"
+    ],
+    "optionalUnityReferences": ["TestAssemblies"]
+}
