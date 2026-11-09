@@ -3,7 +3,9 @@
     "references": [
         "JejakAsa.Gameplay",
         "Unity.InputSystem",
-        "Unity.InputSystem.TestFramework"
+        "Unity.InputSystem.TestFramework",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "optionalUnityReferences": ["TestAssemblies"]
 }

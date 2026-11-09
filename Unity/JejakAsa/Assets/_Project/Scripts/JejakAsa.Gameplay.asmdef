@@ -1,5 +1,5 @@
 {
     "name": "JejakAsa.Gameplay",
     "rootNamespace": "JejakAsa",
-    "references": ["Unity.InputSystem"]
+    "references": ["Unity.InputSystem", "UnityEngine.UI", "Unity.TextMeshPro"]
 }

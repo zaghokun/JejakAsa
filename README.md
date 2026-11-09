@@ -21,7 +21,7 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Platform | Windows, single-player, keyboard dan mouse |
 | Kamera | Isometrik dengan orientasi tetap |
 | Kontrol | Input System resmi; CharacterController untuk gerak |
-| Antarmuka | Unity UI / uGUI dan TextMeshPro saat tahap UI dikerjakan |
+| Antarmuka | Unity UI / uGUI dan TextMeshPro; prompt/dialog U03 sudah tersedia |
 | Cakupan target | Satu peta, satu misi, tiga penerima, satu pengintimidasi, dan satu arena turn-based |
 | Waktu | Target 21 hari; Hari 22–28 cadangan stabilisasi, bukan penambahan fitur |
 
@@ -33,13 +33,14 @@ Tidak termasuk baseline: multiplayer, akun/backend, database server, inventori k
 
 - **U01 selesai untuk A/B berdasarkan konfirmasi anggota tim:** proyek hasil clone dan build awal dapat dijalankan. Verifikasi setup anggota C belum dilaporkan.
 - **U02 lulus di Unity Editor:** lima tes Play Mode lulus, meliputi gerak, collision, kamera, dan penelusuran jalur pada Kampung aktual. Tes jalur diulang sesudah tinggi pembatas diubah dan tetap lulus.
+- **U03 lulus di Unity Editor:** enam tes interaksi lulus, termasuk beberapa target berdekatan, batas jarak, tahan E, kunci gerak, serta dialog Kampung yang ditutup melalui klik mouse. Bersama lima regresi U02, total sebelas tes Play Mode lulus.
 - Source sudah mendukung WASD/panah dengan kecepatan awal 3,5 meter/detik, gerak relatif kamera, normalisasi diagonal, gravitasi, dan kamera follow dengan sudut tetap.
-- Peta masih graybox. Rumah berbentuk kubus; pemain/warga berbentuk capsule. Penanda intimidasi belum aktif dan belum ada interaksi E, dialog, misi, timer, atau battle.
-- **Build Windows belum dibuat ulang setelah U02.** Build D1 tidak otomatis memperoleh perubahan source terbaru. Belum ada verifikasi U02 pada executable baru atau komputer lain.
+- Peta masih graybox. Tiga warga sudah memiliki prompt E dan dialog singkat; penanda intimidasi belum aktif. Paket, trust, misi, timer, dan battle belum diimplementasikan.
+- **Build Windows belum dibuat ulang setelah U02/U03.** Build D1 tidak otomatis memperoleh perubahan source terbaru. Verifikasi terbaru masih pada Unity Editor, bukan executable baru atau komputer lain.
 
-![Graybox Kampung saat pengujian Play Mode U02](docs/visual/u02-kampung.png)
+![Dialog warga pada scene Kampung saat pengujian Play Mode U03](docs/visual/u03-interaksi.png)
 
-Cuplikan runtime, bukan render konsep atau visual final.
+Cuplikan runtime aktual, bukan render konsep atau visual final. UI sederhana ini dapat diganti oleh prefab visual C tanpa memindahkan logika interaksi.
 
 ## Pembagian tiga role
 
@@ -47,8 +48,8 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
-| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | Implementasi U02 selesai; sistem misi dan integrasi battle belum dikerjakan. |
-| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Verifikasi U02 selesai. Ini **bukan** penyelesaian B01–B10; arena dan sistem battle masih belum tersedia. |
+| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | U02/U03 selesai, termasuk penguncian gerak selama dialog; penyerahan paket dan sistem misi belum dikerjakan. |
+| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Verifikasi U02/U03 selesai. Ini **bukan** penyelesaian B01–B10; arena dan sistem battle masih belum tersedia. |
 | C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Graybox dasar tersedia untuk ditindaklanjuti; penyelesaian tugas C belum dilaporkan dan tidak otomatis dicentang. |
 
 ## Tracking penerimaan
@@ -57,7 +58,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 
 - [x] **U01 — Setup awal A/B:** clone bersih dan build Windows awal berjalan; berdasarkan konfirmasi tim. Tidak menyatakan build U02 sudah tersedia.
 - [x] **U02 — Gerak dan collision:** kecepatan lurus/diagonal setara, tidak menembus rumah, dan jalur wajib dapat dilalui. A: implementasi; B: regresi/verifikasi; lima tes Play Mode lulus.
-- [ ] **U03 — Satu interaksi:** saat beberapa target dekat, satu tekan E hanya memicu satu interaksi.
+- [x] **U03 — Satu interaksi:** target aktif terdekat dalam radius horizontal 1,8 meter mendapat prompt E; satu penekanan membuka satu dialog, bukan semua warga atau berulang saat E ditahan. Enam tes interaksi lulus, termasuk UI aktual dan klik Tutup.
 - [ ] **U04 — Penyerahan valid:** paket, status penerima, dan trust berubah sekali; klik cepat tidak menggandakan progres.
 - [ ] **U05 — Penerima dan urutan:** penerima selesai tidak menerima paket lagi; urutan pengantaran bebas.
 - [ ] **U06 — Timer per state:** aktif saat eksplorasi, berhenti pada state yang ditentukan.
@@ -81,7 +82,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 
 A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap mengacu pada rencana 21 hari yang sama, tetapi progres kedua jalur dicatat sendiri-sendiri. Nomor milestone mengelompokkan hasil, bukan memaksa semua pekerjaan berjalan berurutan; persiapan battle dapat berjalan paralel dengan pengantaran.
 
-`Selesai` memerlukan bukti pada kolom kriteria. `Belum` pada A/B berarti hasilnya belum tersedia atau belum dinyatakan selesai. `Belum dilaporkan` pada C berarti belum ada bukti dari pemiliknya, **bukan klaim bahwa C belum bekerja**. Tidak ada nama anggota yang ditetapkan di tabel ini.
+`Selesai` memerlukan bukti pada kolom kriteria. `Sebagian` berarti baru sebagian output milestone yang lulus; kriteria tersisa tetap harus dikerjakan. `Belum` pada A/B berarti hasilnya belum tersedia atau belum dinyatakan selesai. `Belum dilaporkan` pada C berarti belum ada bukti dari pemiliknya, **bukan klaim bahwa C belum bekerja**. Tidak ada nama anggota yang ditetapkan di tabel ini.
 
 ### Jalur A/B — Sistem gameplay dan verifikasi
 
@@ -90,7 +91,7 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 | AB-M01 | D1 | Setup proyek, repository, clone, dan build awal. Satu anggota menyiapkan; anggota lain memeriksa. | Proyek 6000.3.27f1 hasil clone dan build awal berjalan. Bukti U01 berdasarkan konfirmasi anggota A/B; tidak menunggu laporan C untuk menutup milestone A/B ini. | Selesai |
 | AB-M02 | D2–D3 | A: graybox navigasi, gerak, collision, kamera. B: regresi dan uji jalur. | U02 lulus: lima tes Play Mode serta pengujian ulang jalur setelah perubahan pembatas. Tidak mencakup input lock state atau loop misi. | Selesai |
 | AB-M03 | D2–D3 | B: arena Battle mandiri. A/B: kontrak data, hasil menang/kalah, dan tanggung jawab state. | Arena dapat dibuka sendiri; titik karakter tersedia; kontrak disepakati tanpa ketergantungan pada MainMenu. Milestone ini tidak otomatis selesai oleh U02. | Belum |
-| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U03–U08 lulus; loop mulai → antar → hasil → ulang berjalan tiga kali. Bagian U17 terkait battle baru ditutup setelah integrasi. | Belum |
+| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U03 dan kunci gerak selama dialog sudah lulus. U04–U08 serta loop tiga kali belum tersedia; bagian U17 terkait battle baru ditutup setelah integrasi. | Sebagian |
 | AB-M05 | D3–D7 | B: HP, Serang/Bertahan, pola lawan, telegraph, giliran, menang/kalah. A membantu menguji kontrak hasil. | Battle mandiri dapat dimainkan; U11–U14 lulus dan tidak mengirim hasil ganda. | Belum |
 | AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U09, U10, U15, U16 serta U17 lengkap lulus. Jalur, waktu, paket, dan penerima tetap benar setelah transisi. | Belum |
 | AB-M07 | D11 | A: MainMenu, navigasi, konfirmasi keluar sesi. B memeriksa masuk/keluar misi dan regresi battle. | U18 lulus. Menu memakai loop yang sudah bekerja, bukan memiliki salinan logika misi. Memakai prefab menu C setelah handoff. | Belum |
@@ -98,7 +99,7 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 | AB-M09 | D15–D18 | Playtest, perbaikan, kalibrasi angka, regresi, dan release candidate. | Catatan playtest nyata; tidak ada blocker atau tombol kosong; kandidat rilis cocok dengan source dan aturan terbaru. | Belum |
 | AB-M10 | D19–D21 | Stabilisasi, build bersih, pengujian komputer kedua, dan pengumpulan source/build. | U21 lulus; build final, source, bukti uji, serta known issues non-blocking siap. | Belum |
 
-**Batas status saat ini:** AB-M01 dan AB-M02 selesai. Hari D2/D3 secara keseluruhan belum selesai karena AB-M03, battle dasar, dan input lock state masih tersisa. Kontribusi verifikasi B pada AB-M02 tidak menutup milestone battle B.
+**Batas status saat ini:** AB-M01 dan AB-M02 selesai; AB-M04 sebagian karena baru U03 dan kunci gerak dialog yang tersedia. Hari D2/D3 secara keseluruhan belum selesai karena AB-M03, battle dasar, dan penguncian berdasarkan state misi/battle masih tersisa. Verifikasi interaksi oleh B tidak menutup milestone battle B.
 
 ### Jalur C — Visual, level, UI, dan audio
 
@@ -126,7 +127,7 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 
 ### Pekerjaan berikutnya
 
-1. A/B mengerjakan **U03**: interaksi dekat dengan satu target aktif, prompt E, dan pencegahan interaksi ganda. Belum perlu menghitung penyerahan paket pada tahap ini.
+1. A/B lanjut **U04**: penyerahan valid mengubah paket, status penerima, dan trust sekali. U03 sudah menyediakan pemilihan target dan dialog, tetapi belum melakukan transaksi bantuan; U05 kemudian memperluas aturan penerima selesai dan urutan bebas.
 2. B tetap menyiapkan **B01/arena Battle mandiri dan kontrak hasil menang/kalah**, terpisah dari scene Kampung.
 3. C melanjutkan layout/aset serta prefab UI yang mendukung interaksi; tidak menunggu main menu.
 4. Sebelum menandai satu hari atau gerbang selesai, periksa semua hasil wajibnya, bukan hanya U02.
@@ -140,7 +141,7 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 5. Gunakan WASD atau panah. Kamera mengikuti dengan sudut tetap; belum ada sprint/lompat.
 6. Keluar dari Play Mode sebelum mengedit scene. Posisi saat bermain tidak otomatis menjadi posisi spawn tersimpan.
 
-E dan Esc belum memiliki fungsi gameplay pada source saat ini. Jangan menganggapnya rusak sebelum tahap interaksi/pause dikerjakan.
+Dekati salah satu warga hingga prompt E muncul, lalu tekan E untuk berbicara. Tutup dengan tombol Tutup, Enter, atau Esc. Gerak dikunci selama dialog dan dikembalikan sesudahnya. Esc di luar dialog belum membuka pause.
 
 ### Pengujian manual U02
 
@@ -151,11 +152,22 @@ E dan Esc belum memiliki fungsi gameplay pada source saat ini. Jangan menganggap
 
 Visual masih sederhana. Kamera belum memiliki penanganan occlusion bangunan atau pembatas posisi di tepi peta.
 
-### Pengujian otomatis U02
+### Pengujian manual U03
 
-Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, pilih assembly `JejakAsa.PlayModeTests`, lalu **Run Selected**. Suite U02 saat ini berisi lima tes, bukan seluruh U01–U21.
+1. Dekati capsule warga berwarna jingga. Dalam radius horizontal 1,8 meter muncul prompt `[E] Bicara dengan ...`; di luar jarak prompt menghilang.
+2. Tekan E sekali: nama dan pesan warga muncul pada satu panel dialog. Pemain tidak berjalan selama panel terbuka.
+3. Tahan E: dialog tidak terbuka berulang dan tidak berpindah ke warga lain. Tombol baru dianggap penekanan berikutnya setelah E dilepas dan ditekan kembali.
+4. Tutup dengan klik Tutup, Enter, atau Esc, lalu pastikan pemain bisa berjalan lagi. E yang masih ditahan ketika menutup dialog tidak langsung membukanya kembali.
+5. Ulangi pada ketiga warga. Ini percakapan saja: tidak ada paket yang diserahkan atau trust yang bertambah.
 
-Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes level memuat Kampung aktual, menelusuri rute, lalu membongkar scene percobaan. Input fixture dipulihkan sesudah pengujian. Jangan menghentikan runner atau mengubah scene di tengah tes.
+Pemilihan target berdasarkan jarak pada bidang XZ dan status aktif, bukan arah hadap pemain. Skenario beberapa warga berdekatan, jarak tepat di batas, dan target yang hilang diuji otomatis; tidak perlu mengubah layout utama untuk mencobanya.
+
+
+### Pengujian otomatis U02/U03
+
+Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, pilih assembly `JejakAsa.PlayModeTests`, lalu **Run Selected**. Saat ini ada sebelas tes: lima U02 dan enam U03, bukan seluruh U01–U21. Hasil terakhir: semuanya lulus.
+
+Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes integrasi memuat Kampung aktual untuk menelusuri rute atau membuka dialog dan mengklik Tutup dengan input mouse. Scene percobaan dibongkar dan input fixture dipulihkan setelah selesai. Jangan menghentikan runner atau mengubah scene di tengah tes.
 
 Jika layout berubah, tinjau waypoint pada tes rute serta buktikan semua penerima tetap dapat dijangkau. Kelulusan lama bukan bukti bahwa perubahan baru sudah aman.
 
@@ -176,9 +188,10 @@ README.md                         Deskripsi dan progres aktif
 Unity/JejakAsa/
   Assets/_Project/
     Scenes/Kampung.unity           Scene gameplay awal
-    Scripts/                      Controller gerak dan kamera
+    Scripts/                      Gerak, kamera, target NPC, dan interaksi
     Materials/                    Material graybox
-    Tests/PlayMode/               Regresi U02
+    Tests/PlayMode/               Regresi U02 dan U03
+  Assets/TextMesh Pro/             Resource font/settings/shader bawaan TMP
   Packages/                       Manifest dan lock file package
   ProjectSettings/                Konfigurasi dan versi Editor
   Builds/                         Hasil build lokal; diabaikan Git
@@ -189,9 +202,19 @@ docs/                             Acuan desain, rencana, presentasi, bukti visua
 - [FixedIsometricCamera](Unity/JejakAsa/Assets/_Project/Scripts/FixedIsometricCamera.cs)
 - [Tes gerak/collision](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U02MovementTests.cs)
 - [Tes jalur Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U02KampungRouteTests.cs)
+- [PlayerInteraction](Unity/JejakAsa/Assets/_Project/Scripts/PlayerInteraction.cs)
+- [InteractionTarget](Unity/JejakAsa/Assets/_Project/Scripts/InteractionTarget.cs)
+- [Tes interaksi](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U03InteractionTests.cs)
+- [Tes dialog dan mouse di Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U03KampungInteractionTests.cs)
 - [Desain game](docs/desain-game.md)
 - [Rencana kerja acuan](docs/rencana-development-jejak-asa.md)
 - [Presentasi desain](<docs/Kelompok Jejak Asa.pptx>)
+
+### Resource UI dan lisensi
+
+U03 mengimpor **TMP Essential Resources** dari package uGUI/TextMeshPro yang sudah terpasang, bukan memasang package baru. Folder `Assets/TextMesh Pro` dan file `.meta` harus ikut Git agar font serta UI tampil pada hasil clone.
+
+Font Liberation Sans disertai [SIL Open Font License 1.1](<Unity/JejakAsa/Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt>). Pertahankan pemberitahuan hak cipta dan lisensinya pada distribusi aset/build. Ini bukan penetapan lisensi untuk seluruh repository.
 
 ## Aturan kolaborasi dan pembaruan tracker
 
