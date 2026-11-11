@@ -47,19 +47,17 @@ public sealed class U04DeliveryTests : InputTestFixture
         PlayerController movement = actor.AddComponent<PlayerController>();
         SetReference(movement, "movementCamera", view.transform);
 
-        GameObject canvas = new GameObject("Canvas");
-        canvas.transform.SetParent(root.transform);
+        GameObject canvas = new GameObject("Canvas", typeof(RectTransform));
+        canvas.transform.SetParent(root.transform, false);
         canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
 
-        GameObject prompt = new GameObject("Prompt");
-        prompt.transform.SetParent(canvas.transform);
-        TMP_Text promptText = prompt.AddComponent<TextMeshProUGUI>();
+        GameObject prompt = UiObject("Prompt", canvas.transform);
+        TMP_Text promptText = UiObject("Prompt text", prompt.transform).AddComponent<TextMeshProUGUI>();
 
-        GameObject dialogue = new GameObject("Dialogue");
-        dialogue.transform.SetParent(canvas.transform);
-        TMP_Text title = dialogue.AddComponent<TextMeshProUGUI>();
-        bodyText = dialogue.AddComponent<TextMeshProUGUI>();
-        closeBtn = dialogue.AddComponent<Button>();
+        GameObject dialogue = UiObject("Dialogue", canvas.transform);
+        TMP_Text title = UiObject("Title", dialogue.transform).AddComponent<TextMeshProUGUI>();
+        bodyText = UiObject("Body", dialogue.transform).AddComponent<TextMeshProUGUI>();
+        closeBtn = UiObject("Close", dialogue.transform).AddComponent<Button>();
 
         interaction = actor.AddComponent<PlayerInteraction>();
         SetReference(interaction, "promptPanel", prompt);
@@ -126,6 +124,13 @@ public sealed class U04DeliveryTests : InputTestFixture
         Assert.That(interaction.PackagesRemaining, Is.EqualTo(2), "Paket tidak boleh berkurang lagi.");
         Assert.That(interaction.DeliveredCount, Is.EqualTo(1), "Jumlah warga terkirim tidak boleh bertambah lagi.");
         Assert.That(interaction.Trust, Is.EqualTo(1), "Kepercayaan tidak boleh bertambah lagi.");
+    }
+
+    private static GameObject UiObject(string name, Transform parent)
+    {
+        GameObject result = new GameObject(name, typeof(RectTransform));
+        result.transform.SetParent(parent, false);
+        return result;
     }
 
     private static void SetReference(object target, string fieldName, object value)

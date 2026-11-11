@@ -47,19 +47,17 @@ public sealed class U05OrderTests : InputTestFixture
         PlayerController movement = actor.AddComponent<PlayerController>();
         SetReference(movement, "movementCamera", view.transform);
 
-        GameObject canvas = new GameObject("Canvas");
-        canvas.transform.SetParent(root.transform);
+        GameObject canvas = new GameObject("Canvas", typeof(RectTransform));
+        canvas.transform.SetParent(root.transform, false);
         canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
 
-        GameObject prompt = new GameObject("Prompt");
-        prompt.transform.SetParent(canvas.transform);
-        TMP_Text promptText = prompt.AddComponent<TextMeshProUGUI>();
+        GameObject prompt = UiObject("Prompt", canvas.transform);
+        TMP_Text promptText = UiObject("Prompt text", prompt.transform).AddComponent<TextMeshProUGUI>();
 
-        GameObject dialogue = new GameObject("Dialogue");
-        dialogue.transform.SetParent(canvas.transform);
-        TMP_Text title = dialogue.AddComponent<TextMeshProUGUI>();
-        TMP_Text body = dialogue.AddComponent<TextMeshProUGUI>();
-        Button close = dialogue.AddComponent<Button>();
+        GameObject dialogue = UiObject("Dialogue", canvas.transform);
+        TMP_Text title = UiObject("Title", dialogue.transform).AddComponent<TextMeshProUGUI>();
+        TMP_Text body = UiObject("Body", dialogue.transform).AddComponent<TextMeshProUGUI>();
+        Button close = UiObject("Close", dialogue.transform).AddComponent<Button>();
 
         interaction = actor.AddComponent<PlayerInteraction>();
         SetReference(interaction, "promptPanel", prompt);
@@ -115,7 +113,7 @@ public sealed class U05OrderTests : InputTestFixture
         Assert.That(interaction.IsMissionCompleted, Is.False);
 
         // Uji urutan acak/terbalik: antar ke Warga C (Timur) duluan
-        player.position = residentC.transform.position + Vector3.back * 1.2f;
+        TeleportPlayerTo(residentC.transform.position + Vector3.back * 1.2f);
         yield return null;
         Assert.That(interaction.CurrentTarget, Is.SameAs(residentC));
 
@@ -136,7 +134,7 @@ public sealed class U05OrderTests : InputTestFixture
         yield return null;
 
         // Antar ke Warga A (Pos) kedua
-        player.position = residentA.transform.position + Vector3.back * 1.2f;
+        TeleportPlayerTo(residentA.transform.position + Vector3.back * 1.2f);
         yield return null;
         Assert.That(interaction.CurrentTarget, Is.SameAs(residentA));
 
@@ -156,8 +154,23 @@ public sealed class U05OrderTests : InputTestFixture
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         yield return null;
 
+        // Kunjungi kembali Warga A yang sudah selesai sebelum misi selesai -> tidak boleh menambah progres!
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.E));
+        yield return null;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+        yield return null;
+        Assert.That(interaction.PackagesRemaining, Is.EqualTo(1));
+        Assert.That(interaction.DeliveredCount, Is.EqualTo(2));
+        Assert.That(interaction.Trust, Is.EqualTo(2));
+
+        // Tutup dialog Warga A
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Escape));
+        yield return null;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+        yield return null;
+
         // Antar ke Warga B (Tengah) terakhir
-        player.position = residentB.transform.position + Vector3.back * 1.2f;
+        TeleportPlayerTo(residentB.transform.position + Vector3.back * 1.2f);
         yield return null;
         Assert.That(interaction.CurrentTarget, Is.SameAs(residentB));
 
@@ -179,18 +192,26 @@ public sealed class U05OrderTests : InputTestFixture
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         yield return null;
 
-        // Kunjungi kembali Warga A yang sudah selesai
-        player.position = residentA.transform.position + Vector3.back * 1.2f;
-        yield return null;
-        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.E));
-        yield return null;
-        InputSystem.QueueStateEvent(keyboard, new KeyboardState());
-        yield return null;
-
-        // Progres tidak boleh bertambah atau paket berkurang lagi
+        // Progres tetap 0, 3, 3
         Assert.That(interaction.PackagesRemaining, Is.EqualTo(0));
         Assert.That(interaction.DeliveredCount, Is.EqualTo(3));
         Assert.That(interaction.Trust, Is.EqualTo(3));
+    }
+
+    private void TeleportPlayerTo(Vector3 targetPos)
+    {
+        CharacterController cc = player.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+        player.position = targetPos;
+        if (cc != null) cc.enabled = true;
+        Physics.SyncTransforms();
+    }
+
+    private static GameObject UiObject(string name, Transform parent)
+    {
+        GameObject result = new GameObject(name, typeof(RectTransform));
+        result.transform.SetParent(parent, false);
+        return result;
     }
 
     private static void SetReference(object target, string fieldName, object value)
