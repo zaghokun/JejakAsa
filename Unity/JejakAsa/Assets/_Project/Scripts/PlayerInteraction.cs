@@ -10,6 +10,7 @@ namespace JejakAsa
     [RequireComponent(typeof(PlayerController))]
     public sealed class PlayerInteraction : MonoBehaviour
     {
+        [Header("Interaction Settings")]
         [SerializeField, Min(0.01f)] private float interactionDistance = 1.8f;
         [SerializeField] private GameObject promptPanel;
         [SerializeField] private TMP_Text promptText;
@@ -18,12 +19,24 @@ namespace JejakAsa
         [SerializeField] private TMP_Text dialogueBody;
         [SerializeField] private Button closeButton;
 
+        [Header("U04 — Bansos & Delivery Settings")]
+        [SerializeField] private int initialPackages = 3;
+
         private PlayerController movement;
         private bool movementWasEnabled;
+
+        // Runtime Tracking Data (U04)
+        private int packagesRemaining = 3;
+        private int deliveredCount = 0;
+        private int trust = 0;
 
         public InteractionTarget CurrentTarget { get; private set; }
         public InteractionTarget DialogueTarget { get; private set; }
         public bool IsDialogueOpen { get; private set; }
+
+        public int PackagesRemaining => packagesRemaining;
+        public int DeliveredCount => deliveredCount;
+        public int Trust => trust;
 
         private void Awake()
         {
@@ -35,6 +48,10 @@ namespace JejakAsa
                 enabled = false;
                 return;
             }
+
+            packagesRemaining = initialPackages;
+            deliveredCount = 0;
+            trust = 0;
 
             promptPanel.SetActive(false);
             dialoguePanel.SetActive(false);
@@ -48,7 +65,9 @@ namespace JejakAsa
             {
                 if (DialogueTarget == null || !DialogueTarget.isActiveAndEnabled
                     || (keyboard != null && (keyboard.escapeKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame)))
+                {
                     CloseDialogue();
+                }
                 return;
             }
 
@@ -58,22 +77,77 @@ namespace JejakAsa
                 CurrentTarget = nearest;
                 promptPanel.SetActive(nearest != null);
                 if (nearest != null)
-                    promptText.text = "[E] Bicara dengan " + nearest.DisplayName;
+                {
+                    // Menyesuaikan teks prompt interaksi
+                    if (nearest.IsRecipient && !nearest.IsDelivered && packagesRemaining > 0)
+                    {
+                        promptText.text = "[E] Serahkan Bansos ke " + nearest.DisplayName;
+                    }
+                    else
+                    {
+                        promptText.text = "[E] Bicara dengan " + nearest.DisplayName;
+                    }
+                }
             }
 
             if (keyboard != null && keyboard.eKey.wasPressedThisFrame && CurrentTarget != null)
             {
-                DialogueTarget = CurrentTarget;
-                CurrentTarget = null;
-                IsDialogueOpen = true;
-                movementWasEnabled = movement.enabled;
-                movement.enabled = false;
-                promptPanel.SetActive(false);
-                dialogueTitle.text = DialogueTarget.DisplayName;
-                dialogueBody.text = DialogueTarget.Dialogue;
-                dialoguePanel.SetActive(true);
-                closeButton.Select();
+                OpenDialogueWith(CurrentTarget);
             }
+        }
+
+        /// <summary>
+        /// Saat pemain menekan E di depan warga:
+        /// Jika warga belum menerima bansos, bansos langsung diserahkan (U04)
+        /// dan percakapan terima kasih warga langsung muncul di layar.
+        /// </summary>
+        private void OpenDialogueWith(InteractionTarget target)
+        {
+            DialogueTarget = target;
+            CurrentTarget = null;
+            IsDialogueOpen = true;
+            movementWasEnabled = movement.enabled;
+            movement.enabled = false;
+            promptPanel.SetActive(false);
+
+            dialogueTitle.text = DialogueTarget.DisplayName;
+
+            // Logika Penyerahan Bansos Otomatis (U04)
+            if (DialogueTarget.IsRecipient && !DialogueTarget.IsDelivered && packagesRemaining > 0)
+            {
+                DialogueTarget.MarkAsDelivered();
+                packagesRemaining--;
+                deliveredCount++;
+                trust++;
+
+                Debug.Log($"[U04] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket tersisa: {packagesRemaining}/3, Kepercayaan: {trust}/3");
+            }
+
+            // Tampilkan percakapan warga
+            dialogueBody.text = DialogueTarget.Dialogue;
+            dialoguePanel.SetActive(true);
+
+            closeButton.Select();
+        }
+
+        public bool TryDeliverBansos()
+        {
+            if (DialogueTarget == null || !DialogueTarget.IsRecipient || DialogueTarget.IsDelivered || packagesRemaining <= 0)
+            {
+                return false;
+            }
+
+            DialogueTarget.MarkAsDelivered();
+            packagesRemaining--;
+            deliveredCount++;
+            trust++;
+
+            if (dialogueBody != null)
+            {
+                dialogueBody.text = DialogueTarget.Dialogue;
+            }
+
+            return true;
         }
 
         private InteractionTarget FindNearestTarget()
@@ -121,6 +195,15 @@ namespace JejakAsa
         {
             if (closeButton != null)
                 closeButton.onClick.RemoveListener(CloseDialogue);
+        }
+
+        // Tampilan HUD Status Bansos di Pojok Kiri Atas
+        private void OnGUI()
+        {
+            GUI.Box(new Rect(20, 20, 240, 95), "JEJAK ASA — STATUS BANSOS");
+            GUI.Label(new Rect(32, 45, 210, 22), $"📦 Paket Tersisa: <b>{packagesRemaining}/3</b>");
+            GUI.Label(new Rect(32, 65, 210, 22), $"✅ Warga Terbantu: <b>{deliveredCount}/3</b>");
+            GUI.Label(new Rect(32, 85, 210, 22), $"🤝 Kepercayaan: <b>{trust}/3</b>");
         }
     }
 }

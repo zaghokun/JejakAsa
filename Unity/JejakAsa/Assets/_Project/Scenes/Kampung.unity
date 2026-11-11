@@ -1564,8 +1564,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.InteractionTarget
   displayName: Warga Gang Timur
-  dialogue: Kalau warga saling membantu, pengantaran di gang ini bisa lebih mudah.
-    Mari bekerja sama.
+  dialogue: Gang ini sering dijaga preman yang melarang bantuan masuk. Berhati-hatilah kalau lewat sana...
+  isRecipient: 1
+  recipientId: warga_timur
+  deliveredDialogue: "Matur nuwun sanget nggih mas... Semoga kebaikan mas dan teman-teman dibalas berlipat ganda. Hati-hati di jalan ya mas."
+  isDelivered: 0
 --- !u!1 &655798237
 GameObject:
   m_ObjectHideFlags: 0
@@ -2289,8 +2292,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.InteractionTarget
   displayName: Warga Gang Tengah
-  dialogue: Beberapa tetangga juga membutuhkan bantuan. Semoga penyalurannya bisa
-    sampai dengan adil.
+  dialogue: Di gang dalam sini banyak lansia yang kesulitan keluar membeli bahan pokok...
+  isRecipient: 1
+  recipientId: warga_tengah
+  deliveredDialogue: "Wah makasih banyak loh mas, bantuan ini sangat bermanfaat buat keluarga saya. Titip salam buat teman-teman relawan yang lain ya!"
+  isDelivered: 0
 --- !u!114 &915268264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4156,8 +4162,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.InteractionTarget
   displayName: Warga Pos
-  dialogue: Saya sedang menunggu bantuan kebutuhan pokok. Terima kasih sudah datang
-    mendengarkan kebutuhan kami.
+  dialogue: Saya sedang menunggu bantuan kebutuhan pokok. Semoga masih ada bagian beras untuk dapur kami...
+  isRecipient: 1
+  recipientId: warga_pos
+  deliveredDialogue: "Alhamdulillah, terima kasih banyak ya mas. Lancar selalu rejekinya. Beras dan sembakonya langsung kami masak buat anak-anak hari ini."
+  isDelivered: 0
 --- !u!1 &1746266133
 GameObject:
   m_ObjectHideFlags: 0
