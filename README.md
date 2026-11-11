@@ -60,7 +60,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 - [x] **U02 — Gerak dan collision:** kecepatan lurus/diagonal setara, tidak menembus rumah, dan jalur wajib dapat dilalui. A: implementasi; B: regresi/verifikasi; lima tes Play Mode lulus.
 - [x] **U03 — Satu interaksi:** target aktif terdekat dalam radius horizontal 1,8 meter mendapat prompt E; satu penekanan membuka satu dialog, bukan semua warga atau berulang saat E ditahan. Enam tes interaksi lulus, termasuk UI aktual dan klik Tutup.
 - [x] **U04 — Penyerahan valid:** paket, status penerima, dan trust berubah sekali saat penyerahan via tombol E; transaksi tunggal dan dialog warga bervariasi; regresi diuji lewat U04DeliveryTests.
-- [ ] **U05 — Penerima dan urutan:** penerima selesai tidak menerima paket lagi; urutan pengantaran bebas.
+- [x] **U05 — Penerima dan urutan:** tiga penerima dapat diantar dengan urutan bebas; penerima selesai tidak menerima paket lagi; selesai otomatis saat 3/3; diuji lewat U05OrderTests.
 - [ ] **U06 — Timer per state:** aktif saat eksplorasi, berhenti pada state yang ditentukan.
 - [ ] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
 - [ ] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.

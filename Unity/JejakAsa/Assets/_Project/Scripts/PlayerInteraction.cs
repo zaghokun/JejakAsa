@@ -37,6 +37,7 @@ namespace JejakAsa
         public int PackagesRemaining => packagesRemaining;
         public int DeliveredCount => deliveredCount;
         public int Trust => trust;
+        public bool IsMissionCompleted => deliveredCount >= initialPackages;
 
         private void Awake()
         {
@@ -112,7 +113,7 @@ namespace JejakAsa
 
             dialogueTitle.text = DialogueTarget.DisplayName;
 
-            // Logika Penyerahan Bansos Otomatis (U04)
+            // Logika Penyerahan Bansos Otomatis (U04 & U05)
             if (DialogueTarget.IsRecipient && !DialogueTarget.IsDelivered && packagesRemaining > 0)
             {
                 DialogueTarget.MarkAsDelivered();
@@ -120,7 +121,12 @@ namespace JejakAsa
                 deliveredCount++;
                 trust++;
 
-                Debug.Log($"[U04] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket tersisa: {packagesRemaining}/3, Kepercayaan: {trust}/3");
+                Debug.Log($"[U04/U05] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket tersisa: {packagesRemaining}/3, Kepercayaan: {trust}/3");
+
+                if (IsMissionCompleted)
+                {
+                    Debug.Log("[U05] SELURUH 3 PENERIMA SELESAI! Misi pengantaran bansos berhasil diselesaikan.");
+                }
             }
 
             // Tampilkan percakapan warga
@@ -128,6 +134,27 @@ namespace JejakAsa
             dialoguePanel.SetActive(true);
 
             closeButton.Select();
+        }
+
+        /// <summary>
+        /// Reset seluruh sesi pengantaran bansos ke kondisi awal bersih (U05 & U17).
+        /// </summary>
+        public void ResetMissionSession()
+        {
+            packagesRemaining = initialPackages;
+            deliveredCount = 0;
+            trust = 0;
+
+            foreach (var target in InteractionTarget.Active)
+            {
+                if (target != null)
+                {
+                    target.ResetDelivery();
+                }
+            }
+
+            CloseDialogue();
+            Debug.Log("[U05] Sesi misi telah direset bersih.");
         }
 
         public bool TryDeliverBansos()
@@ -200,10 +227,16 @@ namespace JejakAsa
         // Tampilan HUD Status Bansos di Pojok Kiri Atas
         private void OnGUI()
         {
-            GUI.Box(new Rect(20, 20, 240, 95), "JEJAK ASA — STATUS BANSOS");
-            GUI.Label(new Rect(32, 45, 210, 22), $"📦 Paket Tersisa: <b>{packagesRemaining}/3</b>");
-            GUI.Label(new Rect(32, 65, 210, 22), $"✅ Warga Terbantu: <b>{deliveredCount}/3</b>");
-            GUI.Label(new Rect(32, 85, 210, 22), $"🤝 Kepercayaan: <b>{trust}/3</b>");
+            float boxH = IsMissionCompleted ? 120 : 95;
+            GUI.Box(new Rect(20, 20, 250, boxH), "JEJAK ASA — STATUS BANSOS");
+            GUI.Label(new Rect(32, 45, 215, 22), $"📦 Paket Tersisa: <b>{packagesRemaining}/3</b>");
+            GUI.Label(new Rect(32, 65, 215, 22), $"✅ Warga Terbantu: <b>{deliveredCount}/3</b>");
+            GUI.Label(new Rect(32, 85, 215, 22), $"🤝 Kepercayaan: <b>{trust}/3</b>");
+
+            if (IsMissionCompleted)
+            {
+                GUI.Label(new Rect(32, 103, 215, 20), "<b><color=#55FF55>🎉 SEMUA 3 BANSOS TERKIRIM!</color></b>");
+            }
         }
     }
 }
