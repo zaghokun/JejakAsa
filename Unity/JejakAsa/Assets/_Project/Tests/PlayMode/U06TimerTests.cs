@@ -146,3 +146,4 @@ public sealed class U06TimerTests : InputTestFixture
     }
 }
 #endif
+
