@@ -35,8 +35,9 @@ Tidak termasuk baseline: multiplayer, akun/backend, database server, inventori k
 - **U02 lulus di Unity Editor:** lima tes Play Mode lulus, meliputi gerak, collision, kamera, dan penelusuran jalur pada Kampung aktual. Tes jalur diulang sesudah tinggi pembatas diubah dan tetap lulus.
 - **U03 lulus di Unity Editor:** enam tes interaksi lulus, termasuk beberapa target berdekatan, batas jarak, tahan E, kunci gerak, serta dialog Kampung yang ditutup melalui klik mouse. Bersama lima regresi U02, total sebelas tes Play Mode lulus.
 - Source sudah mendukung WASD/panah dengan kecepatan awal 3,5 meter/detik, gerak relatif kamera, normalisasi diagonal, gravitasi, dan kamera follow dengan sudut tetap.
-- Peta masih graybox. Tiga warga sudah memiliki prompt E, dialog unik sebelum/sesudah bantuan, serta sistem penyerahan bansos valid (U04). Paket dan trust bertambah per penyerahan. Timer, encounter intimidasi, dan battle dalam proses implementasi.
-- **Build Windows belum dibuat ulang setelah U02/U03.** Build D1 tidak otomatis memperoleh perubahan source terbaru. Verifikasi terbaru masih pada Unity Editor, bukan executable baru atau komputer lain.
+- Peta masih graybox. Perubahan tim U04–U10 sudah digabungkan; daftar penerimaan di bawah mempertahankan status yang dilaporkan tim. Belum seluruh suite U04–U10 dijalankan ulang saat menguji karakter.
+- **Preview MC Meshy tersedia:** satu model hasil image-to-3D telah diperiksa di Blender dan diuji sementara di Unity. Player pada scene tersimpan masih capsule, bukan model final.
+- **Build Windows belum dibuat ulang untuk preview MC.** Verifikasi terbaru dilakukan di Unity Editor, bukan executable baru atau komputer kedua.
 
 ![Dialog warga pada scene Kampung saat pengujian Play Mode U03](docs/visual/u03-interaksi.png)
 
@@ -48,9 +49,9 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
-| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | U02/U03 selesai, termasuk penguncian gerak selama dialog; penyerahan paket dan sistem misi belum dikerjakan. |
+| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | Perubahan tim U04–U10 telah digabungkan. Smoke test dengan preview MC membuktikan satu gerakan dan satu penyerahan; bukan pengujian ulang seluruh kriteria. |
 | B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Verifikasi U02/U03 selesai. Ini **bukan** penyelesaian B01–B10; arena dan sistem battle masih belum tersedia. |
-| C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Graybox dasar tersedia untuk ditindaklanjuti; penyelesaian tugas C belum dilaporkan dan tidak otomatis dicentang. |
+| C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Preview MC bertekstur sudah diuji; rig, animasi, model warga/musuh, dan integrasi final masih diperlukan. |
 
 ## Tracking penerimaan
 
@@ -64,7 +65,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 - [x] **U06 — Timer per state:** timer 180s aktif saat eksplorasi, membeku saat dialog terbuka dan saat misi selesai; penyerahan terlambat ditolak; diuji lewat U06TimerTests.
 - [X] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
 - [X] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
-- [X] **U09 — Menghindar:** pilihan tidak langsung memicu encounter lagi dan jalur alternatif mencapai semua tujuan. Jalur graybox sudah diuji, tetapi mekanik menghindar belum ada.
+- [X] **U09 — Menghindar:** status selesai dipertahankan berdasarkan laporan/merge tim; tidak dijalankan ulang pada pengujian preview MC.
 - [X] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
 - [ ] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline.
 - [ ] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai.
@@ -91,15 +92,15 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 | AB-M01 | D1 | Setup proyek, repository, clone, dan build awal. Satu anggota menyiapkan; anggota lain memeriksa. | Proyek 6000.3.27f1 hasil clone dan build awal berjalan. Bukti U01 berdasarkan konfirmasi anggota A/B; tidak menunggu laporan C untuk menutup milestone A/B ini. | Selesai |
 | AB-M02 | D2–D3 | A: graybox navigasi, gerak, collision, kamera. B: regresi dan uji jalur. | U02 lulus: lima tes Play Mode serta pengujian ulang jalur setelah perubahan pembatas. Tidak mencakup input lock state atau loop misi. | Selesai |
 | AB-M03 | D2–D3 | B: arena Battle mandiri. A/B: kontrak data, hasil menang/kalah, dan tanggung jawab state. | Arena dapat dibuka sendiri; titik karakter tersedia; kontrak disepakati tanpa ketergantungan pada MainMenu. Milestone ini tidak otomatis selesai oleh U02. | Belum |
-| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U03 dan kunci gerak selama dialog sudah lulus. U04–U08 serta loop tiga kali belum tersedia; bagian U17 terkait battle baru ditutup setelah integrasi. | Sebagian |
+| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U04–U08 ditandai selesai oleh tim; satu skenario penyerahan dengan preview MC lulus. Loop tiga retry dan bagian U17 battle belum dibuktikan dalam pengujian preview ini. | Sebagian |
 | AB-M05 | D3–D7 | B: HP, Serang/Bertahan, pola lawan, telegraph, giliran, menang/kalah. A membantu menguji kontrak hasil. | Battle mandiri dapat dimainkan; U11–U14 lulus dan tidak mengirim hasil ganda. | Belum |
-| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U09, U10, U15, U16 serta U17 lengkap lulus. Jalur, waktu, paket, dan penerima tetap benar setelah transisi. | Belum |
+| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U09/U10 ditandai selesai oleh tim; U15/U16/U17 bergantung integrasi battle dan belum ditutup. | Sebagian |
 | AB-M07 | D11 | A: MainMenu, navigasi, konfirmasi keluar sesi. B memeriksa masuk/keluar misi dan regresi battle. | U18 lulus. Menu memakai loop yang sudah bekerja, bukan memiliki salinan logika misi. Memakai prefab menu C setelah handoff. | Belum |
 | AB-M08 | D12–D14 | Integrasi aset/UI/audio dari C, pengujian alpha, dan pembekuan fitur. | Semua fitur wajib tersambung; U19/U20 diuji bersama C pada build terintegrasi. Belum cukup jika hanya scene percobaan yang bekerja. | Belum |
 | AB-M09 | D15–D18 | Playtest, perbaikan, kalibrasi angka, regresi, dan release candidate. | Catatan playtest nyata; tidak ada blocker atau tombol kosong; kandidat rilis cocok dengan source dan aturan terbaru. | Belum |
 | AB-M10 | D19–D21 | Stabilisasi, build bersih, pengujian komputer kedua, dan pengumpulan source/build. | U21 lulus; build final, source, bukti uji, serta known issues non-blocking siap. | Belum |
 
-**Batas status saat ini:** AB-M01 dan AB-M02 selesai; AB-M04 sebagian karena baru U03 dan kunci gerak dialog yang tersedia. Hari D2/D3 secara keseluruhan belum selesai karena AB-M03, battle dasar, dan penguncian berdasarkan state misi/battle masih tersisa. Verifikasi interaksi oleh B tidak menutup milestone battle B.
+**Batas status saat ini:** AB-M01 dan AB-M02 selesai; AB-M04 dan AB-M06 sebagian karena pekerjaan battle/retry lintas scene masih terbuka. Status U04–U10 mengikuti merge tim; pengujian karakter hanya mencakup gerak dan satu penyerahan, bukan seluruh suite.
 
 ### Jalur C — Visual, level, UI, dan audio
 
@@ -107,7 +108,7 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 | --- | --- | --- | --- | --- |
 | C-M01 | D1–D2 | Setup proyek C, skala/palet, daftar kebutuhan aset, serta sumber/lisensi. | C dapat membuka proyek yang sama; daftar kebutuhan dan sumber aset dapat ditinjau. U01 A/B tidak otomatis membuktikan setup C. | Belum dilaporkan |
 | C-M02 | D2 | Rancangan layout dan penempatan tujuan bersama A/B. | Pos awal, tiga tujuan, gang utama, jalur memutar, serta titik encounter disepakati. Graybox buatan A/B sudah tersedia; kontribusi/handoff C tetap perlu dikonfirmasi. | Belum dilaporkan |
-| C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Skala, orientasi, material URP, dan identitas visual konsisten; aset dapat dipakai A/B dan asal/lisensinya jelas. | Belum dilaporkan |
+| C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Preview MC Meshy bertekstur sudah diuji; belum ber-rig/animasi dan masih 32.687 triangle setelah Decimate. Model warga/musuh dan integrasi final belum tersedia. | Sebagian |
 | C-M04 | D4–D6 | Prefab briefing, HUD, dialog, encounter, battle UI, pause, dan hasil/retry. Main menu belum diprioritaskan. | Teks, anchor, fokus, tombol, serta state terkunci/aktif lengkap; referensi untuk pengikatan controller disertakan. Penyerahan prefab bukan bukti logika misi/battle sudah selesai. | Belum dilaporkan |
 | C-M05 | D5–D8 | Lingkungan modular, bangunan, jalan, paket, penanda penerima, dan dekor minimum. | Prefab diserahkan untuk mengganti graybox; A/B memasangnya dan memeriksa ulang jalur/collider. C tidak menimpa logika atau scene integrasi tanpa handoff. | Belum dilaporkan |
 | C-M06 | D7–D10 | Idle/jalan dan respons visual serang, bertahan, kena, serta bantuan warga. | Aksi terbaca dan dapat dipicu controller A/B; tidak membutuhkan animasi kompleks atau AI baru. | Belum dilaporkan |
@@ -127,10 +128,23 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 
 ### Pekerjaan berikutnya
 
-1. A/B lanjut **U04**: penyerahan valid mengubah paket, status penerima, dan trust sekali. U03 sudah menyediakan pemilihan target dan dialog, tetapi belum melakukan transaksi bantuan; U05 kemudian memperluas aturan penerima selesai dan urutan bebas.
+1. A/B melanjutkan arena dan sistem battle; status U04–U10 mengikuti hasil merge tim. Uji ulang kriteria terkait saat mengintegrasikan model final.
 2. B tetap menyiapkan **B01/arena Battle mandiri dan kontrak hasil menang/kalah**, terpisah dari scene Kampung.
 3. C melanjutkan layout/aset serta prefab UI yang mendukung interaksi; tidak menunggu main menu.
 4. Sebelum menandai satu hari atau gerbang selesai, periksa semua hasil wajibnya, bukan hanya U02.
+
+**Referensi karakter terbaru dari Gemini:** [MC](docs/visual/asset-guides/refs/Gemini_Generated_Image_rcceaqrcceaqrcce.jpg), [warga perempuan](docs/visual/asset-guides/refs/Gemini_Generated_Image_s281xis281xis281.jpg), [warga laki-laki](docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo.jpg), dan [pengintimidasi](<docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo (1).jpg>). Nama file dipertahankan agar perubahan hasil merge tidak terganggu. Acuan ini menggantikan konsep karakter lama yang berbeda. MC menggunakan polo navy, headphone dan sling bag seperti gambar terbaru.
+
+**Status produksi karakter:** satu MC dihasilkan lewat Meshy dari potongan tampak depan gambar Gemini. Satu job selesai; saldo akhir dan biaya aktual tidak dibaca dari akun. Warga perempuan, warga laki-laki, dan pengintimidasi belum digenerate.
+
+### MC Meshy — hasil dan batasan
+
+- [GLB sumber hasil ekspor Blender](ArtSource/Characters/MC_Meshy/JejakAsa_MC_Original.glb): tinggi sekitar 1,70 m, 653.749 triangle, satu UV map dan tiga tekstur tertanam. Ekspor GLB mengeluarkan peringatan tentang sampler tekstur; periksa ulang bila menggunakan format ini di pipeline lain.
+- Salinan uji memakai Decimate non-destruktif di Blender dan diekspor sebagai [FBX preview Unity](Unity/JejakAsa/Assets/_Project/Art/Characters/MC/JejakAsa_MC_Unity_Test.fbx): 32.687 triangle; tinggi terukur 1,70 m setelah koreksi skala impor. Model asli tidak dikurangi.
+- [Prefab preview Unity](Unity/JejakAsa/Assets/_Project/Art/Characters/MC/MC_Meshy_Preview.prefab) memakai material URP/Lit dan base-color 2048×2048. Normal serta metallic/roughness asli tetap ada di GLB sumber, tetapi **belum dipetakan pada material preview**.
+- [Screenshot Play Mode Unity](docs/visual/meshy-mc-unity-preview.png): preview dipasang sementara sebagai child Player, collider asli dipertahankan, dan tidak ada collider baru pada visual. Pada smoke test terpisah, karakter bergerak dan satu penyerahan ke warga mengubah terkirim/trust dari 0 ke 1. Scene Kampung dikembalikan bersih dan Player tersimpan tetap capsule.
+- Model **belum ber-rig atau beranimasi**. Sumber memiliki 50.113 boundary edges; Decimate bukan retopology dan dapat merusak UV/deformasi. Preview 32.687 triangle masih di atas target karakter awal dan belum diprofilkan. Jangan gunakan sebagai karakter final sampai topology, tekstur, rig/skin, animasi, dan performanya diperiksa.
+- Tidak ada job Meshy tambahan untuk optimasi atau rigging. Verifikasi biaya sebenarnya pada dashboard Meshy; jangan menyimpan API key dalam repository. Hak penggunaan aset generasi bergantung ketentuan akun yang digunakan.
 
 ## Membuka dan menjalankan proyek
 
