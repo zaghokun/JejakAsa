@@ -35,7 +35,7 @@ Tidak termasuk baseline: multiplayer, akun/backend, database server, inventori k
 - **U02 lulus di Unity Editor:** lima tes Play Mode lulus, meliputi gerak, collision, kamera, dan penelusuran jalur pada Kampung aktual. Tes jalur diulang sesudah tinggi pembatas diubah dan tetap lulus.
 - **U03 lulus di Unity Editor:** enam tes interaksi lulus, termasuk beberapa target berdekatan, batas jarak, tahan E, kunci gerak, serta dialog Kampung yang ditutup melalui klik mouse. Bersama lima regresi U02, total sebelas tes Play Mode lulus.
 - Source sudah mendukung WASD/panah dengan kecepatan awal 3,5 meter/detik, gerak relatif kamera, normalisasi diagonal, gravitasi, dan kamera follow dengan sudut tetap.
-- Peta masih graybox. Tiga warga sudah memiliki prompt E dan dialog singkat; penanda intimidasi belum aktif. Paket, trust, misi, timer, dan battle belum diimplementasikan.
+- Peta masih graybox. Tiga warga sudah memiliki prompt E, dialog unik sebelum/sesudah bantuan, serta sistem penyerahan bansos valid (U04). Paket dan trust bertambah per penyerahan. Timer, encounter intimidasi, dan battle dalam proses implementasi.
 - **Build Windows belum dibuat ulang setelah U02/U03.** Build D1 tidak otomatis memperoleh perubahan source terbaru. Verifikasi terbaru masih pada Unity Editor, bukan executable baru atau komputer lain.
 
 ![Dialog warga pada scene Kampung saat pengujian Play Mode U03](docs/visual/u03-interaksi.png)
@@ -59,13 +59,13 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 - [x] **U01 — Setup awal A/B:** clone bersih dan build Windows awal berjalan; berdasarkan konfirmasi tim. Tidak menyatakan build U02 sudah tersedia.
 - [x] **U02 — Gerak dan collision:** kecepatan lurus/diagonal setara, tidak menembus rumah, dan jalur wajib dapat dilalui. A: implementasi; B: regresi/verifikasi; lima tes Play Mode lulus.
 - [x] **U03 — Satu interaksi:** target aktif terdekat dalam radius horizontal 1,8 meter mendapat prompt E; satu penekanan membuka satu dialog, bukan semua warga atau berulang saat E ditahan. Enam tes interaksi lulus, termasuk UI aktual dan klik Tutup.
-- [ ] **U04 — Penyerahan valid:** paket, status penerima, dan trust berubah sekali; klik cepat tidak menggandakan progres.
-- [ ] **U05 — Penerima dan urutan:** penerima selesai tidak menerima paket lagi; urutan pengantaran bebas.
-- [ ] **U06 — Timer per state:** aktif saat eksplorasi, berhenti pada state yang ditentukan.
-- [ ] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
-- [ ] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
-- [ ] **U09 — Menghindar:** pilihan tidak langsung memicu encounter lagi dan jalur alternatif mencapai semua tujuan. Jalur graybox sudah diuji, tetapi mekanik menghindar belum ada.
-- [ ] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
+- [x] **U04 — Penyerahan valid:** paket, status penerima, dan trust berubah sekali saat penyerahan via tombol E; transaksi tunggal dan dialog warga bervariasi; regresi diuji lewat U04DeliveryTests.
+- [x] **U05 — Penerima dan urutan:** tiga penerima dapat diantar dengan urutan bebas; penerima selesai tidak menerima paket lagi; selesai otomatis saat 3/3; diuji lewat U05OrderTests.
+- [x] **U06 — Timer per state:** timer 180s aktif saat eksplorasi, membeku saat dialog terbuka dan saat misi selesai; penyerahan terlambat ditolak; diuji lewat U06TimerTests.
+- [X] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
+- [X] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
+- [X] **U09 — Menghindar:** pilihan tidak langsung memicu encounter lagi dan jalur alternatif mencapai semua tujuan. Jalur graybox sudah diuji, tetapi mekanik menghindar belum ada.
+- [X] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
 - [ ] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline.
 - [ ] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai.
 - [ ] **U13 — Guard sekali pakai:** Bertahan pada giliran Persiapan tidak terbawa ke serangan berikutnya.
