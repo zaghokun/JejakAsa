@@ -51,12 +51,14 @@ namespace JejakAsa
         private MissionOutcome outcome = MissionOutcome.InProgress;
         private string outcomeReason = "";
         private bool isOutcomeOpen = false;
+        private bool isSystemDialogue = false;
         private int outcomeOpenedFrame = -1;
         private float outcomeOpenedTime = -10f;
 
         public InteractionTarget CurrentTarget { get; private set; }
         public InteractionTarget DialogueTarget { get; private set; }
         public bool IsDialogueOpen { get; private set; }
+        public bool IsEncounterOpen => EncounterController.AnyOpen;
 
         public int PackagesRemaining => packagesRemaining;
         public int DeliveredCount => deliveredCount;
@@ -124,7 +126,7 @@ namespace JejakAsa
             }
 
             // U06 & U07: Timer hanya berkurang saat eksplorasi aktif & misi masih berlangsung
-            if (!IsDialogueOpen && outcome == MissionOutcome.InProgress)
+            if (!IsDialogueOpen && !IsEncounterOpen && outcome == MissionOutcome.InProgress)
             {
                 if (IsMissionCompleted)
                 {
@@ -149,10 +151,19 @@ namespace JejakAsa
                 }
             }
 
+            if (IsEncounterOpen)
+            {
+                CurrentTarget = null;
+                if (promptPanel != null && promptPanel.activeSelf)
+                    promptPanel.SetActive(false);
+                return;
+            }
+
             Keyboard keyboard = Keyboard.current;
             if (IsDialogueOpen)
             {
-                if (DialogueTarget == null || !DialogueTarget.isActiveAndEnabled
+                bool invalidTarget = !isSystemDialogue && (DialogueTarget == null || !DialogueTarget.isActiveAndEnabled);
+                if (invalidTarget
                     || (keyboard != null && (keyboard.escapeKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame)))
                 {
                     CloseDialogue();
@@ -318,6 +329,11 @@ namespace JejakAsa
                 }
             }
 
+            for (int i = 0; i < EncounterController.Active.Count; i++)
+            {
+                EncounterController.Active[i]?.ResetEncounter();
+            }
+
             // Kembalikan posisi pemain ke pos awal bersih (U17)
             CharacterController cc = GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
@@ -400,11 +416,50 @@ namespace JejakAsa
             return nearest;
         }
 
+        public void SetEncounterMovementLock(bool locked)
+        {
+            if (locked)
+            {
+                CurrentTarget = null;
+                if (promptPanel != null)
+                    promptPanel.SetActive(false);
+                if (movement != null)
+                    movement.enabled = false;
+            }
+            else if (movement != null && !IsDialogueOpen && !isOutcomeOpen)
+            {
+                movement.enabled = true;
+            }
+        }
+
+        public void OpenSystemDialogue(string title, string body)
+        {
+            if (dialoguePanel == null || dialogueTitle == null || dialogueBody == null || closeButton == null)
+                return;
+
+            DialogueTarget = null;
+            CurrentTarget = null;
+            isSystemDialogue = true;
+            IsDialogueOpen = true;
+            movementWasEnabled = true;
+
+            if (movement != null)
+                movement.enabled = false;
+            if (promptPanel != null)
+                promptPanel.SetActive(false);
+
+            dialogueTitle.text = title;
+            dialogueBody.text = body;
+            dialoguePanel.SetActive(true);
+            closeButton.Select();
+        }
+
         private void CloseDialogue()
         {
             if (!IsDialogueOpen)
                 return;
             IsDialogueOpen = false;
+            isSystemDialogue = false;
             DialogueTarget = null;
             if (dialoguePanel != null)
                 dialoguePanel.SetActive(false);
@@ -414,7 +469,7 @@ namespace JejakAsa
             {
                 OpenOutcome();
             }
-            else if (movement != null)
+            else if (movement != null && !IsEncounterOpen)
             {
                 movement.enabled = movementWasEnabled;
             }
@@ -434,300 +489,9 @@ namespace JejakAsa
                 closeButton.onClick.RemoveListener(CloseDialogue);
         }
 
-        // Tampilan HUD Lucu & Cozy untuk Anak-anak (Gaya Nintendo / Animal Crossing / Overcooked)
-        private Texture2D cuteShadowTex;
-        private Texture2D cuteCardTex;
-        private Texture2D cuteRibbonTex;
-        private Texture2D cuteTimerNormalTex;
-        private Texture2D cuteTimerWarnTex;
-        private Texture2D cuteTimerDangerTex;
-        private Texture2D cuteStampDoneTex;
-        private Texture2D cuteStampEmptyTex;
-        private Texture2D cuteBannerInfoTex;
-        private Texture2D cuteBannerSuccessTex;
-        private Texture2D cuteBannerFailTex;
-
-        // U08: Aset UI Layar Hasil Misi
-        private Texture2D cuteDimTex;
-        private Texture2D cuteInnerBoxTex;
-        private Texture2D cuteBtnNormalTex;
-        private Texture2D cuteBtnHoverTex;
-        private Texture2D cuteOutcomeSuccessTex;
-        private Texture2D cuteOutcomePartialTex;
-        private Texture2D cuteOutcomeFailTex;
-
-        private GUIStyle cuteCardStyle;
-        private GUIStyle cuteRibbonStyle;
-        private GUIStyle cuteTimerStyle;
-        private GUIStyle cuteLabelStyle;
-        private GUIStyle cuteSubLabelStyle;
-        private GUIStyle cuteCheckStyle;
-        private GUIStyle cuteBannerStyle;
-
-        private GUIStyle cuteOutcomeHeaderStyle;
-        private GUIStyle cuteOutcomeDescStyle;
-        private GUIStyle cuteInnerBoxStyle;
-        private GUIStyle cuteStatLeftStyle;
-        private GUIStyle cuteStatRightStyle;
-        private GUIStyle cuteBtnStyle;
-        private GUIStyle cuteHintStyle;
-        private bool cuteHudInitialized = false;
-
-        private void InitCuteHudStyles()
-        {
-            if (cuteHudInitialized) return;
-
-            // Warna cozy & ramah anak: Cream hangat, Toska lembut, Kuning cerah, Hijau mint
-            cuteShadowTex = MakeRoundedRectTex(32, 32, 14, new Color(0.10f, 0.08f, 0.06f, 0.25f), new Color(0f, 0f, 0f, 0f), 0);
-            cuteCardTex = MakeRoundedRectTex(32, 32, 14, new Color(1.0f, 0.98f, 0.94f, 0.97f), new Color(0.08f, 0.56f, 0.52f, 1.0f), 2);
-            cuteRibbonTex = MakeRoundedRectTex(24, 24, 10, new Color(0.08f, 0.56f, 0.52f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-            cuteTimerNormalTex = MakeRoundedRectTex(24, 24, 10, new Color(0.96f, 0.62f, 0.04f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-            cuteTimerWarnTex = MakeRoundedRectTex(24, 24, 10, new Color(0.98f, 0.45f, 0.09f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-            cuteTimerDangerTex = MakeRoundedRectTex(24, 24, 10, new Color(0.90f, 0.25f, 0.25f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-
-            // Stempel lingkaran anti-aliased (gantikan emoji HP, checkmark digambar vektor langsung pada tekstur)
-            cuteStampDoneTex = MakeCircleTex(32, new Color(0.10f, 0.72f, 0.50f, 1.0f), new Color(0.05f, 0.50f, 0.35f, 1.0f), 2, drawCheckmark: true);
-            cuteStampEmptyTex = MakeCircleTex(32, new Color(0.92f, 0.89f, 0.84f, 1.0f), new Color(0.80f, 0.76f, 0.70f, 1.0f), 2, drawCheckmark: false);
-
-            // Banner status bagian bawah
-            cuteBannerInfoTex = MakeRoundedRectTex(24, 24, 8, new Color(0.99f, 0.94f, 0.78f, 1.0f), new Color(0.96f, 0.78f, 0.35f, 0.6f), 1);
-            cuteBannerSuccessTex = MakeRoundedRectTex(24, 24, 8, new Color(0.82f, 0.98f, 0.90f, 1.0f), new Color(0.10f, 0.72f, 0.50f, 0.6f), 1);
-            cuteBannerFailTex = MakeRoundedRectTex(24, 24, 8, new Color(0.99f, 0.86f, 0.86f, 1.0f), new Color(0.90f, 0.25f, 0.25f, 0.6f), 1);
-
-            // Aset Layar Hasil (U08)
-            cuteDimTex = MakeRoundedRectTex(4, 4, 0, new Color(0.05f, 0.08f, 0.12f, 0.65f), Color.clear, 0);
-            cuteInnerBoxTex = MakeRoundedRectTex(24, 24, 10, new Color(0.96f, 0.93f, 0.86f, 1.0f), new Color(0.85f, 0.78f, 0.68f, 1.0f), 1);
-            cuteBtnNormalTex = MakeRoundedRectTex(24, 24, 12, new Color(0.08f, 0.56f, 0.52f, 1.0f), new Color(0.05f, 0.40f, 0.38f, 1.0f), 2);
-            cuteBtnHoverTex = MakeRoundedRectTex(24, 24, 12, new Color(0.10f, 0.68f, 0.62f, 1.0f), new Color(0.05f, 0.45f, 0.42f, 1.0f), 2);
-            cuteOutcomeSuccessTex = MakeRoundedRectTex(24, 24, 12, new Color(0.06f, 0.65f, 0.42f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-            cuteOutcomePartialTex = MakeRoundedRectTex(24, 24, 12, new Color(0.90f, 0.55f, 0.04f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-            cuteOutcomeFailTex = MakeRoundedRectTex(24, 24, 12, new Color(0.85f, 0.22f, 0.22f, 1.0f), new Color(1.0f, 0.98f, 0.94f, 1.0f), 2);
-
-            cuteCardStyle = new GUIStyle(GUI.skin.box)
-            {
-                normal = { background = cuteCardTex },
-                border = new RectOffset(14, 14, 14, 14)
-            };
-
-            cuteRibbonStyle = new GUIStyle(GUI.skin.label)
-            {
-                normal = { background = cuteRibbonTex, textColor = Color.white },
-                border = new RectOffset(10, 10, 10, 10),
-                fontSize = 11,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
-
-            cuteTimerStyle = new GUIStyle(GUI.skin.label)
-            {
-                normal = { background = cuteTimerNormalTex, textColor = Color.white },
-                border = new RectOffset(10, 10, 10, 10),
-                fontSize = 12,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
-
-            cuteLabelStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 13,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleLeft,
-                richText = true
-            };
-            cuteLabelStyle.normal.textColor = new Color(0.24f, 0.19f, 0.16f); // Cokelat hangat ramah mata
-
-            cuteSubLabelStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 11,
-                fontStyle = FontStyle.Normal,
-                alignment = TextAnchor.MiddleLeft,
-                richText = true
-            };
-            cuteSubLabelStyle.normal.textColor = new Color(0.42f, 0.36f, 0.32f);
-
-            cuteCheckStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 12,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
-            cuteCheckStyle.normal.textColor = Color.white;
-
-            cuteBannerStyle = new GUIStyle(GUI.skin.label)
-            {
-                border = new RectOffset(8, 8, 8, 8),
-                fontSize = 11,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
-
-            cuteOutcomeHeaderStyle = new GUIStyle(GUI.skin.label)
-            {
-                normal = { textColor = Color.white },
-                border = new RectOffset(12, 12, 12, 12),
-                fontSize = 14,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
-
-            cuteOutcomeDescStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 12,
-                wordWrap = true,
-                alignment = TextAnchor.MiddleCenter,
-                richText = true
-            };
-            cuteOutcomeDescStyle.normal.textColor = new Color(0.32f, 0.25f, 0.20f);
-
-            cuteInnerBoxStyle = new GUIStyle(GUI.skin.box)
-            {
-                normal = { background = cuteInnerBoxTex },
-                border = new RectOffset(10, 10, 10, 10)
-            };
-
-            cuteStatLeftStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 12,
-                alignment = TextAnchor.MiddleLeft
-            };
-            cuteStatLeftStyle.normal.textColor = new Color(0.40f, 0.33f, 0.28f);
-
-            cuteStatRightStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 12,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleRight,
-                richText = true
-            };
-            cuteStatRightStyle.normal.textColor = new Color(0.18f, 0.14f, 0.10f);
-
-            cuteBtnStyle = new GUIStyle(GUI.skin.button)
-            {
-                normal = { background = cuteBtnNormalTex, textColor = Color.white },
-                hover = { background = cuteBtnHoverTex, textColor = Color.white },
-                active = { background = cuteBtnHoverTex, textColor = Color.white },
-                border = new RectOffset(12, 12, 12, 12),
-                fontSize = 13,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter
-            };
-
-            cuteHintStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 10,
-                alignment = TextAnchor.MiddleCenter
-            };
-            cuteHintStyle.normal.textColor = new Color(0.55f, 0.48f, 0.42f);
-
-            cuteHudInitialized = true;
-        }
-
-        private Texture2D MakeRoundedRectTex(int width, int height, int radius, Color fillColor, Color borderColor, int borderWidth = 1)
-        {
-            Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false)
-            {
-                filterMode = FilterMode.Bilinear
-            };
-            Color[] colors = new Color[width * height];
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    float cx = (x < radius) ? radius : (x >= width - radius) ? (width - 1 - radius) : x;
-                    float cy = (y < radius) ? radius : (y >= height - radius) ? (height - 1 - radius) : y;
-                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2(cx, cy));
-
-                    int index = y * width + x;
-                    if (dist > radius)
-                    {
-                        float alpha = Mathf.Clamp01(1f - (dist - radius));
-                        colors[index] = borderWidth > 0
-                            ? new Color(borderColor.r, borderColor.g, borderColor.b, borderColor.a * alpha)
-                            : new Color(fillColor.r, fillColor.g, fillColor.b, fillColor.a * alpha);
-                    }
-                    else if (borderWidth > 0 && dist > radius - borderWidth)
-                    {
-                        colors[index] = borderColor;
-                    }
-                    else
-                    {
-                        colors[index] = fillColor;
-                    }
-                }
-            }
-            tex.SetPixels(colors);
-            tex.Apply();
-            return tex;
-        }
-
-        private float DistToSegment(Vector2 p, Vector2 a, Vector2 b)
-        {
-            Vector2 ab = b - a;
-            float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / Mathf.Max(0.0001f, ab.sqrMagnitude));
-            return Vector2.Distance(p, a + t * ab);
-        }
-
-        private Texture2D MakeCircleTex(int size, Color fillColor, Color borderColor, int borderWidth = 2, bool drawCheckmark = false)
-        {
-            Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
-            {
-                filterMode = FilterMode.Bilinear
-            };
-            Color[] colors = new Color[size * size];
-            float center = (size - 1) * 0.5f;
-            float radius = size * 0.5f - 1f;
-
-            // Koordinat checkmark proporsional untuk size 32
-            Vector2 p1 = new Vector2(size * 0.28f, size * 0.48f);
-            Vector2 p2 = new Vector2(size * 0.44f, size * 0.33f);
-            Vector2 p3 = new Vector2(size * 0.72f, size * 0.65f);
-
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
-                    int idx = y * size + x;
-                    Color baseCol;
-
-                    if (dist > radius)
-                    {
-                        float a = Mathf.Clamp01(1f - (dist - radius));
-                        baseCol = new Color(borderColor.r, borderColor.g, borderColor.b, borderColor.a * a);
-                    }
-                    else if (dist > radius - borderWidth)
-                    {
-                        baseCol = borderColor;
-                    }
-                    else
-                    {
-                        baseCol = fillColor;
-                        if (drawCheckmark)
-                        {
-                            Vector2 pt = new Vector2(x, y);
-                            float d1 = DistToSegment(pt, p1, p2);
-                            float d2 = DistToSegment(pt, p2, p3);
-                            float checkDist = Mathf.Min(d1, d2);
-                            float thickness = size * 0.065f;
-                            if (checkDist < thickness + 1f)
-                            {
-                                float checkAlpha = Mathf.Clamp01(1f - (checkDist - thickness));
-                                baseCol = Color.Lerp(fillColor, Color.white, checkAlpha);
-                            }
-                        }
-                    }
-                    colors[idx] = baseCol;
-                }
-            }
-            tex.SetPixels(colors);
-            tex.Apply();
-            return tex;
-        }
-
         private void OnGUI()
         {
-            InitCuteHudStyles();
+            CozyGuiTheme.EnsureInitialized();
 
             float cardX = 20f;
             float cardY = 26f;
@@ -735,56 +499,56 @@ namespace JejakAsa
             float cardH = 114f;
 
             // 1. Bayangan kartun lembut di belakang kartu
-            GUI.DrawTexture(new Rect(cardX + 3, cardY + 4, cardW, cardH), cuteShadowTex);
+            GUI.DrawTexture(new Rect(cardX + 3, cardY + 4, cardW, cardH), CozyGuiTheme.ShadowTex);
 
             // 2. Kartu Stiker Utama (Cream Hangat dengan Outline Toska)
-            GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, cuteCardStyle);
+            GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
 
-            // 3. Pita Judul Mungil di Atas Kiri (Overlapping style ala game Nintendo)
-            GUI.Label(new Rect(cardX + 12, cardY - 12, 114, 24), "MISI BANSOS", cuteRibbonStyle);
+            // 3. Pita Judul Mungil di Atas Kiri
+            GUI.Label(new Rect(cardX + 12, cardY - 12, 114, 24), "MISI BANSOS", CozyGuiTheme.RibbonStyle);
 
             // 4. Pil Timer Bulat di Atas Kanan
             if (timeRemaining <= 15f)
-                cuteTimerStyle.normal.background = cuteTimerDangerTex;
+                CozyGuiTheme.TimerStyle.normal.background = CozyGuiTheme.TimerDangerTex;
             else if (timeRemaining <= 45f)
-                cuteTimerStyle.normal.background = cuteTimerWarnTex;
+                CozyGuiTheme.TimerStyle.normal.background = CozyGuiTheme.TimerWarnTex;
             else
-                cuteTimerStyle.normal.background = cuteTimerNormalTex;
+                CozyGuiTheme.TimerStyle.normal.background = CozyGuiTheme.TimerNormalTex;
 
-            GUI.Label(new Rect(cardX + cardW - 84, cardY - 12, 72, 24), FormattedTimeRemaining, cuteTimerStyle);
+            GUI.Label(new Rect(cardX + cardW - 84, cardY - 12, 72, 24), FormattedTimeRemaining, CozyGuiTheme.TimerStyle);
 
-            // 5. Baris Utama: Warga Terbantu + 3 Stempel Lingkaran Lucu
-            GUI.Label(new Rect(cardX + 16, cardY + 22, 140, 24), "Warga Terbantu", cuteLabelStyle);
+            // 5. Baris Utama: Warga Terbantu + 3 Stempel Lingkaran
+            GUI.Label(new Rect(cardX + 16, cardY + 22, 140, 24), "Warga Terbantu", CozyGuiTheme.LabelStyle);
 
             for (int i = 0; i < 3; i++)
             {
                 Rect stampRect = new Rect(cardX + 184 + (i * 26), cardY + 23, 22, 22);
                 bool done = i < deliveredCount;
-                GUI.DrawTexture(stampRect, done ? cuteStampDoneTex : cuteStampEmptyTex);
+                GUI.DrawTexture(stampRect, done ? CozyGuiTheme.StampDoneTex : CozyGuiTheme.StampEmptyTex);
             }
 
             // 6. Info Paket & Kepercayaan
-            GUI.Label(new Rect(cardX + 16, cardY + 50, 125, 20), $"Paket: <b><color=#0F766E>{packagesRemaining}</color></b> tersisa", cuteSubLabelStyle);
-            GUI.Label(new Rect(cardX + 148, cardY + 50, 120, 20), $"Kepercayaan: <b><color=#B45309>{trust}/3</color></b>", cuteSubLabelStyle);
+            GUI.Label(new Rect(cardX + 16, cardY + 50, 125, 20), $"Paket: <b><color=#0F766E>{packagesRemaining}</color></b> tersisa", CozyGuiTheme.SubLabelStyle);
+            GUI.Label(new Rect(cardX + 148, cardY + 50, 120, 20), $"Kepercayaan: <b><color=#B45309>{trust}/3</color></b>", CozyGuiTheme.SubLabelStyle);
 
             // 7. Gelembung Pesan Penyemangat di Bagian Bawah
             string cheerText;
             if (IsMissionCompleted)
             {
-                cuteBannerStyle.normal.background = cuteBannerSuccessTex;
-                cuteBannerStyle.normal.textColor = new Color(0.05f, 0.45f, 0.30f);
+                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerSuccessTex;
+                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.05f, 0.45f, 0.30f);
                 cheerText = "Horeee! Semua warga terbantu!";
             }
             else if (timeRemaining <= 0f)
             {
-                cuteBannerStyle.normal.background = cuteBannerFailTex;
-                cuteBannerStyle.normal.textColor = new Color(0.65f, 0.12f, 0.12f);
+                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerFailTex;
+                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.65f, 0.12f, 0.12f);
                 cheerText = "Waktu habis! Yuk coba lagi!";
             }
             else
             {
-                cuteBannerStyle.normal.background = cuteBannerInfoTex;
-                cuteBannerStyle.normal.textColor = new Color(0.55f, 0.35f, 0.05f);
+                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerInfoTex;
+                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.55f, 0.35f, 0.05f);
                 cheerText = deliveredCount switch
                 {
                     0 => "Yuk antar bansos ke 3 warga!",
@@ -793,7 +557,7 @@ namespace JejakAsa
                 };
             }
 
-            GUI.Label(new Rect(cardX + 14, cardY + 76, cardW - 28, 25), cheerText, cuteBannerStyle);
+            GUI.Label(new Rect(cardX + 14, cardY + 76, cardW - 28, 25), cheerText, CozyGuiTheme.BannerStyle);
 
             // =========================================================================
             // U08: LAYAR HASIL MISI (OUTCOME OVERLAY POPUP)
@@ -802,83 +566,69 @@ namespace JejakAsa
             {
                 GUI.depth = -100;
 
-                // 1. Dim Backdrop seluruh layar
-                GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), cuteDimTex);
+                GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), CozyGuiTheme.DimTex);
 
                 float popW = 360f;
                 float popH = 286f;
                 float popX = (Screen.width - popW) * 0.5f;
                 float popY = Mathf.Max(20f, (Screen.height - popH) * 0.5f);
 
-                // 2. Bayangan lembut kartu popup
-                GUI.DrawTexture(new Rect(popX + 4, popY + 6, popW, popH), cuteShadowTex);
+                GUI.DrawTexture(new Rect(popX + 4, popY + 6, popW, popH), CozyGuiTheme.ShadowTex);
+                GUI.Box(new Rect(popX, popY, popW, popH), GUIContent.none, CozyGuiTheme.CardStyle);
 
-                // 3. Kartu Popup Utama (Cream Hangat + Border Toska)
-                GUI.Box(new Rect(popX, popY, popW, popH), GUIContent.none, cuteCardStyle);
-
-                // 4. Badge Header Hasil Misi
                 string outcomeBadgeText;
                 Texture2D outcomeBadgeBg;
                 switch (outcome)
                 {
                     case MissionOutcome.Success:
                         outcomeBadgeText = "MISI BERHASIL!";
-                        outcomeBadgeBg = cuteOutcomeSuccessTex;
+                        outcomeBadgeBg = CozyGuiTheme.OutcomeSuccessTex;
                         break;
                     case MissionOutcome.PartialSuccess:
                         outcomeBadgeText = "BERHASIL SEBAGIAN";
-                        outcomeBadgeBg = cuteOutcomePartialTex;
+                        outcomeBadgeBg = CozyGuiTheme.OutcomePartialTex;
                         break;
                     default:
                         outcomeBadgeText = "MISI BELUM BERHASIL";
-                        outcomeBadgeBg = cuteOutcomeFailTex;
+                        outcomeBadgeBg = CozyGuiTheme.OutcomeFailTex;
                         break;
                 }
-                cuteOutcomeHeaderStyle.normal.background = outcomeBadgeBg;
-                GUI.Label(new Rect(popX + (popW - 210) * 0.5f, popY - 13, 210, 26), outcomeBadgeText, cuteOutcomeHeaderStyle);
+                CozyGuiTheme.OutcomeHeaderStyle.normal.background = outcomeBadgeBg;
+                GUI.Label(new Rect(popX + (popW - 210) * 0.5f, popY - 13, 210, 26), outcomeBadgeText, CozyGuiTheme.OutcomeHeaderStyle);
 
-                // 5. Deskripsi Alasan Akhir Misi
-                GUI.Label(new Rect(popX + 20, popY + 18, popW - 40, 30), outcomeReason, cuteOutcomeDescStyle);
+                GUI.Label(new Rect(popX + 20, popY + 18, popW - 40, 30), outcomeReason, CozyGuiTheme.OutcomeDescStyle);
 
-                // 6. Kotak Rincian Statistik (Inner Plate)
                 Rect innerRect = new Rect(popX + 20, popY + 52, popW - 40, 152);
-                GUI.Box(innerRect, GUIContent.none, cuteInnerBoxStyle);
+                GUI.Box(innerRect, GUIContent.none, CozyGuiTheme.InnerBoxStyle);
 
                 float lineY = innerRect.y + 10;
                 float lineH = 22f;
                 float labelW = 145f;
                 float valW = innerRect.width - labelW - 24;
 
-                // Baris 1: Paket Terbagi
-                GUI.Label(new Rect(innerRect.x + 14, lineY, labelW, lineH), "Paket Tersalurkan", cuteStatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY, valW, lineH), $"<b>{deliveredCount} / {initialPackages}</b> Paket", cuteStatRightStyle);
+                GUI.Label(new Rect(innerRect.x + 14, lineY, labelW, lineH), "Paket Tersalurkan", CozyGuiTheme.StatLeftStyle);
+                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY, valW, lineH), $"<b>{deliveredCount} / {initialPackages}</b> Paket", CozyGuiTheme.StatRightStyle);
 
-                // Baris 2: Warga Terbantu
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH, labelW, lineH), "Warga Terbantu", cuteStatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH, valW, lineH), $"<b><color=#0F766E>{deliveredCount} / 3</color></b> Orang", cuteStatRightStyle);
+                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH, labelW, lineH), "Warga Terbantu", CozyGuiTheme.StatLeftStyle);
+                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH, valW, lineH), $"<b><color=#0F766E>{deliveredCount} / 3</color></b> Orang", CozyGuiTheme.StatRightStyle);
 
-                // Baris 3: Kepercayaan Warga
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 2, labelW, lineH), "Kepercayaan Warga", cuteStatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH * 2, valW, lineH), $"<b><color=#B45309>{trust} / 3</color></b>", cuteStatRightStyle);
+                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 2, labelW, lineH), "Kepercayaan Warga", CozyGuiTheme.StatLeftStyle);
+                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH * 2, valW, lineH), $"<b><color=#B45309>{trust} / 3</color></b>", CozyGuiTheme.StatRightStyle);
 
-                // Baris 4: Sisa Waktu
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 3, labelW, lineH), "Sisa Waktu Akhir", cuteStatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH * 3, valW, lineH), $"<b>{FormattedTimeRemaining}</b>", cuteStatRightStyle);
+                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 3, labelW, lineH), "Sisa Waktu Akhir", CozyGuiTheme.StatLeftStyle);
+                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH * 3, valW, lineH), $"<b>{FormattedTimeRemaining}</b>", CozyGuiTheme.StatRightStyle);
 
-                // Baris 5: Daftar Nama Penerima
                 var names = GetDeliveredRecipientNames();
                 string namesStr = names.Count > 0 ? string.Join(", ", names) : "(Belum ada)";
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 4 + 2, innerRect.width - 28, 36), $"Penerima Selesai: <b><color=#0F766E>{namesStr}</color></b>", cuteSubLabelStyle);
+                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 4 + 2, innerRect.width - 28, 36), $"Penerima Selesai: <b><color=#0F766E>{namesStr}</color></b>", CozyGuiTheme.SubLabelStyle);
 
-                // 7. Tombol Ulang Misi (Retry)
                 Rect btnRect = new Rect(popX + (popW - 170) * 0.5f, popY + popH - 64, 170, 34);
-                if (GUI.Button(btnRect, "Ulang Misi", cuteBtnStyle))
+                if (GUI.Button(btnRect, "Ulang Misi", CozyGuiTheme.TealBtnStyle))
                 {
                     ResetMissionSession();
                 }
 
-                // 8. Petunjuk Keyboard
-                GUI.Label(new Rect(popX + 20, popY + popH - 25, popW - 40, 18), "Tekan Enter atau Space untuk Ulang Misi", cuteHintStyle);
+                GUI.Label(new Rect(popX + 20, popY + popH - 25, popW - 40, 18), "Tekan Enter atau Space untuk Ulang Misi", CozyGuiTheme.HintStyle);
             }
         }
     }

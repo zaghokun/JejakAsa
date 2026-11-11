@@ -62,10 +62,10 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 - [x] **U04 — Penyerahan valid:** paket, status penerima, dan trust berubah sekali saat penyerahan via tombol E; transaksi tunggal dan dialog warga bervariasi; regresi diuji lewat U04DeliveryTests.
 - [x] **U05 — Penerima dan urutan:** tiga penerima dapat diantar dengan urutan bebas; penerima selesai tidak menerima paket lagi; selesai otomatis saat 3/3; diuji lewat U05OrderTests.
 - [x] **U06 — Timer per state:** timer 180s aktif saat eksplorasi, membeku saat dialog terbuka dan saat misi selesai; penyerahan terlambat ditolak; diuji lewat U06TimerTests.
-- [ ] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
-- [ ] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
-- [ ] **U09 — Menghindar:** pilihan tidak langsung memicu encounter lagi dan jalur alternatif mencapai semua tujuan. Jalur graybox sudah diuji, tetapi mekanik menghindar belum ada.
-- [ ] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
+- [X] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
+- [X] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
+- [X] **U09 — Menghindar:** pilihan tidak langsung memicu encounter lagi dan jalur alternatif mencapai semua tujuan. Jalur graybox sudah diuji, tetapi mekanik menghindar belum ada.
+- [X] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
 - [ ] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline.
 - [ ] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai.
 - [ ] **U13 — Guard sekali pakai:** Bertahan pada giliran Persiapan tidak terbawa ke serangan berikutnya.
