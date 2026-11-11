@@ -19,16 +19,21 @@ namespace JejakAsa
         [SerializeField] private TMP_Text dialogueBody;
         [SerializeField] private Button closeButton;
 
-        [Header("U04 — Bansos & Delivery Settings")]
+        [Header("U04/U05 — Bansos & Delivery Settings")]
         [SerializeField] private int initialPackages = 3;
+
+        [Header("U06 — Mission Timer Settings")]
+        [Tooltip("Durasi waktu misi dalam detik (default 180 detik / 03:00)")]
+        [SerializeField, Min(1f)] private float initialTimeSeconds = 180f;
 
         private PlayerController movement;
         private bool movementWasEnabled;
 
-        // Runtime Tracking Data (U04)
+        // Runtime Tracking Data (U04, U05, U06)
         private int packagesRemaining = 3;
         private int deliveredCount = 0;
         private int trust = 0;
+        private float timeRemaining = 180f;
 
         public InteractionTarget CurrentTarget { get; private set; }
         public InteractionTarget DialogueTarget { get; private set; }
@@ -37,7 +42,19 @@ namespace JejakAsa
         public int PackagesRemaining => packagesRemaining;
         public int DeliveredCount => deliveredCount;
         public int Trust => trust;
+        public float TimeRemaining => timeRemaining;
+        public bool IsTimeExpired => timeRemaining <= 0f;
         public bool IsMissionCompleted => deliveredCount >= initialPackages;
+
+        public string FormattedTimeRemaining
+        {
+            get
+            {
+                int minutes = Mathf.FloorToInt(timeRemaining / 60f);
+                int seconds = Mathf.FloorToInt(timeRemaining % 60f);
+                return $"{minutes:00}:{seconds:00}";
+            }
+        }
 
         private void Awake()
         {
@@ -53,6 +70,7 @@ namespace JejakAsa
             packagesRemaining = initialPackages;
             deliveredCount = 0;
             trust = 0;
+            timeRemaining = initialTimeSeconds;
 
             promptPanel.SetActive(false);
             dialoguePanel.SetActive(false);
@@ -61,6 +79,12 @@ namespace JejakAsa
 
         private void Update()
         {
+            // U06: Timer hanya berkurang saat eksplorasi aktif (berhenti saat dialog terbuka & saat misi selesai)
+            if (!IsDialogueOpen && !IsMissionCompleted && timeRemaining > 0f)
+            {
+                timeRemaining = Mathf.Max(0f, timeRemaining - Time.deltaTime);
+            }
+
             Keyboard keyboard = Keyboard.current;
             if (IsDialogueOpen)
             {
@@ -113,15 +137,16 @@ namespace JejakAsa
 
             dialogueTitle.text = DialogueTarget.DisplayName;
 
-            // Logika Penyerahan Bansos Otomatis (U04 & U05)
-            if (DialogueTarget.IsRecipient && !DialogueTarget.IsDelivered && packagesRemaining > 0)
+            // Logika Penyerahan Bansos Otomatis (U04, U05, U06)
+            // Penyerahan sah hanya jika waktu masih tersisa (> 0) (U06 & U07)
+            if (DialogueTarget.IsRecipient && !DialogueTarget.IsDelivered && packagesRemaining > 0 && timeRemaining > 0f)
             {
                 DialogueTarget.MarkAsDelivered();
                 packagesRemaining--;
                 deliveredCount++;
                 trust++;
 
-                Debug.Log($"[U04/U05] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket tersisa: {packagesRemaining}/3, Kepercayaan: {trust}/3");
+                Debug.Log($"[U04/U05/U06] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket tersisa: {packagesRemaining}/3, Kepercayaan: {trust}/3, Sisa Waktu: {FormattedTimeRemaining}");
 
                 if (IsMissionCompleted)
                 {
@@ -137,13 +162,14 @@ namespace JejakAsa
         }
 
         /// <summary>
-        /// Reset seluruh sesi pengantaran bansos ke kondisi awal bersih (U05 & U17).
+        /// Reset seluruh sesi pengantaran bansos ke kondisi awal bersih (U05, U06, U17).
         /// </summary>
         public void ResetMissionSession()
         {
             packagesRemaining = initialPackages;
             deliveredCount = 0;
             trust = 0;
+            timeRemaining = initialTimeSeconds;
 
             foreach (var target in InteractionTarget.Active)
             {
@@ -154,12 +180,17 @@ namespace JejakAsa
             }
 
             CloseDialogue();
-            Debug.Log("[U05] Sesi misi telah direset bersih.");
+            Debug.Log("[U05/U06] Sesi misi telah direset bersih.");
+        }
+
+        public void SetTimeRemaining(float seconds)
+        {
+            timeRemaining = Mathf.Max(0f, seconds);
         }
 
         public bool TryDeliverBansos()
         {
-            if (DialogueTarget == null || !DialogueTarget.IsRecipient || DialogueTarget.IsDelivered || packagesRemaining <= 0)
+            if (DialogueTarget == null || !DialogueTarget.IsRecipient || DialogueTarget.IsDelivered || packagesRemaining <= 0 || timeRemaining <= 0f)
             {
                 return false;
             }
@@ -224,18 +255,27 @@ namespace JejakAsa
                 closeButton.onClick.RemoveListener(CloseDialogue);
         }
 
-        // Tampilan HUD Status Bansos di Pojok Kiri Atas
+        // Tampilan HUD Status Bansos & Timer di Pojok Kiri Atas (U06)
         private void OnGUI()
         {
-            float boxH = IsMissionCompleted ? 120 : 95;
-            GUI.Box(new Rect(20, 20, 250, boxH), "JEJAK ASA — STATUS BANSOS");
-            GUI.Label(new Rect(32, 45, 215, 22), $"📦 Paket Tersisa: <b>{packagesRemaining}/3</b>");
-            GUI.Label(new Rect(32, 65, 215, 22), $"✅ Warga Terbantu: <b>{deliveredCount}/3</b>");
-            GUI.Label(new Rect(32, 85, 215, 22), $"🤝 Kepercayaan: <b>{trust}/3</b>");
+            float boxH = (IsMissionCompleted || timeRemaining <= 0f) ? 142 : 120;
+            GUI.Box(new Rect(20, 20, 260, boxH), "JEJAK ASA — STATUS MISI");
+
+            string timerStatus = IsDialogueOpen ? " <color=#FFFF55>[JEDA]</color>" : "";
+            string timerColor = timeRemaining <= 30f ? (timeRemaining <= 0f ? "red" : "#FFAA00") : "white";
+            GUI.Label(new Rect(32, 45, 230, 22), $"⏱️ Sisa Waktu: <b><color={timerColor}>{FormattedTimeRemaining}</color></b>{timerStatus}");
+
+            GUI.Label(new Rect(32, 65, 230, 22), $"📦 Paket Tersisa: <b>{packagesRemaining}/3</b>");
+            GUI.Label(new Rect(32, 85, 230, 22), $"✅ Warga Terbantu: <b>{deliveredCount}/3</b>");
+            GUI.Label(new Rect(32, 105, 230, 22), $"🤝 Kepercayaan: <b>{trust}/3</b>");
 
             if (IsMissionCompleted)
             {
-                GUI.Label(new Rect(32, 103, 215, 20), "<b><color=#55FF55>🎉 SEMUA 3 BANSOS TERKIRIM!</color></b>");
+                GUI.Label(new Rect(32, 124, 230, 20), "<b><color=#55FF55>🎉 SEMUA 3 BANSOS TERKIRIM!</color></b>");
+            }
+            else if (timeRemaining <= 0f)
+            {
+                GUI.Label(new Rect(32, 124, 230, 20), "<b><color=#FF5555>⚠️ WAKTU MISI HABIS!</color></b>");
             }
         }
     }
