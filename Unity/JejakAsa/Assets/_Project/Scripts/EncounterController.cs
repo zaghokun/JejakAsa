@@ -136,6 +136,9 @@ namespace JejakAsa
 
         private void Update()
         {
+            if (SessionMenu.InputBlocked)
+                return;
+
             ResolvePlayerInteraction();
             if (playerInteraction == null)
                 return;
@@ -350,18 +353,23 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (!isEncounterOpen || playerInteraction == null || playerInteraction.IsOutcomeOpen)
+            if (SessionMenu.InputBlocked || !isEncounterOpen || playerInteraction == null || playerInteraction.IsOutcomeOpen)
                 return;
 
             CozyGuiTheme.EnsureInitialized();
             GUI.depth = -90;
+            float scale = CozyGuiTheme.Scale;
+            Matrix4x4 previousMatrix = GUI.matrix;
+            GUI.matrix = previousMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+            float screenWidth = Screen.width / scale;
+            float screenHeight = Screen.height / scale;
 
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), CozyGuiTheme.DimTex);
+            GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), CozyGuiTheme.DimTex);
 
-            float popW = Mathf.Min(410f, Screen.width - 32f);
+            float popW = Mathf.Min(410f, screenWidth - 32f);
             float popH = 368f;
-            float popX = (Screen.width - popW) * 0.5f;
-            float popY = Mathf.Max(20f, (Screen.height - popH) * 0.5f);
+            float popX = (screenWidth - popW) * 0.5f;
+            float popY = Mathf.Max(20f, (screenHeight - popH) * 0.5f);
 
             GUI.DrawTexture(new Rect(popX + 4, popY + 6, popW, popH), CozyGuiTheme.ShadowTex);
             GUI.Box(new Rect(popX, popY, popW, popH), GUIContent.none, CozyGuiTheme.CardStyle);
@@ -426,6 +434,7 @@ namespace JejakAsa
                 new Rect(popX + 16f, popY + popH - 26f, popW - 32f, 18f),
                 "Pilih tombol atau tekan [1] Menghindar  |  [2] Battle  |  [3] Bantuan Warga",
                 CozyGuiTheme.HintStyle);
+            GUI.matrix = previousMatrix;
         }
     }
 }

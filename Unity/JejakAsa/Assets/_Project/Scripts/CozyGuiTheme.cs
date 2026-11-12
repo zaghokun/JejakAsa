@@ -46,6 +46,8 @@ namespace JejakAsa
         public static GUIStyle LockedBtnStyle { get; private set; }
         public static GUIStyle LockReasonStyle { get; private set; }
 
+        public static float Scale => Mathf.Max(1f, Screen.height / 720f);
+
         private static bool initialized;
 
         public static void EnsureInitialized()

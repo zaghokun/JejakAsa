@@ -112,6 +112,9 @@ namespace JejakAsa
 
         private void Update()
         {
+            if (SessionMenu.InputBlocked)
+                return;
+
             // Jika Layar Hasil Misi sedang terbuka, beri jeda 0.4 detik agar tombol Enter penutup dialog tidak langsung mereset misi di frame yang sama
             if (isOutcomeOpen)
             {
@@ -493,10 +496,15 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (IsInBattle)
+            if (IsInBattle || SessionMenu.InputBlocked)
                 return;
 
             CozyGuiTheme.EnsureInitialized();
+            float scale = CozyGuiTheme.Scale;
+            Matrix4x4 previousMatrix = GUI.matrix;
+            GUI.matrix = previousMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+            float screenWidth = Screen.width / scale;
+            float screenHeight = Screen.height / scale;
 
             float cardX = 20f;
             float cardY = 26f;
@@ -571,12 +579,12 @@ namespace JejakAsa
             {
                 GUI.depth = -100;
 
-                GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), CozyGuiTheme.DimTex);
+                GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), CozyGuiTheme.DimTex);
 
                 float popW = 360f;
                 float popH = 286f;
-                float popX = (Screen.width - popW) * 0.5f;
-                float popY = Mathf.Max(20f, (Screen.height - popH) * 0.5f);
+                float popX = (screenWidth - popW) * 0.5f;
+                float popY = Mathf.Max(20f, (screenHeight - popH) * 0.5f);
 
                 GUI.DrawTexture(new Rect(popX + 4, popY + 6, popW, popH), CozyGuiTheme.ShadowTex);
                 GUI.Box(new Rect(popX, popY, popW, popH), GUIContent.none, CozyGuiTheme.CardStyle);
@@ -635,6 +643,7 @@ namespace JejakAsa
 
                 GUI.Label(new Rect(popX + 20, popY + popH - 25, popW - 40, 18), "Tekan Enter atau Space untuk Ulang Misi", CozyGuiTheme.HintStyle);
             }
+            GUI.matrix = previousMatrix;
         }
     }
 }

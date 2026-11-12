@@ -800,6 +800,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -938,6 +939,103 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.FixedIsometricCamera
   target: {fileID: 1306168563}
+--- !u!82 &330585549
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: bedf1dd6855b8f74491d2adde0f498d8, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.25
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &368419020
 GameObject:
   m_ObjectHideFlags: 0
@@ -3441,6 +3539,7 @@ GameObject:
   - component: {fileID: 1306168559}
   - component: {fileID: 1306168564}
   - component: {fileID: 1900000201}
+  - component: {fileID: 1900000202}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -3580,23 +3679,6 @@ MonoBehaviour:
   closeButton: {fileID: 368419022}
   initialPackages: 3
   initialTimeSeconds: 180
---- !u!114 &1900000201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1306168558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3c6d5e7a8b94012cd4e5f6a7b8c9d0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.BattleTransition
-  battleScenePath: Assets/_Project/Scenes/Battle.unity
-  playerInteraction: {fileID: 1306168564}
-  kampungRoot: {fileID: 106889005}
-  kampungCamera: {fileID: 330585545}
-  postBattleDelay: 1.2
 --- !u!114 &1392674587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4813,6 +4895,36 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1900000121}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1900000201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1306168558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c6d5e7a8b94012cd4e5f6a7b8c9d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.BattleTransition
+  battleScenePath: Assets/_Project/Scenes/Battle.unity
+  playerInteraction: {fileID: 1306168564}
+  kampungRoot: {fileID: 106889005}
+  kampungCamera: {fileID: 330585545}
+  postBattleDelay: 1.2
+--- !u!114 &1900000202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1306168558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5edfc7ea5dcdfbb479e2143ef8f96f2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.SessionMenu
+  isMainMenu: 0
 --- !u!114 &1989879651
 MonoBehaviour:
   m_ObjectHideFlags: 0

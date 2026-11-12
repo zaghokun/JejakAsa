@@ -27,7 +27,10 @@ namespace JejakAsa
         private EncounterController sourceEncounter;
         private Scene loadedBattleScene;
         private bool isInBattle;
-        private bool hiddenCameraWasActive;
+        private bool hiddenCameraWasEnabled;
+        private AudioListener hiddenListener;
+        private AudioSource pausedKampungAudio;
+
 
         public bool IsInBattle => isInBattle;
 
@@ -206,12 +209,19 @@ namespace JejakAsa
             float elapsed = 0f;
             while (elapsed < postBattleDelay && !battle.IsDismissRequested)
             {
+                if (SessionMenu.InputBlocked)
+                {
+                    yield return null;
+                    continue;
+                }
                 elapsed += Time.deltaTime;
                 Keyboard kb = Keyboard.current;
                 if (elapsed >= 0.25f && kb != null && (kb.enterKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame))
                     break;
                 yield return null;
             }
+            yield return new WaitWhile(() => SessionMenu.InputBlocked);
+
 
             if (loadedBattleScene.IsValid() && loadedBattleScene.isLoaded)
                 yield return SceneManager.UnloadSceneAsync(loadedBattleScene);
@@ -292,12 +302,20 @@ namespace JejakAsa
 
             if (kampungCamera != null && kampungCamera.gameObject.activeSelf)
             {
-                hiddenCameraWasActive = true;
-                kampungCamera.gameObject.SetActive(false);
-            }
-            else
-            {
-                hiddenCameraWasActive = false;
+                AudioSource audioSource = kampungCamera.GetComponent<AudioSource>();
+                if (audioSource != null && audioSource.isPlaying)
+                {
+                    audioSource.Pause();
+                    pausedKampungAudio = audioSource;
+                }
+                hiddenCameraWasEnabled = kampungCamera.enabled;
+                kampungCamera.enabled = false;
+                AudioListener listener = kampungCamera.GetComponent<AudioListener>();
+                if (listener != null && listener.enabled)
+                {
+                    listener.enabled = false;
+                    hiddenListener = listener;
+                }
             }
 
             if (playerInteraction != null)
@@ -332,9 +350,17 @@ namespace JejakAsa
             }
             hiddenWorldObjects.Clear();
 
-            if (hiddenCameraWasActive && kampungCamera != null)
-                kampungCamera.gameObject.SetActive(true);
-            hiddenCameraWasActive = false;
+            if (hiddenCameraWasEnabled && kampungCamera != null)
+                kampungCamera.enabled = true;
+            if (hiddenListener != null)
+                hiddenListener.enabled = true;
+            hiddenListener = null;
+            if (pausedKampungAudio != null)
+            {
+                pausedKampungAudio.UnPause();
+                pausedKampungAudio = null;
+            }
+            hiddenCameraWasEnabled = false;
 
             for (int i = 0; i < hiddenPlayerRenderers.Count; i++)
             {

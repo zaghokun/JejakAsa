@@ -25,7 +25,7 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Cakupan target | Satu peta, satu misi, tiga penerima, satu pengintimidasi, dan satu arena turn-based |
 | Waktu | Target 21 hari; Hari 22–28 cadangan stabilisasi, bukan penambahan fitur |
 
-Urutan development adalah **gameplay-first**: Kampung → gerak → interaksi → pengantaran → timer/hasil/ulang → intimidasi dan battle → main menu. Main menu direncanakan pada D11, bukan prasyarat build awal.
+Urutan development **gameplay-first**: loop Kampung dan battle telah disambungkan ke main menu graybox. Integrasi aset dan polishing Role C tetap merupakan tahap berikutnya.
 
 Tidak termasuk baseline: multiplayer, akun/backend, database server, inventori kompleks, crafting, banyak map/chapter, save/load lintas sesi, dan boss cerita final.
 
@@ -35,9 +35,10 @@ Tidak termasuk baseline: multiplayer, akun/backend, database server, inventori k
 - **U02 lulus di Unity Editor:** lima tes Play Mode lulus, meliputi gerak, collision, kamera, dan penelusuran jalur pada Kampung aktual. Tes jalur diulang sesudah tinggi pembatas diubah dan tetap lulus.
 - **U03 lulus di Unity Editor:** enam tes interaksi lulus, termasuk beberapa target berdekatan, batas jarak, tahan E, kunci gerak, serta dialog Kampung yang ditutup melalui klik mouse. Bersama lima regresi U02, total sebelas tes Play Mode lulus.
 - Source sudah mendukung WASD/panah dengan kecepatan awal 3,5 meter/detik, gerak relatif kamera, normalisasi diagonal, gravitasi, dan kamera follow dengan sudut tetap.
-- Peta masih graybox. Perubahan tim U04–U10 sudah digabungkan; daftar penerimaan di bawah mempertahankan status yang dilaporkan tim. Belum seluruh suite U04–U10 dijalankan ulang saat menguji karakter.
-- **Preview MC Meshy tersedia:** satu model hasil image-to-3D telah diperiksa di Blender dan diuji sementara di Unity. Player pada scene tersimpan masih capsule, bukan model final.
-- **Build Windows belum dibuat ulang untuk preview MC.** Verifikasi terbaru dilakukan di Unity Editor, bukan executable baru atau komputer kedua.
+- Peta, karakter, menu, dan UI masih graybox; model MC Meshy belum dipasang permanen.
+- **U16–U18 versi graybox tersedia:** pause, tiga kali retry, main menu, dan konfirmasi kembali. Seluruh **36 tes Play Mode** lulus di Unity Editor setelah integrasi; tes mencakup pause saat serangan tertunda dan tiga retry sesudah kalah battle.
+- U19–U21 tetap menunggu verifikasi build, pendengaran audio dan integrasi visual final, termasuk pengujian komputer kedua. Musik CC0 yang terpasang hanya untuk graybox.
+- Build graybox Windows berhasil dibuat di `Unity/JejakAsa/Builds/Windows-Graybox-U21/JejakAsa.exe` dan menu pembukanya terlihat saat executable dijalankan di komputer ini. Pengujian alur executable dan komputer kedua belum dilakukan.
 
 ![Dialog warga pada scene Kampung saat pengujian Play Mode U03](docs/visual/u03-interaksi.png)
 
@@ -49,8 +50,8 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
-| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | Perubahan tim U04–U10 telah digabungkan. Smoke test dengan preview MC membuktikan satu gerakan dan satu penyerahan; bukan pengujian ulang seluruh kriteria. |
-| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Arena `Battle.unity`, sistem battle U11–U14, transisi U15, serta 31/31 tes Play Mode (termasuk `U11BattleTests` dan `U15BattleIntegrationTests`) lulus di Unity Editor. U16 pause battle dan loop 3× retry U17 masih terbuka. |
+| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | Loop misi dan menu graybox tersambung; uji pengguna dan build pada komputer lain masih diperlukan. |
+| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Battle, pause, kembali ke menu, dan tiga retry setelah kalah tercakup dalam 36 tes Play Mode yang lulus di Unity Editor. |
 | C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Preview MC bertekstur sudah diuji; rig, animasi, model warga/musuh, dan integrasi final masih diperlukan. |
 
 ## Tracking penerimaan
@@ -70,14 +71,22 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 - [x] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline; diuji lewat `U11BattleTests` di Unity Editor.
 - [x] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai; diuji lewat `U11BattleTests` dan `U15BattleIntegrationTests` di Unity Editor.
 - [x] **U13 — Guard sekali pakai:** Bertahan pada giliran Persiapan tidak terbawa ke serangan berikutnya; diuji lewat `U11BattleTests` di Unity Editor.
-- [x] **U14 — Aksi battle tunggal:** klik cepat tidak memberi aksi ganda; lawan HP 0 tidak membalas; hasil dikirim sekali; diuji lewat `U11BattleTests` di Unity Editor.
+- [x] **U14 — Aksi battle tunggal:** aksi tetap terkunci sampai lawan dan pemain selesai kembali ke posisi setelah animasi; musuh HP 0 tidak membalas dan hasil dikirim sekali. Regresi arena nyata untuk serangan biasa dan kuat serta tes battle terarah lulus.
 - [x] **U15 — Kembali dari battle:** timer, paket, trust, dan penerima tetap; musuh selesai tidak muncul lagi pada sesi itu; diuji lewat `U15BattleIntegrationTests` dan Play Mode di Unity Editor.
-- [ ] **U16 — Pause battle:** aksi tertunda berhenti dan resume kembali pada giliran yang benar tanpa damage ganda.
-- [ ] **U17 — Retry bersih:** tiga pengulangan mereset seluruh sesi tanpa data/event lama, termasuk sesudah kalah battle setelah terintegrasi.
-- [ ] **U18 — Menu:** Mulai/Keluar, konfirmasi kembali ke menu, pembatalan, serta sesi baru berfungsi; mulai ditargetkan D11.
-- [ ] **U19 — Kamera dan audio final:** hanya kamera/listener yang benar aktif; musik tidak bertumpuk setelah transisi dan retry.
-- [ ] **U20 — UI:** terbaca pada 1920×1080 dan 1280×720, fokus keyboard benar, prompt serta alasan tombol terkunci tidak terpotong.
-- [ ] **U21 — Build final komputer kedua:** menu, misi, retry, dan keluar berjalan tanpa Editor atau internet.
+- [x] **U16 — Pause battle:** aksi tertunda berhenti dan resume menyelesaikan satu giliran tanpa damage ganda; diuji dengan `U16PauseIntegrationTests`.
+- [x] **U17 — Retry bersih:** tiga pengulangan setelah kalah battle dengan satu penyerahan mereset misi, spawn, penerima, dan encounter; diuji dengan `U17RetryIntegrationTests`.
+- [ ] **U18 — Menu**
+  - [x] Mulai, batal kembali ke menu, kembali dari battle, dan sesi baru diuji pada Play Mode.
+  - [ ] Tombol Keluar diuji pada executable.
+- [ ] **U19 — Kamera dan audio final**
+  - [x] Satu kamera/listener dan pergantian musik graybox tanpa sumber ganda diuji pada Play Mode.
+  - [ ] Audio didengar secara manual dan diuji ulang setelah aset final terintegrasi.
+- [ ] **U20 — UI**
+  - [x] Skala UI disesuaikan; menu, HUD, encounter di 1080p serta battle di 1080p/720p ditinjau di Game View.
+  - [ ] Seluruh prompt, layar dan input diperiksa pada kedua resolusi dan setelah aset final terpasang.
+- [ ] **U21 — Build final komputer kedua**
+  - [x] Build Windows graybox berhasil dibuat dan menu pembuka tampil pada komputer ini.
+  - [ ] Menu, misi, retry, dan keluar diuji pada komputer lain tanpa Editor atau internet setelah aset final terintegrasi.
 
 ## Milestone per jalur kerja
 
@@ -92,15 +101,15 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 | AB-M01 | D1 | Setup proyek, repository, clone, dan build awal. Satu anggota menyiapkan; anggota lain memeriksa. | Proyek 6000.3.27f1 hasil clone dan build awal berjalan. Bukti U01 berdasarkan konfirmasi anggota A/B; tidak menunggu laporan C untuk menutup milestone A/B ini. | Selesai |
 | AB-M02 | D2–D3 | A: graybox navigasi, gerak, collision, kamera. B: regresi dan uji jalur. | U02 lulus: lima tes Play Mode serta pengujian ulang jalur setelah perubahan pembatas. Tidak mencakup input lock state atau loop misi. | Selesai |
 | AB-M03 | D2–D3 | B: arena Battle mandiri. A/B: kontrak data, hasil menang/kalah, dan tanggung jawab state. | Arena `Battle.unity` dapat dibuka sendiri, titik karakter tersedia, dan kontrak `BattleController` disepakati tanpa ketergantungan pada MainMenu; diuji di Unity Editor. | Selesai |
-| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U04–U08 ditandai selesai oleh tim; satu skenario penyerahan dengan preview MC lulus. Pause gameplay dan loop 3× retry bersih U17 belum dibuktikan secara penuh. | Sebagian |
+| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U04–U08 dan tiga retry setelah kalah tercakup dalam 36 tes Play Mode; pause eksplorasi juga perlu dicoba manual pada build. | Sebagian |
 | AB-M05 | D3–D7 | B: HP, Serang/Bertahan, pola lawan, telegraph, giliran, menang/kalah. A membantu menguji kontrak hasil. | `Battle.unity` dapat dimainkan mandiri; seluruh 6 tes `U11BattleTests` (U11–U14) lulus di Unity Editor dan tidak mengirim hasil ganda. | Selesai |
-| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U09/U10 selesai dan U15 lulus lewat 2 tes `U15BattleIntegrationTests` di Unity Editor (termasuk retry setelah kalah battle). U16 (pause battle) dan uji 3× retry U17 masih terbuka. | Sebagian |
-| AB-M07 | D11 | A: MainMenu, navigasi, konfirmasi keluar sesi. B memeriksa masuk/keluar misi dan regresi battle. | U18 lulus. Menu memakai loop yang sudah bekerja, bukan memiliki salinan logika misi. Memakai prefab menu C setelah handoff. | Belum |
+| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U15–U17 dan transisi kamera diuji di Play Mode; pengujian manual terintegrasi tetap diperlukan. | Sebagian |
+| AB-M07 | D11 | A: MainMenu, navigasi, konfirmasi keluar sesi. B memeriksa masuk/keluar misi dan regresi battle. | Menu graybox dan kembali dari battle diuji dengan keyboard di Play Mode; uji Keluar pada build dan integrasi visual C belum selesai. | Sebagian |
 | AB-M08 | D12–D14 | Integrasi aset/UI/audio dari C, pengujian alpha, dan pembekuan fitur. | Semua fitur wajib tersambung; U19/U20 diuji bersama C pada build terintegrasi. Belum cukup jika hanya scene percobaan yang bekerja. | Belum |
 | AB-M09 | D15–D18 | Playtest, perbaikan, kalibrasi angka, regresi, dan release candidate. | Catatan playtest nyata; tidak ada blocker atau tombol kosong; kandidat rilis cocok dengan source dan aturan terbaru. | Belum |
 | AB-M10 | D19–D21 | Stabilisasi, build bersih, pengujian komputer kedua, dan pengumpulan source/build. | U21 lulus; build final, source, bukti uji, serta known issues non-blocking siap. | Belum |
 
-**Batas status saat ini:** AB-M01, AB-M02, AB-M03, dan AB-M05 selesai; AB-M04 dan AB-M06 sebagian karena U16 (pause battle) dan uji loop 3× retry U17 masih terbuka. Seluruh 31 tes Play Mode saat ini (`U02`–`U15`) lulus di Unity Editor; belum dibuat ulang build Windows dan belum diuji di komputer kedua.
+**Batas status saat ini:** 36/36 tes Play Mode lulus di Unity Editor. UI dan audio masih graybox; penerimaan visual/audio final serta uji komputer kedua belum dilakukan. U19–U21 bukan dinyatakan final sebelum pengujian ulang setelah integrasi aset.
 
 ### Jalur C — Visual, level, UI, dan audio
 
@@ -128,9 +137,9 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 
 ### Pekerjaan berikutnya
 
-1. A/B melanjutkan U16 (pause battle), uji loop 3× retry bersih U17, serta U18 (MainMenu); uji ulang kriteria terkait saat mengintegrasikan model final C.
-2. C melanjutkan aset, layout, animasi, audio, dan prefab UI yang mendukung interaksi tanpa menunggu main menu.
-3. Sebelum menandai satu hari atau gerbang selesai, periksa semua hasil wajibnya, bukan hanya U02.
+1. A/B melakukan tes manual daftar U16–U21 di bawah, termasuk build Windows pada komputer kedua, dan mencatat masalah sebelum integrasi aset.
+2. C melanjutkan aset, layout, animasi, audio, dan prefab UI; integrasikan satu per satu tanpa mengganti controller/collider gameplay.
+3. Ulangi tes yang terdampak setelah setiap integrasi dan jangan mencentang U19–U21 final hanya berdasarkan graybox.
 
 **Referensi karakter terbaru dari Gemini:** [MC](docs/visual/asset-guides/refs/Gemini_Generated_Image_rcceaqrcceaqrcce.jpg), [warga perempuan](docs/visual/asset-guides/refs/Gemini_Generated_Image_s281xis281xis281.jpg), [warga laki-laki](docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo.jpg), dan [pengintimidasi](<docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo (1).jpg>). Nama file dipertahankan agar perubahan hasil merge tidak terganggu. Acuan ini menggantikan konsep karakter lama yang berbeda. MC menggunakan polo navy, headphone dan sling bag seperti gambar terbaru.
 
@@ -149,12 +158,10 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 
 1. Clone repository ini. Di Unity Hub pilih **Add project from disk**, lalu pilih `Unity/JejakAsa`, bukan root repository atau folder `Assets`.
 2. Buka menggunakan Editor **6000.3.27f1**. Tunggu import dan pemulihan package dari `Packages/` selesai; pembukaan pertama dapat memerlukan internet.
-3. Buka [`Kampung.unity`](Unity/JejakAsa/Assets/_Project/Scenes/Kampung.unity).
-4. Tekan **Play** dan klik tab **Game** agar keyboard diterima game.
-5. Gunakan WASD atau panah. Kamera mengikuti dengan sudut tetap; belum ada sprint/lompat.
-6. Keluar dari Play Mode sebelum mengedit scene. Posisi saat bermain tidak otomatis menjadi posisi spawn tersimpan.
-
-Dekati salah satu warga hingga prompt E muncul, lalu tekan E untuk berbicara. Tutup dengan tombol Tutup, Enter, atau Esc. Gerak dikunci selama dialog dan dikembalikan sesudahnya. Esc di luar dialog belum membuka pause.
+3. Untuk menguji alur lengkap, buka [`MainMenu.unity`](Unity/JejakAsa/Assets/_Project/Scenes/MainMenu.unity), tekan **Play**, lalu klik tab **Game**. Memulai langsung dari Kampung tetap berguna untuk debugging.
+4. Pilih **Mulai Permainan**. Bergerak dengan WASD atau panah; kamera mengikuti dengan sudut tetap.
+5. Dekati warga dan tekan E untuk menyerahkan bantuan; tutup dialog dengan Tutup, Enter, atau Esc.
+6. Esc saat eksplorasi atau battle membuka pause. Pada dialog Esc menutup dialog; pada panel preman Esc memilih menghindar. Keluar dari Play Mode sebelum mengedit scene.
 
 ### Pengujian manual U02
 
@@ -167,18 +174,37 @@ Visual masih sederhana. Kamera belum memiliki penanganan occlusion bangunan atau
 
 ### Pengujian manual U03
 
-1. Dekati capsule warga berwarna jingga. Dalam radius horizontal 1,8 meter muncul prompt `[E] Bicara dengan ...`; di luar jarak prompt menghilang.
+1. Dekati capsule warga berwarna jingga. Dalam radius horizontal 1,8 meter muncul prompt `[E] Serahkan Bansos ...` untuk penerima yang belum dibantu; di luar jarak prompt menghilang.
 2. Tekan E sekali: nama dan pesan warga muncul pada satu panel dialog. Pemain tidak berjalan selama panel terbuka.
 3. Tahan E: dialog tidak terbuka berulang dan tidak berpindah ke warga lain. Tombol baru dianggap penekanan berikutnya setelah E dilepas dan ditekan kembali.
 4. Tutup dengan klik Tutup, Enter, atau Esc, lalu pastikan pemain bisa berjalan lagi. E yang masih ditahan ketika menutup dialog tidak langsung membukanya kembali.
-5. Ulangi pada ketiga warga. Ini percakapan saja: tidak ada paket yang diserahkan atau trust yang bertambah.
+5. Ulangi pada ketiga warga. Pada misi saat ini E juga menyerahkan satu paket kepada penerima yang belum mendapat bantuan.
 
 Pemilihan target berdasarkan jarak pada bidang XZ dan status aktif, bukan arah hadap pemain. Skenario beberapa warga berdekatan, jarak tepat di batas, dan target yang hilang diuji otomatis; tidak perlu mengubah layout utama untuk mencobanya.
 
+### Pengujian manual U16–U21 pada build graybox
 
-### Pengujian otomatis U02/U03
+Gunakan seluruh folder `Unity/JejakAsa/Builds/Windows-Graybox-U21/`, bukan hanya `.exe`. Jalankan `JejakAsa.exe` dan catat langkah, hasil, serta screenshot bila ada masalah.
 
-Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, pilih assembly `JejakAsa.PlayModeTests`, lalu **Run Selected**. Saat ini ada sebelas tes: lima U02 dan enam U03, bukan seluruh U01–U21. Hasil terakhir: semuanya lulus.
+1. **Menu:** pilih Mulai dengan mouse dan ulangi dengan keyboard. Di eksplorasi tekan Esc → Menu Utama → Batal; sesi tetap sama dan masih dijeda. Pilih Lanjutkan lalu pastikan bisa bergerak. Ulangi dengan konfirmasi kembali: mulai lagi harus menghasilkan 3 paket dan trust 0.
+2. **Pause eksplorasi:** saat timer berjalan tekan Esc, tunggu sekitar 10 detik, lalu lanjutkan. Timer tidak boleh berkurang selama jeda. Esc saat dialog warga menutup dialog; Esc pada pilihan preman memilih menghindar.
+3. **Pause battle:** antar satu paket, dekati preman dan pilih `2` Bertengkar. Tekan `1` Serang, segera Esc, dan tunggu beberapa detik: animasi/HP/giliran tidak boleh berubah. Lanjutkan; satu serangan lawan harus selesai sekali saja. Ulangi ketika menunggu animasi serangan kuat.
+4. **Retry tiga kali:** dari sesi dengan minimal satu penyerahan, kalah dengan menekan Serang empat kali. Pada hasil parsial pilih Ulang Misi. Pastikan 3 paket, 0 warga, trust 0, timer kembali mendekati 03:00, spawn awal, penerima belum ditolong, preman dan penghalang kembali. Ulangi kalah dan retry hingga tiga kali.
+5. **Kemenangan dan pilihan lain:** pada sesi baru pilih Bertengkar dan gunakan Serang ×3, Bertahan ×1, Serang ×2; pemain seharusnya menang dengan HP 4. Setelah kembali, data misi tetap dan gang utama terbuka. Coba juga Menghindar, lalu pada sesi lain antar satu paket dan pilih Bantuan Warga.
+6. **Kamera, audio, UI:** dengarkan musik eksplorasi, battle, kembali, dan setelah retry; tidak boleh ada dua musik bertumpuk. Periksa menu, prompt warga, alasan bantuan terkunci, HUD, dialog, pause, battle, dan hasil dengan mouse serta keyboard pada 1920×1080 dan 1280×720; semua teks/tombol harus terbaca dan tidak terpotong.
+7. **Build komputer kedua:** salin seluruh folder build ke komputer Windows lain, putuskan internet dan pastikan Unity Editor tidak diperlukan. Uji Mulai, satu penyerahan, battle, retry, kembali ke menu, dan Keluar. Ulangi setelah aset final terpasang sebelum menutup U21.
+
+### Musik sementara untuk graybox
+
+- Eksplorasi: [Loop Town — Fupi](https://opengameart.org/content/loop-town), CC0.
+- Battle: [Urban Battle — MintoDog](https://opengameart.org/content/urban-battle), CC0.
+
+Kedua musik bersifat sementara dan boleh diganti saat integrasi audio Role C; periksa kembali transisi dan kredit aset yang benar-benar dipakai pada build final.
+
+
+### Pengujian otomatis Play Mode
+
+Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan seluruh tes. Hasil terakhir di Editor: **36/36 lulus**, termasuk retry tiga kali, pause saat aksi battle, alur menu, dan pergantian musik.
 
 Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes integrasi memuat Kampung aktual untuk menelusuri rute atau membuka dialog dan mengklik Tutup dengan input mouse. Scene percobaan dibongkar dan input fixture dipulihkan setelah selesai. Jangan menghentikan runner atau mengubah scene di tengah tes.
 
@@ -188,8 +214,8 @@ Jika layout berubah, tinjau waypoint pada tes rute serta buktikan semua penerima
 
 1. Keluar dari Play Mode dan simpan scene.
 2. Buka **File → Build Profiles** dan aktifkan Windows.
-3. Pastikan Kampung menjadi scene pertama yang aktif untuk tahap sebelum D11; jangan memakai scene percobaan sebagai entry point. Setelah main menu terimplementasi, entry point berubah sesuai U18.
-4. Build ke `Unity/JejakAsa/Builds/Windows/`, bukan ke dalam `Assets`.
+3. Pastikan urutan scene aktif adalah `MainMenu`, `Kampung`, lalu `Battle`; scene contoh tidak perlu diaktifkan.
+4. Build ke folder baru di `Unity/JejakAsa/Builds/`, bukan ke dalam `Assets`.
 5. Jalankan executable di luar Editor dan bagikan seluruh folder hasil build jika diperlukan, bukan `.exe` saja.
 
 Folder build dan cache Unity tidak di-commit. Build yang akan dibagikan harus dibuat dari source yang sama dengan commit rilisnya.

@@ -239,7 +239,7 @@ namespace JejakAsa
         /// <summary>Pemain menyerang musuh (10 damage) secara sinkron. Mengembalikan false jika aksi ditolak (U14).</summary>
         public bool PlayerAttack()
         {
-            if (!IsPlayerTurn || IsBattleOver || ActionLocked)
+            if (SessionMenu.InputBlocked || !IsPlayerTurn || IsBattleOver || ActionLocked)
                 return false;
 
             ActionLocked = true;
@@ -262,7 +262,7 @@ namespace JejakAsa
         /// <summary>Pemain bertahan secara sinkron — damage lawan berikutnya dikurangi.</summary>
         public bool PlayerDefend()
         {
-            if (!IsPlayerTurn || IsBattleOver || ActionLocked)
+            if (SessionMenu.InputBlocked || !IsPlayerTurn || IsBattleOver || ActionLocked)
                 return false;
 
             ActionLocked = true;
@@ -279,7 +279,7 @@ namespace JejakAsa
         /// <summary>Memicu aksi Serang dengan animasi maju-mundur dan jeda giliran ~0,4 detik.</summary>
         public bool TriggerPlayerAttackAnimated()
         {
-            if (!IsPlayerTurn || IsBattleOver || ActionLocked)
+            if (SessionMenu.InputBlocked || !IsPlayerTurn || IsBattleOver || ActionLocked)
                 return false;
 
             ActionLocked = true;
@@ -292,7 +292,7 @@ namespace JejakAsa
         /// <summary>Memicu aksi Bertahan dengan animasi perisai dan jeda giliran ~0,4 detik.</summary>
         public bool TriggerPlayerDefendAnimated()
         {
-            if (!IsPlayerTurn || IsBattleOver || ActionLocked)
+            if (SessionMenu.InputBlocked || !IsPlayerTurn || IsBattleOver || ActionLocked)
                 return false;
 
             ActionLocked = true;
@@ -370,8 +370,11 @@ namespace JejakAsa
                 return;
             }
 
-            IsPlayerTurn = true;
-            ActionLocked = false;
+            if (!isAnimatingTurn)
+            {
+                IsPlayerTurn = true;
+                ActionLocked = false;
+            }
             TurnNumber++;
         }
 
@@ -387,6 +390,7 @@ namespace JejakAsa
                 // Maju menerjang ke arah preman
                 Vector3 hitPos = enemyBasePos + Vector3.left * 1.15f;
                 yield return MoveTransform(playerVisual, playerVisual.position, hitPos, 0.13f, 0.40f);
+                yield return new WaitWhile(() => SessionMenu.InputBlocked);
 
                 // Impact
                 ApplyPlayerAttackDamage();
@@ -403,8 +407,10 @@ namespace JejakAsa
             else
             {
                 yield return new WaitForSeconds(0.18f);
+                yield return new WaitWhile(() => SessionMenu.InputBlocked);
                 ApplyPlayerAttackDamage();
             }
+            yield return new WaitWhile(() => SessionMenu.InputBlocked);
 
             if (EnemyHP <= 0)
             {
@@ -430,14 +436,17 @@ namespace JejakAsa
             {
                 playerVisual.localScale = new Vector3(1.16f, 0.86f, 1.16f);
                 yield return new WaitForSeconds(0.28f);
+                yield return new WaitWhile(() => SessionMenu.InputBlocked);
                 playerVisual.localScale = Vector3.one;
             }
             else
             {
                 yield return new WaitForSeconds(0.20f);
+                yield return new WaitWhile(() => SessionMenu.InputBlocked);
             }
 
             yield return new WaitForSeconds(0.15f);
+            yield return new WaitWhile(() => SessionMenu.InputBlocked);
             yield return EnemyTurnRoutine("Bertahan");
             isAnimatingTurn = false;
         }
@@ -460,6 +469,8 @@ namespace JejakAsa
                         enemyVisual.localScale = new Vector3(pulse, pulse, pulse);
                         enemyVisual.position = enemyBasePos + new Vector3(Mathf.Sin(t * 50f) * 0.08f, 0f, 0f);
                         yield return null;
+                        while (SessionMenu.InputBlocked)
+                            yield return null;
                     }
                     enemyVisual.position = enemyBasePos;
                     ResolveEnemyTurnMath(playerActionLabel);
@@ -471,15 +482,19 @@ namespace JejakAsa
                     yield return MoveTransform(enemyVisual, enemyBasePos, enemyBasePos + Vector3.right * 0.65f, 0.14f, 0f);
                     Vector3 strikePos = playerBasePos + Vector3.right * 1.15f;
                     yield return MoveTransform(enemyVisual, enemyVisual.position, strikePos, 0.16f, 0.85f);
+                    yield return new WaitWhile(() => SessionMenu.InputBlocked);
 
                     ResolveEnemyTurnMath(playerActionLabel);
                     TriggerFlash(isEnemy: false, wasGuarded ? new Color(0.25f, 0.90f, 0.95f, 1f) : new Color(1f, 0.20f, 0.20f, 1f), 0.25f);
                     TriggerCameraShake(wasGuarded ? 0.14f : 0.26f, wasGuarded ? 0.14f : 0.24f);
 
-                    if (PlayerHP > 0)
-                        StartCoroutine(RecoilRoutine(playerVisual, playerBasePos, playerBasePos + Vector3.left * (wasGuarded ? 0.25f : 0.65f), 0.24f));
+                    Coroutine recoil = PlayerHP > 0
+                        ? StartCoroutine(RecoilRoutine(playerVisual, playerBasePos, playerBasePos + Vector3.left * (wasGuarded ? 0.25f : 0.65f), 0.24f))
+                        : null;
 
                     yield return MoveTransform(enemyVisual, strikePos, enemyBasePos, 0.20f, 0.25f);
+                    if (recoil != null)
+                        yield return recoil;
                 }
                 else
                 {
@@ -487,29 +502,46 @@ namespace JejakAsa
                     yield return MoveTransform(enemyVisual, enemyBasePos, enemyBasePos + Vector3.right * 0.30f, 0.07f, 0f);
                     Vector3 strikePos = playerBasePos + Vector3.right * 1.15f;
                     yield return MoveTransform(enemyVisual, enemyVisual.position, strikePos, 0.14f, 0.32f);
+                    yield return new WaitWhile(() => SessionMenu.InputBlocked);
 
                     ResolveEnemyTurnMath(playerActionLabel);
                     TriggerFlash(isEnemy: false, wasGuarded ? new Color(0.25f, 0.90f, 0.95f, 1f) : new Color(1f, 0.30f, 0.25f, 1f), 0.20f);
                     TriggerCameraShake(0.12f, 0.12f);
 
-                    if (PlayerHP > 0)
-                        StartCoroutine(RecoilRoutine(playerVisual, playerBasePos, playerBasePos + Vector3.left * (wasGuarded ? 0.20f : 0.45f), 0.20f));
+                    Coroutine recoil = PlayerHP > 0
+                        ? StartCoroutine(RecoilRoutine(playerVisual, playerBasePos, playerBasePos + Vector3.left * (wasGuarded ? 0.20f : 0.45f), 0.20f))
+                        : null;
 
                     yield return MoveTransform(enemyVisual, strikePos, enemyBasePos, 0.18f, 0.18f);
+                    if (recoil != null)
+                        yield return recoil;
                 }
             }
             else
             {
                 yield return new WaitForSeconds(0.20f);
+                yield return new WaitWhile(() => SessionMenu.InputBlocked);
                 ResolveEnemyTurnMath(playerActionLabel);
+            }
+            yield return new WaitWhile(() => SessionMenu.InputBlocked);
+
+            if (!IsBattleOver)
+            {
+                IsPlayerTurn = true;
+                ActionLocked = false;
             }
         }
 
         private static IEnumerator MoveTransform(Transform target, Vector3 from, Vector3 to, float duration, float arcHeight)
         {
             float elapsed = 0f;
-            while (elapsed < duration)
+            while (elapsed < duration || SessionMenu.InputBlocked)
             {
+                if (SessionMenu.InputBlocked)
+                {
+                    yield return null;
+                    continue;
+                }
                 elapsed += Time.deltaTime;
                 float u = Mathf.Clamp01(elapsed / Mathf.Max(0.001f, duration));
                 Vector3 pos = Vector3.Lerp(from, to, u);
@@ -600,6 +632,9 @@ namespace JejakAsa
 
         private void Update()
         {
+            if (SessionMenu.InputBlocked)
+                return;
+
             UpdatePopups();
             UpdateVisualEffects();
 
@@ -793,18 +828,22 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (!hasStarted)
+            if (!hasStarted || SessionMenu.InputBlocked)
                 return;
 
             EnsureBattleStyles();
             GUI.depth = -100;
 
-            float sw = Screen.width;
-            float sh = Screen.height;
+            float scale = CozyGuiTheme.Scale;
+            Matrix4x4 previousMatrix = GUI.matrix;
+            GUI.matrix = previousMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+            float sw = Screen.width / scale;
+            float sh = Screen.height / scale;
 
             DrawTopStatusHud(sw);
             DrawWorldPopups();
             DrawBottomActionDock(sw, sh);
+            GUI.matrix = previousMatrix;
         }
 
         private void DrawTopStatusHud(float sw)
@@ -901,8 +940,8 @@ namespace JejakAsa
                 if (screen.z <= 0f)
                     continue;
 
-                float guiX = screen.x - 80f;
-                float guiY = (Screen.height - screen.y) - 24f - ratio * 42f;
+                float guiX = screen.x / CozyGuiTheme.Scale - 80f;
+                float guiY = (Screen.height - screen.y) / CozyGuiTheme.Scale - 24f - ratio * 42f;
                 float alpha = ratio < 0.7f ? 1f : 1f - ((ratio - 0.7f) / 0.3f);
 
                 Rect rect = new Rect(guiX, guiY, 160f, 32f);

@@ -200,6 +200,70 @@ public sealed class U15BattleIntegrationTests : InputTestFixture
         Assert.That(interaction.GetComponent<PlayerController>().enabled, Is.True);
     }
 
+    [UnityTest]
+    public IEnumerator BattleActionsStayLockedUntilEnemyAndPlayerFinishReturning()
+    {
+        yield return LoadKampung();
+        transition.SetPostBattleDelayForTests(0f);
+        TeleportPlayer(interaction, new Vector3(0f, 1f, -1.6f));
+        yield return null;
+        yield return PressKey(Key.Digit2);
+
+        float deadline = Time.realtimeSinceStartup + 5f;
+        while ((BattleController.Active == null || !BattleController.Active.IsPlayerTurn)
+            && Time.realtimeSinceStartup < deadline)
+            yield return null;
+
+        BattleController battle = BattleController.Active;
+        Assert.That(battle, Is.Not.Null);
+        Scene battleScene = SceneManager.GetSceneByPath(BattleScenePath);
+        Transform enemy = null;
+        Transform player = null;
+        foreach (GameObject root in battleScene.GetRootGameObjects())
+        {
+            if (root.name == "Preman_Battle") enemy = root.transform;
+            if (root.name == "Pemain_Battle") player = root.transform;
+        }
+        Assert.That(enemy, Is.Not.Null);
+        Assert.That(player, Is.Not.Null);
+        Vector3 enemyHome = enemy.position;
+        Vector3 playerHome = player.position;
+
+        Assert.That(battle.TriggerPlayerAttackAnimated(), Is.True);
+        deadline = Time.realtimeSinceStartup + 5f;
+        while (battle.PlayerHP == 32 && Time.realtimeSinceStartup < deadline)
+            yield return null;
+        Assert.That(battle.PlayerHP, Is.EqualTo(24), "Serangan biasa harus mengenai pemain.");
+        Assert.That(battle.ActionLocked, Is.True, "Aksi tetap terkunci ketika animasi pulang masih berjalan.");
+        Assert.That(battle.IsPlayerTurn, Is.False);
+        Assert.That(battle.TriggerPlayerAttackAnimated(), Is.False);
+        Assert.That(battle.TriggerPlayerDefendAnimated(), Is.False);
+        deadline = Time.realtimeSinceStartup + 5f;
+        while (battle.ActionLocked && Time.realtimeSinceStartup < deadline)
+            yield return null;
+        Assert.That(battle.ActionLocked, Is.False, "Giliran harus kembali setelah animasi selesai.");
+        Assert.That(Vector3.Distance(enemy.position, enemyHome), Is.LessThan(0.08f));
+        Assert.That(Vector3.Distance(player.position, playerHome), Is.LessThan(0.08f));
+
+        Assert.That(battle.PlayerAttack(), Is.True);
+        Assert.That(battle.PlayerAttack(), Is.True);
+        Assert.That(battle.ShowKuatWarning, Is.True);
+        Assert.That(battle.TriggerPlayerDefendAnimated(), Is.True);
+        deadline = Time.realtimeSinceStartup + 5f;
+        while (battle.PlayerHP == 16 && Time.realtimeSinceStartup < deadline)
+            yield return null;
+        Assert.That(battle.PlayerHP, Is.EqualTo(12), "Bertahan harus mengurangi serangan kuat menjadi 4.");
+        Assert.That(battle.ActionLocked, Is.True, "Serangan kuat juga tetap mengunci aksi selama animasi pulang.");
+        Assert.That(battle.TriggerPlayerAttackAnimated(), Is.False);
+        deadline = Time.realtimeSinceStartup + 5f;
+        while (battle.ActionLocked && Time.realtimeSinceStartup < deadline)
+            yield return null;
+        Assert.That(battle.ActionLocked, Is.False);
+        Assert.That(battle.IsPlayerTurn, Is.True);
+        Assert.That(Vector3.Distance(enemy.position, enemyHome), Is.LessThan(0.08f));
+        Assert.That(Vector3.Distance(player.position, playerHome), Is.LessThan(0.08f));
+    }
+
     private IEnumerator LoadKampung()
     {
         yield return SceneManager.LoadSceneAsync(KampungScenePath, LoadSceneMode.Additive);
