@@ -70,6 +70,7 @@ namespace JejakAsa
         {
             if (!Active.Contains(this))
                 Active.Add(this);
+            BattleTransition.Active?.RegisterEncounter(this);
         }
 
         private void OnDisable()
@@ -77,7 +78,8 @@ namespace JejakAsa
             if (isEncounterOpen)
             {
                 isEncounterOpen = false;
-                playerInteraction?.SetEncounterMovementLock(false);
+                if (BattleTransition.Active == null || !BattleTransition.Active.IsInBattle)
+                    playerInteraction?.SetEncounterMovementLock(false);
             }
             Active.Remove(this);
         }
@@ -227,6 +229,7 @@ namespace JejakAsa
 
             if (BattleRequested != null)
             {
+                isEncounterOpen = false;
                 battleRequestPending = true;
                 statusFeedback = "";
                 BattleRequested.Invoke(this);
@@ -235,6 +238,14 @@ namespace JejakAsa
 
             statusFeedback = "Arena Battle sedang disiapkan tim Battle. Pilih Menghindar atau Bantuan Warga.";
             return false;
+        }
+
+        /// <summary>
+        /// Membersihkan status battle pending jika battle gagal dimuat atau berakhir kalah sebelum retry.
+        /// </summary>
+        public void CancelPendingBattle()
+        {
+            battleRequestPending = false;
         }
 
         /// <summary>

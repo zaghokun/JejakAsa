@@ -50,7 +50,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
 | A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | Perubahan tim U04–U10 telah digabungkan. Smoke test dengan preview MC membuktikan satu gerakan dan satu penyerahan; bukan pengujian ulang seluruh kriteria. |
-| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Verifikasi U02/U03 selesai. Ini **bukan** penyelesaian B01–B10; arena dan sistem battle masih belum tersedia. |
+| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Arena `Battle.unity`, sistem battle U11–U14, transisi U15, serta 31/31 tes Play Mode (termasuk `U11BattleTests` dan `U15BattleIntegrationTests`) lulus di Unity Editor. U16 pause battle dan loop 3× retry U17 masih terbuka. |
 | C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Preview MC bertekstur sudah diuji; rig, animasi, model warga/musuh, dan integrasi final masih diperlukan. |
 
 ## Tracking penerimaan
@@ -67,11 +67,11 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 - [X] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
 - [X] **U09 — Menghindar:** status selesai dipertahankan berdasarkan laporan/merge tim; tidak dijalankan ulang pada pengujian preview MC.
 - [X] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
-- [ ] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline.
-- [ ] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai.
-- [ ] **U13 — Guard sekali pakai:** Bertahan pada giliran Persiapan tidak terbawa ke serangan berikutnya.
-- [ ] **U14 — Aksi battle tunggal:** klik cepat tidak memberi aksi ganda; lawan HP 0 tidak membalas; hasil dikirim sekali.
-- [ ] **U15 — Kembali dari battle:** timer, paket, trust, dan penerima tetap; musuh selesai tidak muncul lagi pada sesi itu.
+- [x] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline; diuji lewat `U11BattleTests` di Unity Editor.
+- [x] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai; diuji lewat `U11BattleTests` dan `U15BattleIntegrationTests` di Unity Editor.
+- [x] **U13 — Guard sekali pakai:** Bertahan pada giliran Persiapan tidak terbawa ke serangan berikutnya; diuji lewat `U11BattleTests` di Unity Editor.
+- [x] **U14 — Aksi battle tunggal:** klik cepat tidak memberi aksi ganda; lawan HP 0 tidak membalas; hasil dikirim sekali; diuji lewat `U11BattleTests` di Unity Editor.
+- [x] **U15 — Kembali dari battle:** timer, paket, trust, dan penerima tetap; musuh selesai tidak muncul lagi pada sesi itu; diuji lewat `U15BattleIntegrationTests` dan Play Mode di Unity Editor.
 - [ ] **U16 — Pause battle:** aksi tertunda berhenti dan resume kembali pada giliran yang benar tanpa damage ganda.
 - [ ] **U17 — Retry bersih:** tiga pengulangan mereset seluruh sesi tanpa data/event lama, termasuk sesudah kalah battle setelah terintegrasi.
 - [ ] **U18 — Menu:** Mulai/Keluar, konfirmasi kembali ke menu, pembatalan, serta sesi baru berfungsi; mulai ditargetkan D11.
@@ -91,16 +91,16 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 | --- | --- | --- | --- | --- |
 | AB-M01 | D1 | Setup proyek, repository, clone, dan build awal. Satu anggota menyiapkan; anggota lain memeriksa. | Proyek 6000.3.27f1 hasil clone dan build awal berjalan. Bukti U01 berdasarkan konfirmasi anggota A/B; tidak menunggu laporan C untuk menutup milestone A/B ini. | Selesai |
 | AB-M02 | D2–D3 | A: graybox navigasi, gerak, collision, kamera. B: regresi dan uji jalur. | U02 lulus: lima tes Play Mode serta pengujian ulang jalur setelah perubahan pembatas. Tidak mencakup input lock state atau loop misi. | Selesai |
-| AB-M03 | D2–D3 | B: arena Battle mandiri. A/B: kontrak data, hasil menang/kalah, dan tanggung jawab state. | Arena dapat dibuka sendiri; titik karakter tersedia; kontrak disepakati tanpa ketergantungan pada MainMenu. Milestone ini tidak otomatis selesai oleh U02. | Belum |
-| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U04–U08 ditandai selesai oleh tim; satu skenario penyerahan dengan preview MC lulus. Loop tiga retry dan bagian U17 battle belum dibuktikan dalam pengujian preview ini. | Sebagian |
-| AB-M05 | D3–D7 | B: HP, Serang/Bertahan, pola lawan, telegraph, giliran, menang/kalah. A membantu menguji kontrak hasil. | Battle mandiri dapat dimainkan; U11–U14 lulus dan tidak mengirim hasil ganda. | Belum |
-| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U09/U10 ditandai selesai oleh tim; U15/U16/U17 bergantung integrasi battle dan belum ditutup. | Sebagian |
+| AB-M03 | D2–D3 | B: arena Battle mandiri. A/B: kontrak data, hasil menang/kalah, dan tanggung jawab state. | Arena `Battle.unity` dapat dibuka sendiri, titik karakter tersedia, dan kontrak `BattleController` disepakati tanpa ketergantungan pada MainMenu; diuji di Unity Editor. | Selesai |
+| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U04–U08 ditandai selesai oleh tim; satu skenario penyerahan dengan preview MC lulus. Pause gameplay dan loop 3× retry bersih U17 belum dibuktikan secara penuh. | Sebagian |
+| AB-M05 | D3–D7 | B: HP, Serang/Bertahan, pola lawan, telegraph, giliran, menang/kalah. A membantu menguji kontrak hasil. | `Battle.unity` dapat dimainkan mandiri; seluruh 6 tes `U11BattleTests` (U11–U14) lulus di Unity Editor dan tidak mengirim hasil ganda. | Selesai |
+| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U09/U10 selesai dan U15 lulus lewat 2 tes `U15BattleIntegrationTests` di Unity Editor (termasuk retry setelah kalah battle). U16 (pause battle) dan uji 3× retry U17 masih terbuka. | Sebagian |
 | AB-M07 | D11 | A: MainMenu, navigasi, konfirmasi keluar sesi. B memeriksa masuk/keluar misi dan regresi battle. | U18 lulus. Menu memakai loop yang sudah bekerja, bukan memiliki salinan logika misi. Memakai prefab menu C setelah handoff. | Belum |
 | AB-M08 | D12–D14 | Integrasi aset/UI/audio dari C, pengujian alpha, dan pembekuan fitur. | Semua fitur wajib tersambung; U19/U20 diuji bersama C pada build terintegrasi. Belum cukup jika hanya scene percobaan yang bekerja. | Belum |
 | AB-M09 | D15–D18 | Playtest, perbaikan, kalibrasi angka, regresi, dan release candidate. | Catatan playtest nyata; tidak ada blocker atau tombol kosong; kandidat rilis cocok dengan source dan aturan terbaru. | Belum |
 | AB-M10 | D19–D21 | Stabilisasi, build bersih, pengujian komputer kedua, dan pengumpulan source/build. | U21 lulus; build final, source, bukti uji, serta known issues non-blocking siap. | Belum |
 
-**Batas status saat ini:** AB-M01 dan AB-M02 selesai; AB-M04 dan AB-M06 sebagian karena pekerjaan battle/retry lintas scene masih terbuka. Status U04–U10 mengikuti merge tim; pengujian karakter hanya mencakup gerak dan satu penyerahan, bukan seluruh suite.
+**Batas status saat ini:** AB-M01, AB-M02, AB-M03, dan AB-M05 selesai; AB-M04 dan AB-M06 sebagian karena U16 (pause battle) dan uji loop 3× retry U17 masih terbuka. Seluruh 31 tes Play Mode saat ini (`U02`–`U15`) lulus di Unity Editor; belum dibuat ulang build Windows dan belum diuji di komputer kedua.
 
 ### Jalur C — Visual, level, UI, dan audio
 
@@ -128,10 +128,9 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 
 ### Pekerjaan berikutnya
 
-1. A/B melanjutkan arena dan sistem battle; status U04–U10 mengikuti hasil merge tim. Uji ulang kriteria terkait saat mengintegrasikan model final.
-2. B tetap menyiapkan **B01/arena Battle mandiri dan kontrak hasil menang/kalah**, terpisah dari scene Kampung.
-3. C melanjutkan layout/aset serta prefab UI yang mendukung interaksi; tidak menunggu main menu.
-4. Sebelum menandai satu hari atau gerbang selesai, periksa semua hasil wajibnya, bukan hanya U02.
+1. A/B melanjutkan U16 (pause battle), uji loop 3× retry bersih U17, serta U18 (MainMenu); uji ulang kriteria terkait saat mengintegrasikan model final C.
+2. C melanjutkan aset, layout, animasi, audio, dan prefab UI yang mendukung interaksi tanpa menunggu main menu.
+3. Sebelum menandai satu hari atau gerbang selesai, periksa semua hasil wajibnya, bukan hanya U02.
 
 **Referensi karakter terbaru dari Gemini:** [MC](docs/visual/asset-guides/refs/Gemini_Generated_Image_rcceaqrcceaqrcce.jpg), [warga perempuan](docs/visual/asset-guides/refs/Gemini_Generated_Image_s281xis281xis281.jpg), [warga laki-laki](docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo.jpg), dan [pengintimidasi](<docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo (1).jpg>). Nama file dipertahankan agar perubahan hasil merge tidak terganggu. Acuan ini menggantikan konsep karakter lama yang berbeda. MC menggunakan polo navy, headphone dan sling bag seperti gambar terbaru.
 
