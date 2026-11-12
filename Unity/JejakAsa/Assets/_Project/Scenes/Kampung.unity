@@ -3440,6 +3440,7 @@ GameObject:
   - component: {fileID: 1306168560}
   - component: {fileID: 1306168559}
   - component: {fileID: 1306168564}
+  - component: {fileID: 1900000201}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -3579,6 +3580,23 @@ MonoBehaviour:
   closeButton: {fileID: 368419022}
   initialPackages: 3
   initialTimeSeconds: 180
+--- !u!114 &1900000201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1306168558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c6d5e7a8b94012cd4e5f6a7b8c9d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.BattleTransition
+  battleScenePath: Assets/_Project/Scenes/Battle.unity
+  playerInteraction: {fileID: 1306168564}
+  kampungRoot: {fileID: 106889005}
+  kampungCamera: {fileID: 330585545}
+  postBattleDelay: 1.2
 --- !u!114 &1392674587
 MonoBehaviour:
   m_ObjectHideFlags: 0

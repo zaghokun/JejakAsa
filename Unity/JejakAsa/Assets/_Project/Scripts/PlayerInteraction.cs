@@ -59,6 +59,7 @@ namespace JejakAsa
         public InteractionTarget DialogueTarget { get; private set; }
         public bool IsDialogueOpen { get; private set; }
         public bool IsEncounterOpen => EncounterController.AnyOpen;
+        public bool IsInBattle => BattleTransition.Active != null && BattleTransition.Active.IsInBattle;
 
         public int PackagesRemaining => packagesRemaining;
         public int DeliveredCount => deliveredCount;
@@ -126,7 +127,7 @@ namespace JejakAsa
             }
 
             // U06 & U07: Timer hanya berkurang saat eksplorasi aktif & misi masih berlangsung
-            if (!IsDialogueOpen && !IsEncounterOpen && outcome == MissionOutcome.InProgress)
+            if (!IsDialogueOpen && !IsEncounterOpen && !IsInBattle && outcome == MissionOutcome.InProgress)
             {
                 if (IsMissionCompleted)
                 {
@@ -151,7 +152,7 @@ namespace JejakAsa
                 }
             }
 
-            if (IsEncounterOpen)
+            if (IsEncounterOpen || IsInBattle)
             {
                 CurrentTarget = null;
                 if (promptPanel != null && promptPanel.activeSelf)
@@ -340,6 +341,7 @@ namespace JejakAsa
             transform.position = initialSpawnPosition;
             transform.rotation = initialSpawnRotation;
             if (cc != null) cc.enabled = true;
+            Physics.SyncTransforms();
 
             outcome = MissionOutcome.InProgress;
             outcomeReason = "";
@@ -426,7 +428,7 @@ namespace JejakAsa
                 if (movement != null)
                     movement.enabled = false;
             }
-            else if (movement != null && !IsDialogueOpen && !isOutcomeOpen)
+            else if (movement != null && !IsDialogueOpen && !isOutcomeOpen && !IsEncounterOpen && !IsInBattle)
             {
                 movement.enabled = true;
             }
@@ -491,6 +493,9 @@ namespace JejakAsa
 
         private void OnGUI()
         {
+            if (IsInBattle)
+                return;
+
             CozyGuiTheme.EnsureInitialized();
 
             float cardX = 20f;
