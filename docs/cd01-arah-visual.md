@@ -40,7 +40,7 @@ Pemeriksaan rasio warna teks (perhitungan warna solid sRGB): `#28344B` pada crea
 
 **Model yang sudah ada:** [GLB sumber](../ArtSource/Characters/MC_Meshy/JejakAsa_MC_Original.glb) dan [FBX preview](../Unity/JejakAsa/Assets/_Project/Art/Characters/MC/JejakAsa_MC_Unity_Test.fbx) berasal dari percobaan Meshy sebelumnya. Preview dilaporkan sekitar 1,70 m dan 32.687 triangle; belum ber-rig/animasi final dan belum dinyatakan siap produksi. Pemeriksaan dan integrasinya termasuk C-D02.
 
-**Tokoh lain:** gambar yang diberikan pengguna menjadi acuan visual utama: [Jonathan](visual/asset-guides/refs/Jonathan.jpg), [Ophelia](visual/asset-guides/refs/Ophelia.jpg), [preman](visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](visual/asset-guides/refs/Ibu.jpg), [Ayah](visual/asset-guides/refs/Ayah.jpg), [warga perempuan](visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](visual/asset-guides/refs/Warga-Male.jpg). Nama file boss tidak dengan sendirinya mengonfirmasi nama final.
+**Tokoh lain:** gambar yang diberikan pengguna menjadi acuan visual utama: [Jonathan](visual/asset-guides/refs/Jonathan.jpg), [Ophelia](visual/asset-guides/refs/Ophelia.jpg), [preman](visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](visual/asset-guides/refs/Ibu.jpg), [Ayah](visual/asset-guides/refs/Ayah.jpg), [warga perempuan](visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](visual/asset-guides/refs/Warga-Male.jpg). Pengguna mengonfirmasi nama boss terakhir adalah **Mr. Gas Oke**.
 
 Warga dapat memakai basis dan variasi yang digunakan ulang; 15 nama pada draft cerita tidak mewajibkan 15 mesh unik. Ibu dan Ayah boleh memakai karakter sederhana sebagaimana diminta. Hindari menjadikan bentuk tubuh, warna kulit, atau kondisi rumah sebagai penanda moral tokoh.
 
@@ -119,7 +119,7 @@ Ketiga gambar adalah diagram tidak berskala, bukan tampilan final atau bukti rut
 | Palet dan arah visual | Disetujui pengguna | Uji kontras dan suasana pada aset Unity nyata |
 | Struktur map | Arahan pengguna | Posko dengan lingkungan, rumah langsung interior, dan lima map level terpisah; penempatan detail perlu disepakati |
 | Model reuse warga dan modul bangunan | Usulan efisiensi | Cukup variasi agar tokoh dan rumah tetap terbaca berbeda |
-| Nama boss terakhir | Belum diputuskan | Mr. Gas Oke atau Mr. Oke Gas |
+| Nama boss terakhir | Dikonfirmasi pengguna | Mr. Gas Oke |
 | Ukuran pintu, gang, dan paket | Sebagian diuji | Pintu dan gang lulus uji collider sederhana; paket dan layout revisi belum diuji |
 | Persetujuan visual | Pengguna menyetujui arah visual | Denah revisi, skala jalur baru dan penerimaan bersama A/B masih perlu dibuktikan |
 

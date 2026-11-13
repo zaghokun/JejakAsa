@@ -8,7 +8,7 @@
 - **Latar:** kampung fiktif di Jakarta Utara. Perlihatkan lingkungan hidup, aktivitas, dan identitas warganya dengan hormat; kemiskinan bukan dekorasi atau karakterisasi penduduk.
 - **Cara berhemat:** setiap level tetap mempunyai map sendiri, tetapi bagian bangunan, prop, material, rig, dan animasi boleh digunakan ulang antar-map. Lima level juga tidak mewajibkan 15 model warga unik.
 - **Gambar referensi bukan model:** PNG/JPG concept art dapat membantu mendesain atau menjadi masukan generator, tetapi tidak dapat langsung menggantikan karakter/map 3D yang harus terlihat dari berbagai sudut. Aset final perlu mesh, material, dan bila diperlukan rig/animasi yang kompatibel dengan Unity.
-- **Keputusan yang masih terbuka:** nama boss terakhir (Mr. Gas Oke/Mr. Oke Gas), jumlah penerima final, jenis/efek item dan weapon, daftar pengaturan, serta detail layout masing-masing level. Sepakati detail aset bersama A/B sebelum produksi final.
+- **Keputusan yang masih terbuka:** jumlah penerima final, jenis/efek item dan weapon, daftar pengaturan, serta detail layout masing-masing level. Nama boss terakhir dikonfirmasi pengguna sebagai Mr. Gas Oke. Sepakati detail aset bersama A/B sebelum produksi final.
 - **Tanpa biaya otomatis:** penggunaan generator/asset store harus dilihat biaya, hak pakai, dan kuotanya terlebih dahulu. Daftar ini tidak memberi izin untuk memakai kredit berbayar tanpa arahan pemilik akun.
 
 ### Referensi yang tersedia
@@ -109,7 +109,7 @@
 | Warga kampung | Basis laki-laki dan perempuan, dengan variasi secukupnya | Naskah memiliki banyak nama; bukan berarti harus membuat satu model unik untuk setiap nama. Variasikan usia, pakaian, warna, dan aksesori dengan hormat. |
 | Preman/anak buah | 1 basis dengan variasi secukupnya | Dipakai di encounter dan cuplikan prolog. |
 | Mr. Deddy | 1 | Identitas visual boss level 3. |
-| Mr. Gas Oke | 1 | Identitas visual boss level 5; nama final masih terbuka. |
+| Mr. Gas Oke | 1 | Identitas visual boss level 5; nama dikonfirmasi pengguna. |
 | Sponsor | 0 model wajib | Diwakili Jonathan; logo/dokumen visual hanya bila disetujui. |
 
 - [ ] Jonathan: model, material, skala, rig/pose bicara sesuai kebutuhan dan prefab visual.

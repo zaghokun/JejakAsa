@@ -117,7 +117,7 @@ Daftar ini adalah **rencana pekerjaan**, bukan fitur yang sudah tersedia. U01–
 - [ ] **R14 — Main Menu revisi:** sediakan Mulai, Lanjutkan, Load, dan Setting yang berfungsi; Lanjutkan/Load menjelaskan saat save belum tersedia. Tentukan dan terapkan jumlah slot, perilaku overwrite, serta pengaturan yang disimpan.
 - [ ] **R15 — Regresi dan build:** uji alur prolog sampai level 5, dua boss, retry, save/load, pause, reward sekali, pergantian hari, serta kamera/audio/UI. Buat build dari source yang sama dan uji pada komputer kedua; ulangi setelah aset final diintegrasikan.
 
-**Keputusan desain yang belum disepakati:** nama final boss terakhir (Mr. Gas Oke/Mr. Oke Gas), jumlah slot save, apakah ada autosave selain save di rumah, detail reward/weapon, dan jumlah serta susunan penerima tiap level. R08 mempertahankan syarat berbicara dengan Ophelia sesuai ide awal; bila interaksi itu nantinya dibuat opsional, aturan reward harus disesuaikan terlebih dahulu. Aturan 50/50 perlu menjelaskan apakah timer berhenti dan ke mana pemain kembali saat berhasil menghindar.
+**Keputusan desain yang belum disepakati:** jumlah slot save, apakah ada autosave selain save di rumah, detail reward/weapon, dan jumlah serta susunan penerima tiap level. Nama boss terakhir dikonfirmasi pengguna sebagai **Mr. Gas Oke**. R08 mempertahankan syarat berbicara dengan Ophelia sesuai ide awal; bila interaksi itu nantinya dibuat opsional, aturan reward harus disesuaikan terlebih dahulu. Aturan 50/50 perlu menjelaskan apakah timer berhenti dan ke mana pemain kembali saat berhasil menghindar.
 
 ## Paket delivery revisi A/B
 
@@ -218,11 +218,17 @@ Tabel ini mempertahankan rencana dan bukti awal; status dan hari D tidak otomati
 
 **C-D01 dalam pengerjaan:** [arah visual dan hasil uji skala](docs/cd01-arah-visual.md) serta [checklist delivery Role C](docs/daftar-aset-role-c.md). Pengguna menyetujui arah visual dan model Meshy Vicky yang sudah ada serta memberi referensi tokoh lain. Uji collider sederhana dan 5/5 tes gerak/rute graybox lama lulus; jalur map revisi belum diuji karena scene belum tersedia.
 
+**Katalog lingkungan lokal:** `Blender/AssetLibrary_Staging/JejakAsa_Environment_Catalog.blend` berisi 340 entri sumber/variasi sebelumnya serta **20 objek rumah** yang di-append pengguna. Rumah `house_1`–`house_20` dikelompokkan dalam collection `House20`; tekstur rumah sudah dikemas. Sebagian parent aset lain disesuaikan untuk display katalog, **bukan skala final Unity**; 20 rumah mempertahankan skala dan posisi saat di-append. Model MC dan arsip asli tidak diubah.
+
+**Vegetasi pilihan lokal:** `Blender/AssetLibrary_Staging/JejakAsa_Environment_Vegetasi.blend` adalah salinan katalog berisi collection `Vegetasi_Terpilih`: lima pohon (tiga berdaun dan dua pinus), satu semak, dan tiga rumpun rumput. Objek sumber forest tetap ada; salinan memakai mesh/material terpisah dan ukuran tampilan usulan. Aset belum diekspor/diuji di Unity, belum dinilai cocok sebagai spesies Jakarta, dan lisensi paket forest masih perlu diverifikasi.
+
+Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis ikut push/clone**. Delapan FBX ASCII rumah suburban tidak didukung importer Blender, sehingga katalog memakai versi GLB dari [paket Kenney yang sama di Poly Pizza](https://poly.pizza/bundle/Suburban-Houses-Pack-dZQwy8vcDv), tercantum CC0. Lisensi aset lain, khususnya paket Urban City yang dokumennya menyebut pembelian, perlu diverifikasi sebelum dibagikan atau dipakai dalam build.
+
 | ID | Target | Output yang diserahkan C | Kriteria selesai / bukti | Status |
 | --- | --- | --- | --- | --- |
 | C-M01 | D1–D2 | Setup proyek C, skala/palet, daftar kebutuhan aset, serta sumber/lisensi. | C dapat membuka proyek yang sama; daftar kebutuhan dan sumber aset dapat ditinjau. U01 A/B tidak otomatis membuktikan setup C. | Belum dilaporkan |
 | C-M02 | D2 | Rancangan layout dan penempatan tujuan bersama A/B. | Pos awal, tiga tujuan, gang utama, jalur memutar, serta titik encounter disepakati. Graybox buatan A/B sudah tersedia; kontribusi/handoff C tetap perlu dikonfirmasi. | Belum dilaporkan |
-| C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Preview MC Meshy bertekstur sudah diuji; belum ber-rig/animasi dan masih 32.687 triangle setelah Decimate. Model warga/musuh dan integrasi final belum tersedia. | Sebagian |
+| C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Preview MC diuji; sembilan model sumber Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki sudah digenerate. Model baru belum rig/animasi atau terintegrasi. | Sebagian |
 | C-M04 | D4–D6 | Prefab briefing, HUD, dialog, encounter, battle UI, pause, dan hasil/retry. Main menu belum diprioritaskan. | Teks, anchor, fokus, tombol, serta state terkunci/aktif lengkap; referensi untuk pengikatan controller disertakan. Penyerahan prefab bukan bukti logika misi/battle sudah selesai. | Belum dilaporkan |
 | C-M05 | D5–D8 | Lingkungan modular, bangunan, jalan, paket, penanda penerima, dan dekor minimum. | Prefab diserahkan untuk mengganti graybox; A/B memasangnya dan memeriksa ulang jalur/collider. C tidak menimpa logika atau scene integrasi tanpa handoff. | Belum dilaporkan |
 | C-M06 | D7–D10 | Idle/jalan dan respons visual serang, bertahan, kena, serta bantuan warga. | Aksi terbaca dan dapat dipicu controller A/B; tidak membutuhkan animasi kompleks atau AI baru. | Belum dilaporkan |
@@ -248,7 +254,25 @@ Tabel ini mempertahankan rencana dan bukti awal; status dan hari D tidak otomati
 
 **Referensi karakter dari pengguna:** [Vicky](docs/visual/asset-guides/refs/Vicky.jpg), [Jonathan](docs/visual/asset-guides/refs/Jonathan.jpg), [Ophelia](docs/visual/asset-guides/refs/Ophelia.jpg), [Preman](docs/visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](docs/visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<docs/visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](docs/visual/asset-guides/refs/Ibu.jpg), [Ayah](docs/visual/asset-guides/refs/Ayah.jpg), [warga perempuan](docs/visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](docs/visual/asset-guides/refs/Warga-Male.jpg). Gambar memperlihatkan depan, tiga-perempat, dan belakang; bukan model 3D.
 
-**Status produksi karakter:** pengguna memilih model MC Meshy yang sudah dibuat dan menerima bentuknya meskipun tidak rapi. Pemilihan ini tidak berarti rig/animasi atau integrasi gameplay selesai. Tokoh lain baru berupa referensi gambar; model 3D-nya belum dibuat berdasarkan informasi yang tersedia.
+**Status produksi karakter:** pengguna memilih model MC Meshy yang sudah ada. Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki telah digenerate dari potongan depan referensi masing-masing. Model-model baru masih sumber mentah: belum dioptimalkan, di-rig, dianimasikan, atau diintegrasikan ke Unity.
+
+### Sembilan karakter Meshy — sumber
+
+| Karakter | File GLB sumber | Tinggi | Triangle |
+| --- | --- | ---: | ---: |
+| Jonathan | [Jonathan_Original.glb](ArtSource/Characters/Jonathan_Meshy/Jonathan_Original.glb) | 1,75 m | 307.837 |
+| Ophelia | [Ophelia_Original.glb](ArtSource/Characters/Ophelia_Meshy/Ophelia_Original.glb) | 1,60 m | 576.285 |
+| Mr. Gas Oke | [Mr_Gas_Oke_Original.glb](ArtSource/Characters/Mr_Gas_Oke_Meshy/Mr_Gas_Oke_Original.glb) | 1,70 m | 364.347 |
+| Mr. Deddy | [Mr_Deddy_Original.glb](ArtSource/Characters/Mr_Deddy_Meshy/Mr_Deddy_Original.glb) | 1,75 m | 277.207 |
+| Ayah | [Ayah_Original.glb](ArtSource/Characters/Ayah_Meshy/Ayah_Original.glb) | 1,70 m | 208.318 |
+| Ibu | [Ibu_Original.glb](ArtSource/Characters/Ibu_Meshy/Ibu_Original.glb) | 1,65 m | 752.454 |
+| Preman | [Preman_Original.glb](ArtSource/Characters/Preman_Meshy/Preman_Original.glb) | 1,75 m | 555.115 |
+| Warga perempuan | [Warga_Perempuan_Original.glb](ArtSource/Characters/Warga_Perempuan_Meshy/Warga_Perempuan_Original.glb) | 1,65 m | 385.569 |
+| Warga laki-laki | [Warga_Laki_Original.glb](ArtSource/Characters/Warga_Laki_Meshy/Warga_Laki_Original.glb) | 1,75 m | 481.975 |
+
+Setiap GLB diperiksa mempunyai mesh dan tiga gambar tekstur tertanam. Blender menampilkan peringatan sampler tekstur saat ekspor; tampilan saat reimport atau di Unity masih harus diuji. Setiap model memiliki satu UV map, belum memiliki armature, dan memiliki boundary edges; kualitas deformasi dan performa belum dibuktikan. Angka triangle tersebut tinggi untuk penggunaan bersamaan, sehingga jangan menganggap file mentah otomatis siap untuk build.
+
+Sembilan generasi Meshy selesai dalam tiga tahap (termasuk warga laki-laki yang dialihkan ke Meshy setelah percobaan Tripo terkendala saldo kredit); saldo dan biaya aktual tidak dilaporkan tool, sehingga harus dilihat di dashboard Meshy. Salinan scene Blender terbaru dengan sembilan karakter tersedia secara lokal di `Blender/Generated_Characters_03/JejakAsa_Character_Set_03.blend`, collection `JA_Karakter_Generasi`; salinan scene sebelumnya dan `Blender/MC.blend` asli tidak ditimpa. Folder `Blender/` diabaikan Git, sedangkan GLB di `ArtSource/` berada di luar folder tersebut.
 
 ### MC Meshy — hasil dan batasan
 

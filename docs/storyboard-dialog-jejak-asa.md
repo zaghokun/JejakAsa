@@ -11,7 +11,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 ### Catatan rancangan untuk ditinjau
 
 - **Struktur map:** posko adalah map tersendiri dengan lingkungan, rumah langsung berupa map interior, dan setiap level memiliki map sendiri. Saat gameplay, keluar rumah hanya menuju posko; dari posko pemain berangkat ke map level dan kembali ke posko setelah selesai.
-- **Nama boss terakhir sementara:** dokumen memakai **Mr. Gas Oke**. Nama final perlu dipilih karena sebelumnya juga disebut Mr. Oke Gas.
+- **Nama boss terakhir:** Mr. Gas Oke, dikonfirmasi pengguna.
 - **Penerima:** naskah mengusulkan tiga penyerahan per level agar sejalan dengan graybox; jumlah dan susunan final belum disepakati. Nama warga adalah nama tokoh cerita, bukan kewajiban membuat 15 model unik.
 - **Syarat level:** untuk draft ini, antar tiga paket dan, pada level 3/5, menangkan battle boss. Timer misi berhenti saat penyerahan selesai; level boss belum dianggap selesai sebelum boss menang. Perubahan ini belum ada di graybox.
 - **Urutan setelah menang:** lapor kepada Jonathan → bicara dengan Ophelia → terima reward → pulang dan istirahat. Reward setelah kedua percakapan mengikuti ide awal; jenis, angka efek, dan apakah percakapan nanti wajib masih perlu disepakati.
@@ -988,6 +988,6 @@ Teks berikut merupakan naskah usulan untuk desain menu baru; implementasi dan da
 ## 12. Catatan handoff A/B dan Role C
 
 - **A/B:** tentukan state dan pemicu per ID adegan; dialog warga sebelum dan sesudah penyerahan harus mengikuti state penerima. Pastikan boss dipicu sekali setelah syarat, dan retry tidak mengulang reward yang sudah diberikan.
-- **A/B:** sebelum implementasi, putuskan aturan save/slot/autosave, item dan weapon, jumlah penerima, nama final boss, serta timer/posisi aman saat menghindar. Jangan membuat teks menjanjikan sistem yang belum ada.
+- **A/B:** sebelum implementasi, putuskan aturan save/slot/autosave, item dan weapon, jumlah penerima, serta timer/posisi aman saat menghindar. Jangan membuat teks menjanjikan sistem yang belum ada.
 - **Role C:** storyboard memberi acuan suasana, lokasi, tokoh, dan pose minimal; bukan daftar final model, jadwal produksi, atau kewajiban membuat cutscene kompleks.
 - **Review bersama:** periksa keterbacaan dialog, representasi warga Jakarta Utara tanpa karikatur, nada hubungan Vicky–Ophelia, dan konsistensi transisi setelah aturan gameplay disepakati.
