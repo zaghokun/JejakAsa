@@ -45,6 +45,7 @@ namespace JejakAsa
         public static GUIStyle AmberBtnStyle { get; private set; }
         public static GUIStyle LockedBtnStyle { get; private set; }
         public static GUIStyle LockReasonStyle { get; private set; }
+        public static GUIStyle DialogueTextStyle { get; private set; }
 
         public static float Scale => Mathf.Max(1f, Screen.height / 720f);
 
@@ -204,6 +205,15 @@ namespace JejakAsa
                 wordWrap = true,
                 alignment = TextAnchor.MiddleCenter
             };
+
+            DialogueTextStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 13,
+                wordWrap = true,
+                alignment = TextAnchor.UpperLeft,
+                richText = true
+            };
+            DialogueTextStyle.normal.textColor = new Color(0.20f, 0.16f, 0.12f);
 
             initialized = true;
         }
