@@ -22,12 +22,13 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Kamera | Isometrik dengan orientasi tetap |
 | Kontrol | Input System resmi; CharacterController untuk gerak |
 | Antarmuka | Unity UI / uGUI dan TextMeshPro; prompt/dialog U03 sudah tersedia |
-| Cakupan target | Satu peta, satu misi, tiga penerima, satu pengintimidasi, dan satu arena turn-based |
-| Waktu | Target 21 hari; Hari 22–28 cadangan stabilisasi, bukan penambahan fitur |
+| Cakupan graybox saat ini | Satu peta, satu misi, tiga penerima, satu pengintimidasi, dan satu arena turn-based |
+| Arah revisi yang direncanakan | Prolog; satu map posko dengan lingkungan; satu map interior rumah; lima map level terpisah; boss level 3 dan 5; save/load. Belum diimplementasikan |
+| Waktu | Rencana awal 21 hari dan cadangan hingga 28 hari; estimasi untuk cakupan revisi perlu disusun ulang |
 
-Urutan development **gameplay-first**: loop Kampung dan battle telah disambungkan ke main menu graybox. Integrasi aset dan polishing Role C tetap merupakan tahap berikutnya.
+Urutan development **gameplay-first**: loop Kampung dan battle graybox telah tersambung ke main menu. Revisi progres lima level memerlukan perubahan core sebelum integrasi aset final.
 
-Tidak termasuk baseline: multiplayer, akun/backend, database server, inventori kompleks, crafting, banyak map/chapter, save/load lintas sesi, dan boss cerita final.
+Tidak termasuk rancangan saat ini: multiplayer, akun/backend, database server, crafting, serta chapter tambahan di luar lima level yang direncanakan.
 
 ## Status saat ini
 
@@ -88,9 +89,111 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
   - [x] Build Windows graybox berhasil dibuat dan menu pembuka tampil pada komputer ini.
   - [ ] Menu, misi, retry, dan keluar diuji pada komputer lain tanpa Editor atau internet setelah aset final terintegrasi.
 
-## Milestone per jalur kerja
+## Tracker revisi core gameplay A/B
 
-A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap mengacu pada rencana 21 hari yang sama, tetapi progres kedua jalur dicatat sendiri-sendiri. Nomor milestone mengelompokkan hasil, bukan memaksa semua pekerjaan berjalan berurutan; persiapan battle dapat berjalan paralel dengan pengantaran.
+Daftar ini adalah **rencana pekerjaan**, bukan fitur yang sudah tersedia. U01–U21 di atas tetap mencatat bukti graybox lama; kelulusannya tidak otomatis membuktikan revisi lima level. Semua item di bawah baru boleh dicentang setelah implementasi dan kriteria penerimaannya dibuktikan. Aset, animasi, dan UI final tetap ditangani bersama Role C pada tahap berikutnya.
+
+### R1 — Alur dunia dan progres
+
+- [ ] **R01 — Kontrak alur:** sepakati prolog → posko → map level → posko/laporan Jonathan → dialog Ophelia → interior rumah/istirahat → posko pada hari berikutnya. Rumah hanya menuju posko; tentukan syarat berhasil dan penanganan gagal.
+- [ ] **R02 — Prolog dan pengantar boss:** tampilkan Vicky yang baru lulus, kebutuhan kampung, sponsor, pendirian posko, dan perkenalan Jonathan serta Ophelia; berikan cuplikan Mr. Deddy dan boss terakhir sebelum gameplay utama.
+- [ ] **R03 — Posko graybox:** buat map posko dan lingkungannya sebagai pusat briefing, laporan, serta interaksi Jonathan/Ophelia. Satu gerbang masuk/keluar membuka pilihan Rumah atau Level sesuai progres; kedatangan tidak langsung memicu ulang dialog.
+- [ ] **R04 — Rumah graybox:** buat map interior rumah tanpa tampilan luar sebagai tempat istirahat dan save, dengan interaksi orang tua sederhana. Keluar dari rumah hanya menuju posko.
+- [ ] **R05 — Lima map level dan hari:** masing-masing level memiliki map terpisah dari posko, rumah, dan level lain; simpan level aktif, selesai/terbuka, serta hari. Level 3 memuat Mr. Deddy dan level 5 boss terakhir. Setelah istirahat, pemain kembali ke posko sebelum berangkat ke level berikutnya.
+- [ ] **R06 — Hasil dan retry per level:** penyerahan, timer, trust, hasil battle, dan hasil misi berlaku pada level aktif; gagal dapat diulang tanpa menghapus progres level yang telah diselesaikan. Uji kemenangan, kegagalan, dan retry berulang.
+
+### R2 — Cerita, reward, dan pertempuran
+
+- [ ] **R07 — Dialog dan progres cerita:** Jonathan memberi briefing serta menerima laporan; Ophelia memiliki perkembangan dialog setelah tiap level tanpa bonus pertempuran langsung. Pastikan dialog dan tahap cerita tidak terulang atau terlewat setelah memuat save.
+- [ ] **R08 — Reward:** dukung item dan weapon yang diperoleh setelah menyelesaikan level, melapor ke Jonathan, dan berbicara dengan Ophelia sesuai konsep awal; tiap reward diberikan sekali dan tercatat dalam progres.
+- [ ] **R09 — Item dan weapon:** pemain dapat memperoleh, melihat, dan menggunakan item serta memasang weapon; efeknya benar-benar memengaruhi battle, jumlah item berubah sesuai pemakaian, dan equipment tersimpan. Jenis, jumlah, serta angka efek ditentukan sebelum implementasi.
+- [ ] **R10 — Boss level 3 dan 5:** kedua boss memiliki identitas, dialog, pola serangan, dan hasil menang/kalah yang terhubung ke progres level; uji bahwa boss kalah tidak menyerang lagi dan hasil tidak dikirim ganda.
+- [ ] **R11 — Menghindar 50/50:** jelaskan peluang sebelum dipilih; hasil berhasil menghindar dan gagal masuk battle masing-masing berlaku 50%, tanpa menggandakan encounter atau kehilangan state misi. Uji kedua hasil secara terkendali.
+- [ ] **R12 — Bantuan warga:** ketika syarat trust terpenuhi, pilihan bantuan menjalankan urutan warga membantu dan membuka jalan sebelum kendali kembali; saat tidak memenuhi syarat, alasan terkunci terlihat. Hubungkan animasi Role C saat tersedia.
+
+### R3 — Penyimpanan, menu, dan penerimaan
+
+- [ ] **R13 — Save/load:** simpan dan pulihkan progres level/hari, tahap cerita/dialog, reward, item, weapon, serta state yang diperlukan untuk melanjutkan; istirahat di rumah mendukung save. Uji tutup-buka game dan pastikan save lama tidak tertimpa tanpa konfirmasi.
+- [ ] **R14 — Main Menu revisi:** sediakan Mulai, Lanjutkan, Load, dan Setting yang berfungsi; Lanjutkan/Load menjelaskan saat save belum tersedia. Tentukan dan terapkan jumlah slot, perilaku overwrite, serta pengaturan yang disimpan.
+- [ ] **R15 — Regresi dan build:** uji alur prolog sampai level 5, dua boss, retry, save/load, pause, reward sekali, pergantian hari, serta kamera/audio/UI. Buat build dari source yang sama dan uji pada komputer kedua; ulangi setelah aset final diintegrasikan.
+
+**Keputusan desain yang belum disepakati:** nama final boss terakhir (Mr. Gas Oke/Mr. Oke Gas), jumlah slot save, apakah ada autosave selain save di rumah, detail reward/weapon, dan jumlah serta susunan penerima tiap level. R08 mempertahankan syarat berbicara dengan Ophelia sesuai ide awal; bila interaksi itu nantinya dibuat opsional, aturan reward harus disesuaikan terlebih dahulu. Aturan 50/50 perlu menjelaskan apakah timer berhenti dan ke mana pemain kembali saat berhasil menghindar.
+
+## Paket delivery revisi A/B
+
+Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U01–U21 dan AB-M lama. A dan B dikerjakan kolaboratif oleh dua anggota; pembagian berikut adalah **tanggung jawab role, bukan penetapan nama**. Tentukan satu pemilik file/scene untuk setiap pekerjaan agar perubahan tidak saling menimpa. Checklist `[ ]` ditutup hanya setelah hasilnya diuji dan bukti dicatat.
+
+### AB-D01 — Kontrak alur dan pembagian kerja · R01
+
+- [ ] **A:** petakan transisi `rumah → posko → map level → posko → rumah`, state siang/istirahat, titik masuk/keluar, serta kondisi berhasil dan gagal.
+- [ ] **B:** sepakati kontrak data dan urutan giliran untuk battle, encounter, hasil misi, reward, retry, dan save/load bersama A.
+- [ ] **A/B + C:** sepakati skala, penempatan gerbang, batas area interaksi, kebutuhan visual/animasi, dan kepemilikan scene/file berdasarkan [C-D01](docs/cd01-arah-visual.md).
+- [ ] **A/B:** putuskan jumlah slot save, autosave atau hanya save di rumah, jumlah penerima tiap level, reward/item/weapon, serta posisi aman dan perilaku timer untuk menghindar. Catat keputusan tanpa menandai fitur sudah diimplementasikan.
+- [ ] **Bukti terima:** urutan, kondisi gagal, keputusan terbuka, dan tanggung jawab tiap role tersedia untuk ditinjau A/B/C.
+
+### AB-D02 — Posko, rumah, dan gerbang graybox · R03–R04
+
+- [ ] **A:** buat satu map posko beserta lingkungan; buat satu map rumah yang langsung menampilkan interior, tanpa membuat map luar rumah.
+- [ ] **A:** sediakan satu gerbang bersama di posko; saat didekati pemain dapat memilih `Pulang ke Rumah`, `Berangkat ke Level`, atau `Batal`. Tujuan yang belum tersedia harus menunjukkan alasan yang sesuai progres.
+- [ ] **A:** perpindahan rumah → posko memakai gerbang yang sama; dari rumah tidak ada akses langsung ke level. Saat datang dari rumah/level, menu gerbang tidak otomatis terbuka ulang sebelum pemain keluar area dan mendekat lagi.
+- [ ] **A:** sediakan titik interaksi Jonathan, Ophelia, orang tua, tempat tidur dan titik transisi menggunakan graybox; jangan menunggu aset final C.
+- [ ] **B:** uji kedua arah transisi, batal, tujuan terkunci, input/fokus, collision serta spawn agar tidak memicu perpindahan berulang atau kehilangan state.
+- [ ] **Bukti terima:** demonstrasi rumah → gerbang posko → map uji → gerbang posko → rumah; C meninjau skala terhadap C-D01/C-D03.
+
+### AB-D03 — Progres, lima map, dan retry · R05–R06
+
+- [ ] **A:** buat lima map level yang terpisah dari posko, rumah dan satu sama lain. Aset modular boleh digunakan ulang, tetapi tiap map memiliki layout dan penempatan sendiri.
+- [ ] **A:** alirkan level aktif, progres terbuka/selesai, hari, spawn dan hasil antara posko, level, battle, dan rumah. Level berikutnya tidak tersedia sebelum syarat hari dan istirahat terpenuhi.
+- [ ] **A/B:** sesuaikan penyerahan, timer, trust dan hasil untuk level aktif. Level 3/5 menyediakan pemicu boss; syarat kapan level dinyatakan selesai mengikuti keputusan AB-D01.
+- [ ] **B:** uji berhasil, waktu habis, kalah battle, retry berulang dan kembali ke posko; retry mengulang level aktif tanpa menghapus progres level sebelumnya atau menggandakan event.
+- [ ] **Bukti terima:** lima map dapat diakses sesuai progres; transisi, hasil, timer, penerima, dan retry lulus pada map nyata. Layout final divalidasi ulang bersama C-D03.
+
+### AB-D04 — Prolog, dialog, dan reward · R02, R07–R08
+
+- [ ] **A:** hubungkan prolog dan pengantar kedua boss serta dialog Vicky, Jonathan, Ophelia dan orang tua mengikuti [storyboard draft](docs/storyboard-dialog-jejak-asa.md); gunakan tampilan sementara yang dapat dibaca.
+- [ ] **A:** implementasikan urutan briefing → level → laporan Jonathan → dialog Ophelia → reward → pulang, termasuk penutup level 5 tanpa membuka level 6.
+- [ ] **B:** pastikan tahap dialog dan reward tersimpan, tidak terlewat atau terulang keliru setelah perpindahan/retry/load; reward diberikan tepat satu kali per level sesuai kontrak.
+- [ ] **A/B + C:** tentukan pemicu, pose/animasi, dan format handoff dialog sebelum menghubungkan C-D04/C-D05/C-D06.
+- [ ] **Bukti terima:** prolog dan satu siklus lengkap dapat dimainkan; perubahan dialog sesudah level 1–5 dan reward sekali per level diverifikasi.
+
+### AB-D05 — Encounter dan bantuan warga · R11–R12
+
+- [ ] **A:** tampilkan pilihan menghindar dengan peluang **50% berhasil / 50% battle**, bertengkar, dan bantuan warga; jelaskan alasan pilihan bantuan terkunci.
+- [ ] **A/B:** terapkan kedua hasil menghindar, jalur kembali/posisi aman, serta aturan timer yang disepakati; pilihan tidak boleh menyebabkan encounter atau hasil battle ganda.
+- [ ] **A:** hubungkan bantuan warga dengan urutan animasi dari C-D06; kendali pemain dan penghalang berubah pada waktu yang tepat.
+- [ ] **B:** uji kedua cabang acak secara terkendali, trust belum/cukup, pause saat bantuan, kembali dari battle, serta state level yang tetap benar.
+- [ ] **Bukti terima:** semua pilihan encounter berfungsi pada map level; animasi warga dan perubahan akses terbukti saat aset C-D06 sudah terpasang.
+
+### AB-D06 — Item, weapon, dan boss · R09–R10
+
+- [ ] **B:** implementasikan item dan weapon yang telah disepakati: dapat diperoleh, dilihat, digunakan/dipasang, memengaruhi pertempuran dan mengubah jumlah bila diperlukan.
+- [ ] **B:** integrasikan Mr. Deddy pada level 3 dan boss terakhir pada level 5 dengan pola, peringatan, serta hasil menang/kalah yang dibedakan.
+- [ ] **A:** hubungkan pemicu boss, hasil level dan pengembalian ke map level/posko sesuai alur yang disepakati; pertahankan data misi sepanjang transisi battle.
+- [ ] **B:** uji penggunaan item habis, weapon terpasang, pola dua boss, pause saat aksi, kematian lawan tanpa serangan balasan, dan hasil tunggal.
+- [ ] **Bukti terima:** kedua boss dan equipment terbukti bekerja bersama progres level; animasi/visual dapat memakai graybox sampai C-D04/C-D06 diterima.
+
+### AB-D07 — Save/load dan main menu · R13–R14
+
+- [ ] **A:** implementasikan simpan dan muat untuk hari, level terbuka/selesai, tahap cerita, reward, item dan weapon, termasuk aturan istirahat di rumah.
+- [ ] **A:** ubah Main Menu menjadi `Mulai`, `Lanjutkan`, `Load`, dan `Setting`; kondisi tanpa save, pemilihan slot, overwrite, dan setting mengikuti keputusan AB-D01.
+- [ ] **B:** uji simpan → tutup → buka → lanjut, pemilihan save, game baru dan konfirmasi overwrite; gagal menyimpan/memuat tidak boleh diam-diam menghapus data lama atau membuka hari berikutnya.
+- [ ] **A/B + C:** hubungkan menu/save UI C-D05 setelah state dan input-nya disepakati; periksa kamera/audio saat berganti scene.
+- [ ] **Bukti terima:** progres yang disimpan pulih pada executable, termasuk item/reward, dan semua tombol yang ditampilkan benar-benar berfungsi.
+
+### AB-D08 — Integrasi, regresi, dan build · R15
+
+- [ ] **A/B + C:** gabungkan aset C-D02–C-D07 secara bertahap; pertahankan controller/collider/trigger dan periksa jalur setiap map setelah penggantian visual.
+- [ ] **B:** jalankan regresi terintegrasi dari prolog sampai akhir level 5, termasuk semua transisi map, dua boss, semua cabang encounter, pause, retry, reward, save/load, dan pergantian hari.
+- [ ] **A/B + C:** periksa kamera/audio, keterbacaan dan fokus UI pada 1280×720 serta 1920×1080, performa dan daftar lisensi/aset yang benar-benar dipakai.
+- [ ] **A/B:** buat build Windows dari source yang sama dan uji menu, misi, save/load, retry, keluar, serta offline pada komputer kedua; catat hasil dan masalah.
+- [ ] **Bukti terima:** bukti uji dan build terintegrasi tersedia; tidak ada blocker. Kriteria final C-D08 dan U19–U21 tetap diperiksa ulang, bukan otomatis lulus.
+
+**Cara melacak:** pada tiap handoff catat ID paket, perubahan/versi, file dan scene terdampak, dependensi C, hasil uji, bukti screenshot/video/log, serta masalah yang masih terbuka. Waktu pelaksanaan revisi perlu diestimasi ulang; label D pada milestone lama bukan jadwal pasti untuk delapan paket baru.
+
+
+## Milestone awal graybox dan Role C
+
+Tabel ini mempertahankan rencana dan bukti awal; status dan hari D tidak otomatis berlaku untuk revisi lima level. Gunakan **AB-D01–AB-D08** untuk delivery A/B revisi dan **C-D01–C-D08** untuk delivery aset C. Estimasi jadwal revisi perlu disusun ulang.
 
 `Selesai` memerlukan bukti pada kolom kriteria. `Sebagian` berarti baru sebagian output milestone yang lulus; kriteria tersisa tetap harus dikerjakan. `Belum` pada A/B berarti hasilnya belum tersedia atau belum dinyatakan selesai. `Belum dilaporkan` pada C berarti belum ada bukti dari pemiliknya, **bukan klaim bahwa C belum bekerja**. Tidak ada nama anggota yang ditetapkan di tabel ini.
 
@@ -112,6 +215,8 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 **Batas status saat ini:** 36/36 tes Play Mode lulus di Unity Editor. UI dan audio masih graybox; penerimaan visual/audio final serta uji komputer kedua belum dilakukan. U19–U21 bukan dinyatakan final sebelum pengujian ulang setelah integrasi aset.
 
 ### Jalur C — Visual, level, UI, dan audio
+
+**C-D01 dalam pengerjaan:** [arah visual dan hasil uji skala](docs/cd01-arah-visual.md) serta [checklist delivery Role C](docs/daftar-aset-role-c.md). Pengguna menyetujui arah visual dan model Meshy Vicky yang sudah ada serta memberi referensi tokoh lain. Uji collider sederhana dan 5/5 tes gerak/rute graybox lama lulus; jalur map revisi belum diuji karena scene belum tersedia.
 
 | ID | Target | Output yang diserahkan C | Kriteria selesai / bukti | Status |
 | --- | --- | --- | --- | --- |
@@ -137,13 +242,13 @@ A/B dan C memiliki output serta urutan pekerjaan berbeda. Target hari tetap meng
 
 ### Pekerjaan berikutnya
 
-1. A/B melakukan tes manual daftar U16–U21 di bawah, termasuk build Windows pada komputer kedua, dan mencatat masalah sebelum integrasi aset.
-2. C melanjutkan aset, layout, animasi, audio, dan prefab UI; integrasikan satu per satu tanpa mengganti controller/collider gameplay.
-3. Ulangi tes yang terdampak setelah setiap integrasi dan jangan mencentang U19–U21 final hanya berdasarkan graybox.
+1. A/B dan C meninjau **AB-D01** bersama: kontrak level, gerbang, save, reward, pembagian file, serta layout C-D01.
+2. A/B menyiapkan posko/rumah dan progres dalam graybox melalui AB-D02–AB-D03; C menyiapkan aset secara paralel setelah kebutuhan tiap paket jelas.
+3. Uji manual graybox sebelumnya tetap berguna sebagai baseline; ulangi skenario yang terdampak setelah revisi dan integrasi aset. U19–U21 final tidak otomatis lulus.
 
-**Referensi karakter terbaru dari Gemini:** [MC](docs/visual/asset-guides/refs/Gemini_Generated_Image_rcceaqrcceaqrcce.jpg), [warga perempuan](docs/visual/asset-guides/refs/Gemini_Generated_Image_s281xis281xis281.jpg), [warga laki-laki](docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo.jpg), dan [pengintimidasi](<docs/visual/asset-guides/refs/Gemini_Generated_Image_x3foqux3foqux3fo (1).jpg>). Nama file dipertahankan agar perubahan hasil merge tidak terganggu. Acuan ini menggantikan konsep karakter lama yang berbeda. MC menggunakan polo navy, headphone dan sling bag seperti gambar terbaru.
+**Referensi karakter dari pengguna:** [Vicky](docs/visual/asset-guides/refs/Vicky.jpg), [Jonathan](docs/visual/asset-guides/refs/Jonathan.jpg), [Ophelia](docs/visual/asset-guides/refs/Ophelia.jpg), [Preman](docs/visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](docs/visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<docs/visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](docs/visual/asset-guides/refs/Ibu.jpg), [Ayah](docs/visual/asset-guides/refs/Ayah.jpg), [warga perempuan](docs/visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](docs/visual/asset-guides/refs/Warga-Male.jpg). Gambar memperlihatkan depan, tiga-perempat, dan belakang; bukan model 3D.
 
-**Status produksi karakter:** satu MC dihasilkan lewat Meshy dari potongan tampak depan gambar Gemini. Satu job selesai; saldo akhir dan biaya aktual tidak dibaca dari akun. Warga perempuan, warga laki-laki, dan pengintimidasi belum digenerate.
+**Status produksi karakter:** pengguna memilih model MC Meshy yang sudah dibuat dan menerima bentuknya meskipun tidak rapi. Pemilihan ini tidak berarti rig/animasi atau integrasi gameplay selesai. Tokoh lain baru berupa referensi gambar; model 3D-nya belum dibuat berdasarkan informasi yang tersedia.
 
 ### MC Meshy — hasil dan batasan
 
