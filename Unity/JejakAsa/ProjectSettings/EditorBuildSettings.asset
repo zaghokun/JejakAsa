@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/_Project/Scenes/Rumah.unity
+    guid: c1d2e3f4a5b6789012345678abcdef01
+  - enabled: 1
+    path: Assets/_Project/Scenes/Posko.unity
+    guid: d2e3f4a5b6c7890123456789bcdef012
+  - enabled: 1
     path: Assets/_Project/Scenes/Kampung.unity
     guid: 9c5afa2cd18b4164f8d3931a7942abb5
   - enabled: 1

@@ -141,7 +141,19 @@ namespace JejakAsa
             if (!isMainMenu)
                 return;
             Time.timeScale = 1f;
+            if (GameFlowManager.Instance != null)
+                GameFlowManager.Instance.StartNewCampaign();
+
             SceneManager.LoadScene("Assets/_Project/Scenes/Kampung.unity", LoadSceneMode.Single);
+        }
+
+        public void StartCampaignFromHome()
+        {
+            Time.timeScale = 1f;
+            if (GameFlowManager.Instance != null)
+                GameFlowManager.Instance.StartNewCampaign();
+
+            SceneManager.LoadScene("Assets/_Project/Scenes/Rumah.unity", LoadSceneMode.Single);
         }
 
         private void Activate(int choice)

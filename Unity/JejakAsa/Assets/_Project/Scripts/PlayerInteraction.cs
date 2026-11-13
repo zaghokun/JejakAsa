@@ -42,10 +42,14 @@ namespace JejakAsa
         private Quaternion initialSpawnRotation;
 
         // Runtime Tracking Data (U04, U05, U06, U07, U08)
+        [Header("Status Misi Bansos")]
+        [SerializeField] private bool isMissionActive = true;
         private int packagesRemaining = 3;
         private int deliveredCount = 0;
         private int trust = 0;
         private float timeRemaining = 180f;
+
+        public bool IsMissionActive => isMissionActive;
 
         // U07 & U08: State Hasil Misi & Layar Hasil
         private MissionOutcome outcome = MissionOutcome.InProgress;
@@ -97,7 +101,19 @@ namespace JejakAsa
             initialSpawnPosition = transform.position;
             initialSpawnRotation = transform.rotation;
 
-            packagesRemaining = initialPackages;
+            // Jika dalam alur campaign dan pemain belum mengambil paket di Posko,
+            // misi pengantaran dan timer belum dimulai sampai mengambil paket di Posko
+            if (GameFlowManager.Instance != null && !GameFlowManager.Instance.Progress.hasPickedUpBansos && (GameFlowManager.Instance.CurrentPhase == DayPhase.PoskoBriefing || GameFlowManager.Instance.LastSpawnPoint == "RumahVicky"))
+            {
+                isMissionActive = false;
+                packagesRemaining = 0;
+            }
+            else
+            {
+                isMissionActive = true;
+                packagesRemaining = initialPackages;
+            }
+
             deliveredCount = 0;
             trust = 0;
             timeRemaining = initialTimeSeconds;
@@ -129,8 +145,8 @@ namespace JejakAsa
                 return;
             }
 
-            // U06 & U07: Timer hanya berkurang saat eksplorasi aktif & misi masih berlangsung
-            if (!IsDialogueOpen && !IsEncounterOpen && !IsInBattle && outcome == MissionOutcome.InProgress)
+            // U06 & U07: Timer hanya berkurang saat eksplorasi aktif, misi aktif & misi masih berlangsung
+            if (!IsDialogueOpen && !IsEncounterOpen && !IsInBattle && outcome == MissionOutcome.InProgress && isMissionActive)
             {
                 if (IsMissionCompleted)
                 {
@@ -312,6 +328,21 @@ namespace JejakAsa
                 }
             }
             return list;
+        }
+
+        /// <summary>
+        /// Mengambil paket bansos dari Posko Bantuan dan memulai timer misi penyaluran.
+        /// </summary>
+        public void StartDeliveryMissionFromPosko()
+        {
+            packagesRemaining = initialPackages;
+            deliveredCount = 0;
+            trust = 0;
+            timeRemaining = initialTimeSeconds;
+            isMissionActive = true;
+            outcome = MissionOutcome.InProgress;
+            outcomeReason = "";
+            Debug.Log($"[Posko] Paket bansos diambil! Misi penyaluran ({packagesRemaining} paket) resmi dimulai.");
         }
 
         /// <summary>
@@ -519,6 +550,17 @@ namespace JejakAsa
 
             // 3. Pita Judul Mungil di Atas Kiri
             GUI.Label(new Rect(cardX + 12, cardY - 12, 114, 24), "MISI BANSOS", CozyGuiTheme.RibbonStyle);
+
+            if (!isMissionActive)
+            {
+                GUI.Label(new Rect(cardX + 16, cardY + 22, cardW - 32, 24), "Persiapan Misi", CozyGuiTheme.LabelStyle);
+                GUI.Label(new Rect(cardX + 16, cardY + 48, cardW - 32, 20), "Bicara dengan petugas & ambil paket di Posko.", CozyGuiTheme.SubLabelStyle);
+                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerInfoTex;
+                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.55f, 0.35f, 0.05f);
+                GUI.Label(new Rect(cardX + 16, cardY + 76, cardW - 32, 24), "Pergi ke Posko Bantuan di barat gang", CozyGuiTheme.BannerStyle);
+                GUI.matrix = previousMatrix;
+                return;
+            }
 
             // 4. Pil Timer Bulat di Atas Kanan
             if (timeRemaining <= 15f)
