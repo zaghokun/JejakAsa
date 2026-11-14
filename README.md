@@ -296,6 +296,8 @@ Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis iku
 
 **Preview animasi C-M06:** `Unity/JejakAsa/Assets/_Project/AnimationLab/RerigLocal/RerigPreview.unity` adalah scene preview final dengan tombol **Lari** untuk 10 karakter Humanoid menggunakan satu klip Mixamo *Running* in-place yang berulang. Shift kiri/kanan menggerakkan controller gameplay lebih cepat, tetapi animasi lari belum dihubungkan ke karakter gameplay. Folder `AnimationLab/` dan sumber `Blender/` diabaikan Git, sehingga aset preview ini belum ikut push/clone dan perlu handoff terpisah sebelum integrasi A/B.
 
+**Handoff karakter lokal:** seluruh dependensi preview final berada di `Unity/JejakAsa/Assets/_Project/AnimationLab/RerigLocal/`, termasuk `Materials/`, `Textures/`, FBX, controller dan scene. Untuk berbagi di luar Git, sertakan seluruh folder tersebut bersama semua file `.meta`, termasuk `AnimationLab.meta` dan `RerigLocal.meta`, lalu ekstrak pada path yang sama. Versi preview dan rig lama yang tidak dipakai telah dihapus dari `AnimationLab`; sumber `Blender/` dan `ArtSource/` tidak diubah.
+
 ### Titik handoff dan penerimaan bersama
 
 - **D2:** A/B dan C menyepakati layout, skala, penempatan penanda, serta kebutuhan referensi prefab. A/B membekukan kontrak logika misi/battle.
@@ -313,7 +315,7 @@ Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis iku
 
 **Referensi karakter dari pengguna:** [Vicky](docs/visual/asset-guides/refs/Vicky.jpg), [Jonathan](docs/visual/asset-guides/refs/Jonathan.jpg), [Ophelia](docs/visual/asset-guides/refs/Ophelia.jpg), [Preman](docs/visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](docs/visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<docs/visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](docs/visual/asset-guides/refs/Ibu.jpg), [Ayah](docs/visual/asset-guides/refs/Ayah.jpg), [warga perempuan](docs/visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](docs/visual/asset-guides/refs/Warga-Male.jpg). Gambar memperlihatkan depan, tiga-perempat, dan belakang; bukan model 3D.
 
-**Status produksi karakter:** pengguna memilih model MC Meshy yang sudah ada. Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki telah digenerate dari potongan depan referensi masing-masing. Model-model baru masih sumber mentah: belum dioptimalkan, di-rig, dianimasikan, atau diintegrasikan ke Unity.
+**Status produksi karakter:** pengguna memilih model MC Meshy yang sudah ada. Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki telah digenerate dari potongan depan referensi masing-masing. GLB sumber di bawah masih mentah; salinan ber-rig dan animasi tersedia dalam preview Unity lokal, tetapi belum diintegrasikan ke scene gameplay atau diterima sebagai aset final.
 
 ### Sembilan karakter Meshy — sumber
 
