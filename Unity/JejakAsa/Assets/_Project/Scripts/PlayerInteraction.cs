@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace JejakAsa
@@ -56,8 +57,14 @@ namespace JejakAsa
         private string outcomeReason = "";
         private bool isOutcomeOpen = false;
         private bool isSystemDialogue = false;
+        private DialogueLine[] dialogueLines;
+        private int dialogueLineIndex;
+        private int dialogueAdvanceFrame = -1;
         private int outcomeOpenedFrame = -1;
         private float outcomeOpenedTime = -10f;
+        private bool returningToPosko;
+
+        private bool ReturnsToPosko => outcome == MissionOutcome.Success && GameFlowManager.Instance.CurrentPhase == DayPhase.DiLevel;
 
         public InteractionTarget CurrentTarget { get; private set; }
         public InteractionTarget DialogueTarget { get; private set; }
@@ -71,6 +78,22 @@ namespace JejakAsa
         public float TimeRemaining => timeRemaining;
         public bool IsTimeExpired => timeRemaining <= 0f;
         public bool IsMissionCompleted => deliveredCount >= initialPackages;
+
+        private bool IsLevelObjectiveCompleted
+        {
+            get
+            {
+                if (!IsMissionCompleted)
+                    return false;
+                var flow = GameFlowManager.Instance;
+                if (flow == null || flow.CurrentPhase != DayPhase.DiLevel || (flow.CurrentLevel != 3 && flow.CurrentLevel != 5))
+                    return true;
+                foreach (var encounter in EncounterController.Active)
+                    if (encounter != null && encounter.gameObject.scene == gameObject.scene && encounter.IsBoss && encounter.IsResolved)
+                        return true;
+                return false;
+            }
+        }
 
         public MissionOutcome Outcome => outcome;
         public string OutcomeReason => outcomeReason;
@@ -123,7 +146,7 @@ namespace JejakAsa
 
             promptPanel.SetActive(false);
             dialoguePanel.SetActive(false);
-            closeButton.onClick.AddListener(CloseDialogue);
+            closeButton.onClick.AddListener(AdvanceDialogue);
         }
 
         private void Update()
@@ -131,7 +154,7 @@ namespace JejakAsa
             if (SessionMenu.InputBlocked)
                 return;
 
-            // Jika Layar Hasil Misi sedang terbuka, beri jeda 0.4 detik agar tombol Enter penutup dialog tidak langsung mereset misi di frame yang sama
+            // Beri jeda agar tombol penutup dialog tidak langsung mengonfirmasi hasil.
             if (isOutcomeOpen)
             {
                 if (Time.frameCount > outcomeOpenedFrame && (Time.unscaledTime - outcomeOpenedTime) >= 0.4f)
@@ -139,16 +162,23 @@ namespace JejakAsa
                     Keyboard kb = Keyboard.current;
                     if (kb != null && (kb.enterKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame))
                     {
-                        ResetMissionSession();
+                        AcknowledgeOutcome();
                     }
                 }
+                return;
+            }
+
+            if (StoryNpcController.AnyDialogueOpen)
+            {
+                CurrentTarget = null;
+                promptPanel.SetActive(false);
                 return;
             }
 
             // U06 & U07: Timer hanya berkurang saat eksplorasi aktif, misi aktif & misi masih berlangsung
             if (!IsDialogueOpen && !IsEncounterOpen && !IsInBattle && outcome == MissionOutcome.InProgress && isMissionActive)
             {
-                if (IsMissionCompleted)
+                if (IsLevelObjectiveCompleted)
                 {
                     // U07: Penyerahan ke-3 sah -> Berhasil (tidak boleh ditimpa gagal/parsial)
                     SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
@@ -183,11 +213,10 @@ namespace JejakAsa
             if (IsDialogueOpen)
             {
                 bool invalidTarget = !isSystemDialogue && (DialogueTarget == null || !DialogueTarget.isActiveAndEnabled);
-                if (invalidTarget
-                    || (keyboard != null && (keyboard.escapeKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame)))
-                {
+                if (invalidTarget)
                     CloseDialogue();
-                }
+                else if (keyboard != null && (keyboard.escapeKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame))
+                    AdvanceDialogue();
                 return;
             }
 
@@ -243,18 +272,26 @@ namespace JejakAsa
 
                 Debug.Log($"[U04/U05/U06/U07] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket: {packagesRemaining}/3, Kepercayaan: {trust}/3, Sisa Waktu: {FormattedTimeRemaining}");
 
-                if (IsMissionCompleted)
+                if (IsLevelObjectiveCompleted)
                 {
                     SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
                     Debug.Log("[U05/U07/U08] SELURUH 3 PENERIMA SELESAI! Misi pengantaran bansos berhasil diselesaikan.");
                 }
             }
 
-            // Tampilkan percakapan warga
-            dialogueBody.text = DialogueTarget.Dialogue;
+            dialogueLines = DialogueTarget.DialogueLines;
+            dialogueLineIndex = 0;
+            dialogueAdvanceFrame = -1;
+            if (dialogueLines != null && dialogueLines.Length > 0)
+                ShowDialogueLine();
+            else
+                dialogueBody.text = DialogueTarget.Dialogue;
             dialoguePanel.SetActive(true);
 
-            closeButton.Select();
+            if (dialogueLines != null && dialogueLines.Length > 1 && UnityEngine.EventSystems.EventSystem.current != null)
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            else
+                closeButton.Select();
         }
 
         /// <summary>
@@ -305,6 +342,24 @@ namespace JejakAsa
             if (promptPanel != null)
                 promptPanel.SetActive(false);
             CurrentTarget = null;
+        }
+
+        private void AcknowledgeOutcome()
+        {
+            if (returningToPosko)
+                return;
+
+            if (ReturnsToPosko)
+            {
+                returningToPosko = true;
+                if (GameFlowManager.Instance.OnLevelSuccess())
+                    SceneManager.LoadScene("Assets/_Project/Scenes/Posko.unity", LoadSceneMode.Single);
+                else
+                    returningToPosko = false;
+                return;
+            }
+
+            ResetMissionSession();
         }
 
         public void CloseOutcome()
@@ -423,7 +478,7 @@ namespace JejakAsa
                 dialogueBody.text = DialogueTarget.Dialogue;
             }
 
-            if (IsMissionCompleted)
+            if (IsLevelObjectiveCompleted)
             {
                 SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
             }
@@ -476,6 +531,8 @@ namespace JejakAsa
             DialogueTarget = null;
             CurrentTarget = null;
             isSystemDialogue = true;
+            dialogueLines = null;
+            dialogueAdvanceFrame = -1;
             IsDialogueOpen = true;
             movementWasEnabled = true;
 
@@ -490,12 +547,43 @@ namespace JejakAsa
             closeButton.Select();
         }
 
+        private void ShowDialogueLine()
+        {
+            DialogueLine line = dialogueLines[dialogueLineIndex];
+            dialogueTitle.text = string.IsNullOrEmpty(line.speaker) ? DialogueTarget.DisplayName : line.speaker;
+            dialogueBody.text = line.text;
+            TMP_Text label = closeButton.GetComponentInChildren<TMP_Text>(true);
+            if (label != null && dialogueLines.Length > 1)
+                label.text = dialogueLineIndex + 1 < dialogueLines.Length ? "Lanjut" : "Tutup";
+        }
+
+        private void AdvanceDialogue()
+        {
+            if (!IsDialogueOpen || dialogueAdvanceFrame == Time.frameCount)
+                return;
+            dialogueAdvanceFrame = Time.frameCount;
+            if (dialogueLines != null && dialogueLineIndex + 1 < dialogueLines.Length)
+            {
+                dialogueLineIndex++;
+                ShowDialogueLine();
+                return;
+            }
+            CloseDialogue();
+        }
+
         private void CloseDialogue()
         {
             if (!IsDialogueOpen)
                 return;
             IsDialogueOpen = false;
             isSystemDialogue = false;
+            if (dialogueLines != null && dialogueLines.Length > 1 && closeButton != null)
+            {
+                TMP_Text label = closeButton.GetComponentInChildren<TMP_Text>(true);
+                if (label != null)
+                    label.text = "Tutup";
+            }
+            dialogueLines = null;
             DialogueTarget = null;
             if (dialoguePanel != null)
                 dialoguePanel.SetActive(false);
@@ -522,7 +610,7 @@ namespace JejakAsa
         private void OnDestroy()
         {
             if (closeButton != null)
-                closeButton.onClick.RemoveListener(CloseDialogue);
+                closeButton.onClick.RemoveListener(AdvanceDialogue);
         }
 
         private void OnGUI()
@@ -678,12 +766,13 @@ namespace JejakAsa
                 GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 4 + 2, innerRect.width - 28, 36), $"Penerima Selesai: <b><color=#0F766E>{namesStr}</color></b>", CozyGuiTheme.SubLabelStyle);
 
                 Rect btnRect = new Rect(popX + (popW - 170) * 0.5f, popY + popH - 64, 170, 34);
-                if (GUI.Button(btnRect, "Ulang Misi", CozyGuiTheme.TealBtnStyle))
+                string actionText = ReturnsToPosko ? "Kembali ke Posko" : "Ulang Misi";
+                if (GUI.Button(btnRect, actionText, CozyGuiTheme.TealBtnStyle))
                 {
-                    ResetMissionSession();
+                    AcknowledgeOutcome();
                 }
 
-                GUI.Label(new Rect(popX + 20, popY + popH - 25, popW - 40, 18), "Tekan Enter atau Space untuk Ulang Misi", CozyGuiTheme.HintStyle);
+                GUI.Label(new Rect(popX + 20, popY + popH - 25, popW - 40, 18), "Tekan Enter atau Space untuk " + actionText, CozyGuiTheme.HintStyle);
             }
             GUI.matrix = previousMatrix;
         }

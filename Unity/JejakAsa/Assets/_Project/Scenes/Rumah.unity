@@ -1106,8 +1106,7 @@ MonoBehaviour:
   doorTransform: {fileID: 10000052}
   bedTransform: {fileID: 10000057}
   interactionRadius: 2.2
-  kampungScenePath: Assets/_Project/Scenes/Kampung.unity
-  poskoScenePath: Assets/_Project/Scenes/Kampung.unity
+  poskoScenePath: Assets/_Project/Scenes/Posko.unity
 --- !u!114 &10000088
 MonoBehaviour:
   m_ObjectHideFlags: 0

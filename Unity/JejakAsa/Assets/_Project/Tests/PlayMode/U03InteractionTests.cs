@@ -185,6 +185,77 @@ public sealed class U03InteractionTests : InputTestFixture
         Assert.That(interaction.DialogueTarget, Is.SameAs(selected));
     }
 
+    [UnityTest]
+    public IEnumerator StorySequenceCompletesOnlyAfterFinalKeyboardAdvance()
+    {
+        GameFlowManager flow = GameFlowManager.Instance;
+        GameProgressData previous = flow.Progress.Clone();
+        try
+        {
+            flow.SetStateForTesting(new GameProgressData { currentDay = 1, currentLevel = 1, currentPhase = DayPhase.PoskoBriefing });
+            var npc = new GameObject("Story NPC");
+            npc.transform.SetParent(root.transform);
+            var story = npc.AddComponent<StoryNpcController>();
+            story.playerTransform = player;
+            var fields = new SerializedObject(story);
+            var lines = fields.FindProperty("dialogueLines");
+            lines.arraySize = 2;
+            lines.GetArrayElementAtIndex(0).FindPropertyRelative("speaker").stringValue = "One";
+            lines.GetArrayElementAtIndex(0).FindPropertyRelative("text").stringValue = "First";
+            lines.GetArrayElementAtIndex(1).FindPropertyRelative("speaker").stringValue = "Two";
+            lines.GetArrayElementAtIndex(1).FindPropertyRelative("text").stringValue = "Second";
+            fields.ApplyModifiedPropertiesWithoutUndo();
+            story.OpenDialogue();
+            Assert.That(flow.Progress.isBriefingDone, Is.False);
+            Assert.That(movement.enabled, Is.False);
+            Keys(Key.Enter);
+            yield return null;
+            Assert.That(flow.Progress.isBriefingDone, Is.False);
+            Assert.That(movement.enabled, Is.False);
+            Keys();
+            yield return null;
+            Keys(Key.Escape);
+            yield return null;
+            Assert.That(flow.Progress.isBriefingDone, Is.True);
+            Assert.That(movement.enabled, Is.True);
+        }
+        finally
+        {
+            flow.SetStateForTesting(previous);
+        }
+    }
+
+    [Test]
+    public void ReportRewardIsClaimedWhenJonathanIsTheLastConversation()
+    {
+        GameFlowManager flow = GameFlowManager.Instance;
+        GameProgressData previous = flow.Progress.Clone();
+        try
+        {
+            flow.SetStateForTesting(new GameProgressData { currentDay = 1, currentLevel = 1, currentPhase = DayPhase.PoskoLaporan });
+            var opheliaObject = new GameObject("Ophelia");
+            opheliaObject.transform.SetParent(root.transform);
+            var ophelia = opheliaObject.AddComponent<StoryNpcController>();
+            ophelia.npcType = StoryNpcType.Ophelia;
+            ophelia.OpenDialogue();
+            Assert.That(flow.Progress.hasClaimedReward, Is.False);
+            ophelia.CloseDialogue();
+
+            var jonathanObject = new GameObject("Jonathan");
+            jonathanObject.transform.SetParent(root.transform);
+            var jonathan = jonathanObject.AddComponent<StoryNpcController>();
+            jonathan.OpenDialogue();
+            Assert.That(flow.Progress.isReportDone, Is.True);
+            Assert.That(flow.Progress.isOpheliaTalkDone, Is.True);
+            Assert.That(flow.Progress.hasClaimedReward, Is.True);
+            Assert.That(flow.Progress.inventory.FindAll(x => x == "BekalLogistik_Hari1").Count, Is.EqualTo(1));
+        }
+        finally
+        {
+            flow.SetStateForTesting(previous);
+        }
+    }
+
     private InteractionTarget Target(string name, float offset)
     {
         GameObject target = new GameObject(name);

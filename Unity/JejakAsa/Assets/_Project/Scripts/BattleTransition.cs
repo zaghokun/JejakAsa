@@ -197,7 +197,9 @@ namespace JejakAsa
                 yield break;
             }
 
-            battle.StartBattle();
+            int bossLevel = sourceEncounter != null && sourceEncounter.IsBoss
+                ? GameFlowManager.Instance.Progress.currentLevel : 0;
+            battle.StartBattle(bossLevel);
 
             bool? battleResult = null;
             battle.OnBattleEnd += (won) => battleResult = won;

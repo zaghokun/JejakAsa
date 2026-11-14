@@ -23,6 +23,7 @@ namespace JejakAsa
         private bool isGateMenuOpen;
         private string lockedDepartReason;
         private string lockedHomeReason;
+        internal bool IsMenuOpen => isGateMenuOpen;
 
         private void Start()
         {
@@ -46,7 +47,7 @@ namespace JejakAsa
             if (kb == null)
                 return;
 
-            if (isPlayerInRange && !isGateMenuOpen && kb.eKey.wasPressedThisFrame)
+            if (isPlayerInRange && !isGateMenuOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
             {
                 OpenGateMenu();
             }
@@ -83,11 +84,22 @@ namespace JejakAsa
         {
             if (GameFlowManager.Instance.CanDepartToLevel(out string reason))
             {
-                GameFlowManager.Instance.Progress.hasPickedUpBansos = true;
+                int level = GameFlowManager.Instance.CurrentLevel;
+                if (level < 1 || level > 5)
+                {
+                    lockedDepartReason = "Level aktif tidak valid.";
+                    return;
+                }
+                string scenePath = level == 1 ? levelScenePath : $"Assets/_Project/Scenes/Kampung_L{level}.unity";
+                if (SceneUtility.GetBuildIndexByScenePath(scenePath) < 0)
+                {
+                    lockedDepartReason = "Wilayah misi tidak tersedia di build.";
+                    return;
+                }
                 GameFlowManager.Instance.LastSpawnPoint = "PosBantuan";
                 GameFlowManager.Instance.DepartToLevel();
                 isGateMenuOpen = false;
-                SceneManager.LoadScene(levelScenePath, LoadSceneMode.Single);
+                SceneManager.LoadScene(scenePath, LoadSceneMode.Single);
             }
             else
             {
@@ -163,9 +175,9 @@ namespace JejakAsa
                 {
                     TryDepartToLevel();
                 }
-                if (!canDepart && !string.IsNullOrEmpty(departReason))
+                if (!canDepart || !string.IsNullOrEmpty(lockedDepartReason))
                 {
-                    GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), "⚠ " + departReason, CozyGuiTheme.SubLabelStyle);
+                    GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), "⚠ " + (canDepart ? lockedDepartReason : departReason), CozyGuiTheme.SubLabelStyle);
                 }
 
                 rowY += 68f;

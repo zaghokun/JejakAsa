@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using System.Reflection;
 using UnityEngine.TestTools;
 
 namespace JejakAsa
@@ -11,25 +12,46 @@ namespace JejakAsa
     /// </summary>
     public class R01FlowContractTests
     {
-        private GameObject flowManagerGo;
         private GameFlowManager flow;
+        private GameProgressData previousProgress;
+        private string previousSpawn;
+        private bool createdFlow;
+        private readonly bool[] slotExisted = new bool[6];
+        private readonly string[] slotValues = new string[6];
 
         [SetUp]
         public void SetUp()
         {
-            flowManagerGo = new GameObject("Test_GameFlowManager");
-            flow = flowManagerGo.AddComponent<GameFlowManager>();
+            flow = Object.FindFirstObjectByType<GameFlowManager>();
+            createdFlow = flow == null;
+            if (createdFlow)
+                flow = GameFlowManager.Instance;
+            previousProgress = flow.Progress.Clone();
+            previousSpawn = flow.LastSpawnPoint;
+            for (int i = 0; i < slotValues.Length; i++)
+            {
+                string key = "JejakAsa_SaveSlot_" + (i / 2 + 1) + (i % 2 == 1 ? "_Time" : "");
+                slotExisted[i] = PlayerPrefs.HasKey(key);
+                slotValues[i] = PlayerPrefs.GetString(key);
+            }
+            flow.LastSpawnPoint = null;
             flow.StartNewCampaign();
         }
 
         [TearDown]
         public void TearDown()
         {
-            for (int i = 1; i <= GameFlowManager.MaxSaveSlots; i++)
-                GameFlowManager.DeleteSave(i);
-
-            if (flowManagerGo != null)
-                Object.DestroyImmediate(flowManagerGo);
+            flow.SetStateForTesting(previousProgress);
+            flow.LastSpawnPoint = previousSpawn;
+            for (int i = 0; i < slotValues.Length; i++)
+            {
+                string key = "JejakAsa_SaveSlot_" + (i / 2 + 1) + (i % 2 == 1 ? "_Time" : "");
+                if (slotExisted[i]) PlayerPrefs.SetString(key, slotValues[i]);
+                else PlayerPrefs.DeleteKey(key);
+            }
+            PlayerPrefs.Save();
+            if (createdFlow)
+                Object.DestroyImmediate(flow.gameObject);
         }
 
         [Test]
@@ -68,10 +90,73 @@ namespace JejakAsa
         }
 
         [Test]
-        public void DepartToLevel_AfterBriefing_Succeeds()
+        public void Packages_RequireJonathanBriefing()
+        {
+            flow.GoToPoskoFromHome();
+            var packages = new GameObject("Test_Packages");
+            try
+            {
+                var trigger = packages.AddComponent<PoskoDistributionTrigger>();
+                var take = typeof(PoskoDistributionTrigger).GetMethod("TryTakeBansos", BindingFlags.Instance | BindingFlags.NonPublic);
+                take.Invoke(trigger, null);
+                Assert.IsFalse(flow.Progress.isBriefingDone);
+                Assert.IsFalse(flow.Progress.hasPickedUpBansos);
+                Assert.IsFalse(flow.CanDepartToLevel(out _));
+                StringAssert.Contains("Jonathan", (string)typeof(PoskoDistributionTrigger)
+                    .GetField("feedbackText", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(trigger));
+
+                var jonathan = packages.AddComponent<StoryNpcController>();
+                jonathan.OpenDialogue();
+                var gate = packages.AddComponent<PoskoGateController>();
+                gate.TryDepartToLevel();
+                Assert.IsFalse(flow.Progress.hasPickedUpBansos);
+                Assert.AreEqual(DayPhase.PoskoBriefing, flow.CurrentPhase);
+                take.Invoke(trigger, null);
+                Assert.IsTrue(flow.Progress.isBriefingDone);
+                Assert.IsTrue(flow.Progress.hasPickedUpBansos);
+                Assert.IsTrue(flow.CanDepartToLevel(out _));
+            }
+            finally
+            {
+                Object.DestroyImmediate(packages);
+            }
+        }
+
+        [Test]
+        public void Packages_OutsideMissionPhase_DoNotStartMission()
+        {
+            var packages = new GameObject("Test_Packages");
+            try
+            {
+                var trigger = packages.AddComponent<PoskoDistributionTrigger>();
+                typeof(PoskoDistributionTrigger).GetMethod("TryTakeBansos", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(trigger, null);
+                Assert.IsFalse(flow.Progress.hasPickedUpBansos);
+                Assert.IsFalse(flow.Progress.isBriefingDone);
+
+                flow.SetStateForTesting(new GameProgressData { currentPhase = DayPhase.DiLevel, isBriefingDone = true });
+                typeof(PoskoDistributionTrigger).GetMethod("TryTakeBansos", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(trigger, null);
+                Assert.IsTrue(flow.Progress.hasPickedUpBansos, "Kampung pickup remains available during the level.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(packages);
+            }
+        }
+
+
+        [Test]
+        public void DepartToLevel_AfterBriefingAndPackagePickup_Succeeds()
         {
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+
+            Assert.IsFalse(flow.CanDepartToLevel(out string lockedReason));
+            StringAssert.Contains("paket", lockedReason.ToLower());
+            Assert.IsFalse(flow.DepartToLevel());
+            Assert.AreEqual(DayPhase.PoskoBriefing, flow.CurrentPhase);
+            flow.Progress.hasPickedUpBansos = true;
 
             Assert.IsTrue(flow.CanDepartToLevel(out string reason));
             Assert.IsEmpty(reason);
@@ -86,6 +171,7 @@ namespace JejakAsa
         {
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+            flow.Progress.hasPickedUpBansos = true;
             flow.DepartToLevel();
 
             bool finished = flow.OnLevelSuccess();
@@ -100,6 +186,7 @@ namespace JejakAsa
         {
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+            flow.Progress.hasPickedUpBansos = true;
             flow.DepartToLevel();
             flow.OnLevelSuccess();
 
@@ -129,6 +216,7 @@ namespace JejakAsa
         {
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+            flow.Progress.hasPickedUpBansos = true;
             flow.DepartToLevel();
             flow.OnLevelSuccess();
 
@@ -143,11 +231,29 @@ namespace JejakAsa
             Assert.IsTrue(claimed);
             Assert.IsTrue(flow.Progress.hasClaimedReward);
             CollectionAssert.Contains(flow.Progress.inventory, "BansosKit_L1");
+            CollectionAssert.Contains(flow.Progress.inventory, BattleController.HealingItemId);
 
             // Klaim kedua kali di level yang sama -> ditolak
             bool claimAgain = flow.ClaimLevelReward("BansosKit_L1");
             Assert.IsFalse(claimAgain);
-            Assert.AreEqual(1, flow.Progress.inventory.Count);
+            Assert.AreEqual(2, flow.Progress.inventory.Count);
+        }
+
+        [Test]
+        public void LevelTwoRewardGrantsWeaponOnce()
+        {
+            flow.SetStateForTesting(new GameProgressData
+            {
+                currentDay = 2,
+                currentLevel = 2,
+                currentPhase = DayPhase.PoskoLaporan,
+                isReportDone = true,
+                isOpheliaTalkDone = true
+            });
+            Assert.IsTrue(flow.ClaimLevelReward("BansosKit_L2"));
+            CollectionAssert.Contains(flow.Progress.inventory, BattleController.BasicWeaponId);
+            Assert.IsFalse(flow.ClaimLevelReward("BansosKit_L2"));
+            Assert.AreEqual(2, flow.Progress.inventory.Count);
         }
 
         [Test]
@@ -155,6 +261,7 @@ namespace JejakAsa
         {
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+            flow.Progress.hasPickedUpBansos = true;
             flow.DepartToLevel();
             flow.OnLevelSuccess();
             flow.CompleteReport();
@@ -192,6 +299,7 @@ namespace JejakAsa
             // Selesaikan Hari 1
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+            flow.Progress.hasPickedUpBansos = true;
             flow.DepartToLevel();
             flow.OnLevelSuccess();
             flow.CompleteReport();
@@ -204,6 +312,7 @@ namespace JejakAsa
             // Masuk Level 2 lalu gagal
             flow.GoToPoskoFromHome();
             flow.CompleteBriefing();
+            flow.Progress.hasPickedUpBansos = true;
             flow.DepartToLevel();
 
             bool retry = flow.OnLevelFailureRetry();

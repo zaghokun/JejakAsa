@@ -3,6 +3,13 @@ using UnityEngine;
 
 namespace JejakAsa
 {
+    [System.Serializable]
+    public struct DialogueLine
+    {
+        public string speaker;
+        [TextArea(2, 5)] public string text;
+    }
+
     [DisallowMultipleComponent]
     public sealed class InteractionTarget : MonoBehaviour
     {
@@ -10,6 +17,8 @@ namespace JejakAsa
 
         [SerializeField] private string displayName = "Warga";
         [SerializeField, TextArea(2, 5)] private string dialogue = "Terima kasih sudah datang membantu warga.";
+        [SerializeField] private DialogueLine[] dialogueLines;
+        [SerializeField] private DialogueLine[] deliveredDialogueLines;
         
         [Header("Bansos Delivery Settings (U04)")]
         [SerializeField] private bool isRecipient = true;
@@ -61,6 +70,7 @@ namespace JejakAsa
         }
         public string InitialDialogue => dialogue;
         public string DeliveredDialogue => deliveredDialogue;
+        public DialogueLine[] DialogueLines => isDelivered ? deliveredDialogueLines : dialogueLines;
         public bool IsRecipient => isRecipient;
         public string RecipientId => recipientId;
         public bool IsDelivered => isDelivered;

@@ -93,6 +93,11 @@ namespace JejakAsa
                 reason = "Sudah larut malam. Istirahatlah di tempat tidur sebelum kembali ke posko besok pagi.";
                 return false;
             }
+            if (data.currentPhase == DayPhase.Tamat)
+            {
+                reason = "Kelima level sudah selesai. Kembali ke menu utama melalui jeda.";
+                return false;
+            }
 
             reason = string.Empty;
             return true;
@@ -135,6 +140,12 @@ namespace JejakAsa
             if (!data.isBriefingDone)
             {
                 reason = "Bicaralah dengan Pak Jonathan terlebih dahulu untuk mendapatkan briefing misi hari ini!";
+                return false;
+            }
+
+            if (!data.hasPickedUpBansos)
+            {
+                reason = "Ambil paket bansos di posko sebelum berangkat.";
                 return false;
             }
 
@@ -208,6 +219,7 @@ namespace JejakAsa
 
             if (!string.IsNullOrEmpty(rewardId))
                 data.inventory.Add(rewardId);
+            data.inventory.Add(data.currentLevel == 2 ? BattleController.BasicWeaponId : BattleController.HealingItemId);
 
             data.hasClaimedReward = true;
             return true;
@@ -306,22 +318,41 @@ namespace JejakAsa
 
         public bool LoadGame(int slotIndex)
         {
-            if (slotIndex < 1 || slotIndex > MaxSaveSlots)
-                return false;
-
-            string key = SaveKeyPrefix + slotIndex;
-            if (!PlayerPrefs.HasKey(key))
-                return false;
-
-            string json = PlayerPrefs.GetString(key);
-            GameProgressData loaded = JsonUtility.FromJson<GameProgressData>(json);
-            if (loaded == null)
+            if (!TryReadSave(slotIndex, out GameProgressData loaded))
                 return false;
 
             data = loaded;
             OnPhaseChanged?.Invoke(data.currentPhase);
             return true;
         }
+        internal static bool TryReadSave(int slotIndex, out GameProgressData loaded)
+        {
+            loaded = null;
+            if (slotIndex < 1 || slotIndex > MaxSaveSlots || !HasSave(slotIndex))
+                return false;
+            string json = PlayerPrefs.GetString(SaveKeyPrefix + slotIndex);
+            string[] required = { "currentDay", "currentLevel", "currentPhase", "isBriefingDone", "hasPickedUpBansos",
+                "isLevelCompleted", "isReportDone", "isOpheliaTalkDone", "hasClaimedReward", "inventory", "completedLevels" };
+            foreach (string field in required)
+                if (!json.Contains("\"" + field + "\""))
+                    return false;
+            try
+            {
+                GameProgressData candidate = JsonUtility.FromJson<GameProgressData>(json);
+                if (candidate == null || candidate.currentDay < 1 || candidate.currentDay > 5 ||
+                    candidate.currentLevel < 1 || candidate.currentLevel > 5 ||
+                    !Enum.IsDefined(typeof(DayPhase), candidate.currentPhase) ||
+                    candidate.inventory == null || candidate.completedLevels == null)
+                    return false;
+                loaded = candidate;
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
 
         public static bool HasSave(int slotIndex)
         {
@@ -338,9 +369,7 @@ namespace JejakAsa
 
             if (meta.exists)
             {
-                string json = PlayerPrefs.GetString(SaveKeyPrefix + slotIndex);
-                GameProgressData d = JsonUtility.FromJson<GameProgressData>(json);
-                if (d != null)
+                if (TryReadSave(slotIndex, out GameProgressData d))
                 {
                     meta.day = d.currentDay;
                     meta.level = d.currentLevel;

@@ -18,12 +18,12 @@ namespace JejakAsa
         public float interactionRadius = 2.2f;
 
         [Header("Scene Target")]
-        public string kampungScenePath = "Assets/_Project/Scenes/Kampung.unity";
-        public string poskoScenePath = "";
+        public string poskoScenePath = "Assets/_Project/Scenes/Posko.unity";
 
         private bool nearDoor;
         private bool nearBed;
         private bool isBedMenuOpen;
+        private int pendingSaveSlot;
         private string feedbackNotice = string.Empty;
         private float feedbackTimer;
 
@@ -69,22 +69,25 @@ namespace JejakAsa
             }
             else if (isBedMenuOpen)
             {
-                if (kb.escapeKey.wasPressedThisFrame || kb.digit4Key.wasPressedThisFrame)
+                if (pendingSaveSlot != 0)
+                {
+                    if (kb.escapeKey.wasPressedThisFrame || kb.digit1Key.wasPressedThisFrame)
+                        pendingSaveSlot = 0;
+                    else if (kb.digit2Key.wasPressedThisFrame)
+                        ConfirmSave();
+                }
+                else if (kb.escapeKey.wasPressedThisFrame || kb.digit5Key.wasPressedThisFrame)
                 {
                     isBedMenuOpen = false;
                 }
                 else if (kb.digit1Key.wasPressedThisFrame)
-                {
                     TryRestAndAdvanceDay();
-                }
                 else if (kb.digit2Key.wasPressedThisFrame)
-                {
                     DoSave(1);
-                }
                 else if (kb.digit3Key.wasPressedThisFrame)
-                {
                     DoSave(2);
-                }
+                else if (kb.digit4Key.wasPressedThisFrame)
+                    DoSave(3);
             }
         }
 
@@ -94,8 +97,7 @@ namespace JejakAsa
             {
                 GameFlowManager.Instance.GoToPoskoFromHome();
                 GameFlowManager.Instance.LastSpawnPoint = "RumahVicky";
-                string targetScene = !string.IsNullOrEmpty(kampungScenePath) ? kampungScenePath : poskoScenePath;
-                SceneManager.LoadScene(targetScene, LoadSceneMode.Single);
+                SceneManager.LoadScene(poskoScenePath, LoadSceneMode.Single);
             }
             else
             {
@@ -109,7 +111,9 @@ namespace JejakAsa
             {
                 GameFlowManager.Instance.RestAndAdvanceDay();
                 isBedMenuOpen = false;
-                ShowNotice($"Selamat pagi! Memasuki Hari ke-{GameFlowManager.Instance.CurrentDay}.");
+                ShowNotice(GameFlowManager.Instance.CurrentPhase == DayPhase.Tamat
+                    ? "Kelima level selesai! Tekan Esc untuk kembali ke menu utama."
+                    : $"Selamat pagi! Memasuki Hari ke-{GameFlowManager.Instance.CurrentDay}.");
             }
             else
             {
@@ -118,6 +122,30 @@ namespace JejakAsa
         }
 
         public void DoSave(int slot)
+        {
+            if (slot < 1 || slot > GameFlowManager.MaxSaveSlots)
+            {
+                ShowNotice($"Gagal menyimpan ke Slot {slot}.");
+                return;
+            }
+            if (GameFlowManager.HasSave(slot))
+            {
+                pendingSaveSlot = slot;
+                return;
+            }
+            SaveSlot(slot);
+        }
+
+        public void ConfirmSave()
+        {
+            if (pendingSaveSlot == 0)
+                return;
+            int slot = pendingSaveSlot;
+            pendingSaveSlot = 0;
+            SaveSlot(slot);
+        }
+
+        private void SaveSlot(int slot)
         {
             if (GameFlowManager.Instance.SaveGame(slot))
             {
@@ -194,7 +222,7 @@ namespace JejakAsa
                 GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
 
                 float cardW = 460f;
-                float cardH = 340f;
+                float cardH = 390f;
                 float cardX = (sw - cardW) * 0.5f;
                 float cardY = (sh - cardH) * 0.5f;
 
@@ -205,44 +233,36 @@ namespace JejakAsa
                 string desc = $"Hari {GameFlowManager.Instance.CurrentDay} • Fase: {GameFlowManager.Instance.CurrentPhase}";
                 GUI.Label(new Rect(cardX + 16, cardY + 48, cardW - 32, 22), desc, CozyGuiTheme.OutcomeDescStyle);
 
-                float rowY = cardY + 80f;
-
-                // 1. Tidur / Istirahat
-                bool canRest = GameFlowManager.Instance.CanRestAndAdvanceDay(out string restReason);
-                if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 42), "1. Istirahat Tidur (Lanjut Hari Berikutnya)", canRest ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.LockedBtnStyle))
+                if (pendingSaveSlot != 0)
                 {
-                    TryRestAndAdvanceDay();
+                    GUI.Label(new Rect(cardX + 20, cardY + 90, cardW - 40, 48), $"Timpa save Slot {pendingSaveSlot}? Data lama akan hilang.", CozyGuiTheme.OutcomeDescStyle);
+                    if (GUI.Button(new Rect(cardX + 20, cardY + 150, cardW - 40, 42), "1. Batal", CozyGuiTheme.TealBtnStyle))
+                        pendingSaveSlot = 0;
+                    if (GUI.Button(new Rect(cardX + 20, cardY + 200, cardW - 40, 42), "2. Ya, timpa save", CozyGuiTheme.CoralBtnStyle))
+                        ConfirmSave();
                 }
-                if (!canRest && !string.IsNullOrEmpty(restReason))
+                else
                 {
-                    GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), "⚠ " + restReason, CozyGuiTheme.SubLabelStyle);
-                }
+                    float rowY = cardY + 80f;
+                    bool canRest = GameFlowManager.Instance.CanRestAndAdvanceDay(out string restReason);
+                    if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 42), "1. Istirahat Tidur (Lanjut Hari Berikutnya)", canRest ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.LockedBtnStyle))
+                        TryRestAndAdvanceDay();
+                    if (!canRest && !string.IsNullOrEmpty(restReason))
+                        GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), restReason, CozyGuiTheme.SubLabelStyle);
 
-                rowY += 66f;
-
-                // 2. Simpan Progres Slot 1 & Slot 2
-                float btnHalf = (cardW - 50f) * 0.5f;
-                string s1Time = GameFlowManager.HasSave(1) ? GameFlowManager.GetSlotMeta(1).timestamp : "Kosong";
-                string s2Time = GameFlowManager.HasSave(2) ? GameFlowManager.GetSlotMeta(2).timestamp : "Kosong";
-
-                if (GUI.Button(new Rect(cardX + 20, rowY, btnHalf, 42), $"2. Simpan Slot 1\n({s1Time})", CozyGuiTheme.AmberBtnStyle))
-                {
-                    DoSave(1);
-                }
-                if (GUI.Button(new Rect(cardX + 30 + btnHalf, rowY, btnHalf, 42), $"3. Simpan Slot 2\n({s2Time})", CozyGuiTheme.AmberBtnStyle))
-                {
-                    DoSave(2);
-                }
-
-                rowY += 56f;
-
-                // Tutup
-                if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 36), "4. Batal / Bangkit", CozyGuiTheme.CoralBtnStyle))
-                {
-                    isBedMenuOpen = false;
+                    rowY += 66f;
+                    for (int slot = 1; slot <= GameFlowManager.MaxSaveSlots; slot++)
+                    {
+                        string time = GameFlowManager.HasSave(slot) ? PlayerPrefs.GetString("JejakAsa_SaveSlot_" + slot + "_Time", "-") : "Kosong";
+                        if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 38), $"{slot + 1}. Simpan Slot {slot} ({time})", CozyGuiTheme.AmberBtnStyle))
+                            DoSave(slot);
+                        rowY += 44f;
+                    }
+                    if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 36), "5. Batal / Bangkit", CozyGuiTheme.CoralBtnStyle))
+                        isBedMenuOpen = false;
                 }
 
-                GUI.Label(new Rect(cardX + 20, cardY + cardH - 24, cardW - 40, 18), "[1/2/3/4] Pilih Opsi  |  [Esc] Tutup", CozyGuiTheme.HintStyle);
+                GUI.Label(new Rect(cardX + 20, cardY + cardH - 24, cardW - 40, 18), "[1-5] Pilih Opsi  |  [Esc] Batal", CozyGuiTheme.HintStyle);
 
                 GUI.matrix = prevMatrix;
             }

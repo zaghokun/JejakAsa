@@ -23,6 +23,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Battle.unity
     guid: a1b2c3d4e5f647890123456789abcdef
+  - enabled: 1
+    path: Assets/_Project/Scenes/Kampung_L2.unity
+    guid: 3d3e590b9b239474c8cdffc4fbf50cfd
+  - enabled: 1
+    path: Assets/_Project/Scenes/Kampung_L3.unity
+    guid: 3cd0c1f6c1c60dd49b7d98cf39b19dc8
+  - enabled: 1
+    path: Assets/_Project/Scenes/Kampung_L4.unity
+    guid: 7c0ccc094d9608747a15087060001e73
+  - enabled: 1
+    path: Assets/_Project/Scenes/Kampung_L5.unity
+    guid: 46cbb420bf45f144eb21b17d139994b8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

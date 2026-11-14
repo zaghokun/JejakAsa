@@ -20,6 +20,7 @@ namespace JejakAsa
         public StoryNpcType npcType = StoryNpcType.Jonathan;
         public string characterName = "Pak Jonathan";
         public float interactionRadius = 2.0f;
+        [SerializeField] private DialogueLine[] dialogueLines;
 
         [Header("Referensi")]
         public Transform playerTransform;
@@ -27,6 +28,17 @@ namespace JejakAsa
         private bool isPlayerInRange;
         private bool isDialogueOpen;
         private string currentDialogueText = string.Empty;
+        private int dialogueLineIndex;
+        private int dialogueAdvanceFrame = -1;
+        private DayPhase dialoguePhase;
+        private int dialogueDay;
+        private PlayerController movement;
+        private bool movementWasEnabled;
+        private static StoryNpcController activeDialogue;
+        private static int escapeConsumedFrame = -1;
+        internal static bool EscapeConsumedThisFrame => escapeConsumedFrame == Time.frameCount;
+        internal static bool AnyDialogueOpen => activeDialogue != null;
+        internal bool IsDialogueOpen => isDialogueOpen;
 
         private void Start()
         {
@@ -50,21 +62,40 @@ namespace JejakAsa
             if (kb == null)
                 return;
 
-            if (isPlayerInRange && !isDialogueOpen && kb.eKey.wasPressedThisFrame)
+            if (isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
             {
                 OpenDialogue();
             }
             else if (isDialogueOpen && (kb.enterKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame || kb.escapeKey.wasPressedThisFrame))
             {
+                if (kb.escapeKey.wasPressedThisFrame)
+                    escapeConsumedFrame = Time.frameCount;
                 CloseDialogue();
             }
         }
 
         public void OpenDialogue()
         {
+            if (isDialogueOpen || AnyDialogueOpen)
+                return;
+            var interaction = playerTransform != null ? playerTransform.GetComponent<PlayerInteraction>() : null;
+            if (interaction != null && (interaction.IsDialogueOpen || interaction.IsEncounterOpen || interaction.IsOutcomeOpen || interaction.IsInBattle))
+                return;
+
             isDialogueOpen = true;
+            activeDialogue = this;
+            movement = playerTransform != null ? playerTransform.GetComponent<PlayerController>() : null;
+            if (movement != null)
+            {
+                movementWasEnabled = movement.enabled;
+                movement.enabled = false;
+            }
             int day = GameFlowManager.Instance.CurrentDay;
             DayPhase phase = GameFlowManager.Instance.CurrentPhase;
+            dialogueDay = day;
+            dialoguePhase = phase;
+            dialogueLineIndex = 0;
+            dialogueAdvanceFrame = -1;
 
             switch (npcType)
             {
@@ -72,12 +103,17 @@ namespace JejakAsa
                     if (phase == DayPhase.PoskoBriefing)
                     {
                         currentDialogueText = $"\"Selamat pagi Vicky. Untuk Hari ke-{day}, kita punya sembako yang harus sampai ke 3 keluarga di kampung. Pastikan catatannya rapi dan waspada bila ada preman yang menghalangi.\"";
-                        GameFlowManager.Instance.CompleteBriefing();
+                        if (dialogueLines == null || dialogueLines.Length <= 1)
+                            GameFlowManager.Instance.CompleteBriefing();
                     }
                     else if (phase == DayPhase.PoskoLaporan)
                     {
                         currentDialogueText = $"\"Kerja bagus Vicky! Semua laporan penyaluran bansos Hari ke-{day} sudah kuterima dengan baik. Jangan lupa sapa Ophelia sebelum kamu pulang istirahat.\"";
-                        GameFlowManager.Instance.CompleteReport();
+                        if (dialogueLines == null || dialogueLines.Length <= 1)
+                        {
+                            GameFlowManager.Instance.CompleteReport();
+                            GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{day}");
+                        }
                     }
                     else
                     {
@@ -93,8 +129,11 @@ namespace JejakAsa
                     else if (phase == DayPhase.PoskoLaporan)
                     {
                         currentDialogueText = $"\"Vicky, kamu hebat bisa selesaikan rute hari ini! Ini ada bekal dan catatan tambahan untukmu. Istirahatlah dengan baik ya nanti di rumah.\"";
-                        GameFlowManager.Instance.CompleteOpheliaTalk();
-                        GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{day}");
+                        if (dialogueLines == null || dialogueLines.Length <= 1)
+                        {
+                            GameFlowManager.Instance.CompleteOpheliaTalk();
+                            GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{day}");
+                        }
                     }
                     else
                     {
@@ -121,7 +160,45 @@ namespace JejakAsa
 
         public void CloseDialogue()
         {
+            if (!isDialogueOpen || dialogueAdvanceFrame == Time.frameCount)
+                return;
+            dialogueAdvanceFrame = Time.frameCount;
+            if (dialogueLines != null && dialogueLineIndex + 1 < dialogueLines.Length)
+            {
+                dialogueLineIndex++;
+                return;
+            }
+            if (dialogueLines != null && dialogueLines.Length > 1)
+            {
+                if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoBriefing)
+                    GameFlowManager.Instance.CompleteBriefing();
+                else if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoLaporan)
+                {
+                    GameFlowManager.Instance.CompleteReport();
+                    GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{dialogueDay}");
+                }
+                else if (npcType == StoryNpcType.Ophelia && dialoguePhase == DayPhase.PoskoLaporan)
+                {
+                    GameFlowManager.Instance.CompleteOpheliaTalk();
+                    GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{dialogueDay}");
+                }
+            }
+            EndDialogue();
+        }
+
+        private void EndDialogue()
+        {
+            if (!isDialogueOpen)
+                return;
             isDialogueOpen = false;
+            activeDialogue = null;
+            if (movement != null)
+                movement.enabled = movementWasEnabled;
+        }
+
+        private void OnDisable()
+        {
+            EndDialogue();
         }
 
         private void OnGUI()
@@ -164,14 +241,16 @@ namespace JejakAsa
                 GUI.DrawTexture(new Rect(cardX + 4, cardY + 6, cardW, cardH), CozyGuiTheme.ShadowTex);
                 GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
 
-                // Nama NPC
-                GUI.Label(new Rect(cardX + 18, cardY + 14, 160, 24), characterName.ToUpper(), CozyGuiTheme.RibbonStyle);
-
-                // Teks Dialog
-                GUI.Label(new Rect(cardX + 18, cardY + 44, cardW - 36, 75), currentDialogueText, CozyGuiTheme.DialogueTextStyle);
-
-                // Hint Tutup
-                GUI.Label(new Rect(cardX + 18, cardY + cardH - 24, cardW - 36, 18), "Tekan [Enter] atau [Spasi] untuk Menutup", CozyGuiTheme.HintStyle);
+                bool configured = dialogueLines != null && dialogueLines.Length > 0;
+                string speaker = configured && !string.IsNullOrEmpty(dialogueLines[dialogueLineIndex].speaker)
+                    ? dialogueLines[dialogueLineIndex].speaker : characterName;
+                string text = configured ? dialogueLines[dialogueLineIndex].text : currentDialogueText;
+                GUI.Label(new Rect(cardX + 18, cardY + 14, 160, 24), speaker.ToUpper(), CozyGuiTheme.RibbonStyle);
+                GUI.Label(new Rect(cardX + 18, cardY + 44, cardW - 36, 75), text, CozyGuiTheme.DialogueTextStyle);
+                bool hasNext = configured && dialogueLineIndex + 1 < dialogueLines.Length;
+                GUI.Label(new Rect(cardX + 18, cardY + cardH - 24, cardW - 150, 18), "Enter / Spasi / Esc", CozyGuiTheme.HintStyle);
+                if (GUI.Button(new Rect(cardX + cardW - 125, cardY + cardH - 30, 105, 24), hasNext ? "Lanjut" : "Tutup"))
+                    CloseDialogue();
 
                 GUI.matrix = prevMatrix;
             }

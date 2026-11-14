@@ -70,6 +70,7 @@ public sealed class U02MovementTests : InputTestFixture
     public IEnumerator StraightAndDiagonalHaveTheSameSpeedAndCameraStaysFixed()
     {
         yield return null;
+        yield return new WaitForEndOfFrame();
         Vector3 offset = view.position - player.position;
         Quaternion orientation = view.rotation;
         Vector3 start = player.position;
@@ -97,8 +98,32 @@ public sealed class U02MovementTests : InputTestFixture
         Assert.That(Mathf.Abs(diagonal.x), Is.LessThan(0.02f));
         SetKeys();
         yield return null;
+        yield return new WaitForEndOfFrame();
         Assert.That(Quaternion.Angle(view.rotation, orientation), Is.LessThan(0.01f));
         Assert.That((view.position - player.position - offset).magnitude, Is.LessThan(0.02f));
+    }
+
+    [UnityTest]
+    public IEnumerator EitherShiftRunsAndReleasingReturnsToWalking()
+    {
+        yield return null;
+        foreach (Key shift in new[] { Key.LeftShift, Key.RightShift })
+        {
+            Vector3 start = player.position;
+            float started = Time.time;
+            SetKeys(Key.W, shift);
+            yield return new WaitForSeconds(0.3f);
+            float elapsed = Time.time - started;
+            Assert.That(Vector3.ProjectOnPlane(player.position - start, Vector3.up).magnitude,
+                Is.EqualTo(7f * elapsed).Within(0.03f));
+        }
+
+        Vector3 walkStart = player.position;
+        float walkStarted = Time.time;
+        SetKeys(Key.W);
+        yield return new WaitForSeconds(0.3f);
+        Assert.That(Vector3.ProjectOnPlane(player.position - walkStart, Vector3.up).magnitude,
+            Is.EqualTo(3.5f * (Time.time - walkStarted)).Within(0.03f));
     }
 
     [UnityTest]

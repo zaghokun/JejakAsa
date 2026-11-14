@@ -24,12 +24,20 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
     private GameObject marker;
     private Keyboard keyboard;
     private float previousTimeScale;
+    private Random.State previousRandomState;
+    private GameProgressData previousProgress;
+    private string previousSpawn;
     private Scene loadedScene;
 
     public override void Setup()
     {
         base.Setup();
         previousTimeScale = Time.timeScale;
+        previousRandomState = Random.state;
+        previousProgress = GameFlowManager.Instance.Progress.Clone();
+        previousSpawn = GameFlowManager.Instance.LastSpawnPoint;
+        GameFlowManager.Instance.StartNewCampaign();
+        GameFlowManager.Instance.LastSpawnPoint = null;
         Time.timeScale = 1f;
         keyboard = InputSystem.AddDevice<Keyboard>();
 
@@ -117,6 +125,9 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
         if (root != null)
             Object.DestroyImmediate(root);
         Time.timeScale = previousTimeScale;
+        Random.state = previousRandomState;
+        GameFlowManager.Instance.SetStateForTesting(previousProgress);
+        GameFlowManager.Instance.LastSpawnPoint = previousSpawn;
         base.TearDown();
     }
 
@@ -152,8 +163,8 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
         yield return null;
         Assert.That(encounter.IsEncounterOpen, Is.True);
 
-        // Tekan Esc / 1 untuk memilih Menghindar (setelah jeda 1 frame dibuka)
-        yield return PressKey(Key.Escape);
+        SetAvoidResult(true);
+        encounter.AvoidEncounter();
 
         Assert.That(encounter.IsEncounterOpen, Is.False, "Panel harus menutup setelah Menghindar.");
         Assert.That(encounter.IsResolved, Is.False, "Preman tetap berjaga setelah Menghindar.");
@@ -180,6 +191,24 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
     }
 
     [UnityTest]
+    public IEnumerator FailedAvoidRequestsBattleOnceAndKeepsMissionState()
+    {
+        yield return null;
+        TeleportPlayerTo(new Vector3(0f, 1f, -1.5f));
+        yield return null;
+        Assert.That(encounter.IsEncounterOpen, Is.True);
+        int battles = 0;
+        encounter.BattleRequested += _ => battles++;
+        int packages = interaction.PackagesRemaining;
+        SetAvoidResult(false);
+        yield return PressKey(Key.Digit1);
+        Assert.That(battles, Is.EqualTo(1));
+        Assert.That(encounter.HasBattleRequestPending, Is.True);
+        Assert.That(interaction.PackagesRemaining, Is.EqualTo(packages));
+        Assert.That(movement.enabled, Is.False);
+    }
+
+    [UnityTest]
     public IEnumerator CitizenHelpLockedAtZeroTrustAndUnlockedAfterOneDeliveryDisablesBarrierWithoutBattle()
     {
         yield return null;
@@ -194,6 +223,7 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
         Assert.That(obstacle.activeSelf, Is.True);
 
         // Menghindar lalu antar bantuan ke Warga Pos -> Trust jadi 1
+        SetAvoidResult(true);
         encounter.AvoidEncounter();
         TeleportPlayerTo(new Vector3(-4f, 1f, -2.8f));
         yield return null;
@@ -275,6 +305,7 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
         yield return null;
         Assert.That(sceneEncounter.IsEncounterOpen, Is.True);
 
+        SetAvoidResult(true);
         yield return PressKey(Key.Escape);
         Assert.That(sceneEncounter.IsEncounterOpen, Is.False);
 
@@ -314,6 +345,19 @@ public sealed class U09EncounterAndCitizenHelpTests : InputTestFixture
         Assert.That(sceneEncounter.IsResolved, Is.False);
         Assert.That(sceneEncounter.ObstacleObject.activeSelf, Is.True);
         Assert.That(sceneEncounter.PremanVisual.activeSelf, Is.True);
+    }
+
+    private static void SetAvoidResult(bool success)
+    {
+        for (int seed = 0; seed < 100; seed++)
+        {
+            Random.InitState(seed);
+            if ((Random.value < 0.5f) != success)
+                continue;
+            Random.InitState(seed);
+            return;
+        }
+        Assert.Fail("Could not choose a deterministic avoidance outcome.");
     }
 
     private void TeleportPlayerTo(Vector3 targetPos)

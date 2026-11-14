@@ -44,7 +44,9 @@ namespace JejakAsa
             }
 
             input = Vector2.ClampMagnitude(input, 1f);
-            Vector3 velocity = (cameraForward * input.y + cameraRight * input.x) * moveSpeed;
+            float speed = keyboard != null && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed)
+                ? moveSpeed * 2f : moveSpeed;
+            Vector3 velocity = (cameraForward * input.y + cameraRight * input.x) * speed;
             if (velocity.sqrMagnitude > 0f)
                 transform.rotation = Quaternion.LookRotation(velocity);
 

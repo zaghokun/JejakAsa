@@ -8,7 +8,7 @@ namespace JejakAsa
 {
     /// <summary>
     /// Logika turn-based battle deterministik (U11–U14) beserta animasi 3D sederhana &amp; HUD arena bawah.
-    /// HP, damage, dan pola lawan semuanya tetap — tidak ada RNG, critical, atau item.
+    /// HP, damage, dan pola lawan deterministik; item dan senjata memakai inventori progres.
     /// Urutan: aksi pemain → cek HP musuh → aksi lawan (bila hidup) → cek HP pemain.
     /// </summary>
     [DisallowMultipleComponent]
@@ -25,6 +25,14 @@ namespace JejakAsa
         public int biasaGuarded = 2;
         public int kuatDamage   = 18;
         public int kuatGuarded  = 4;
+        public const string HealingItemId = "healing_item";
+        public const string BasicWeaponId = "basic_weapon";
+        public const int HealingAmount = 12;
+        public const int WeaponBonus = 5;
+        public int BossLevel { get; private set; }
+        public int CurrentAttackDamage => attackDamage +
+            (GameFlowManager.Instance.Progress.equippedWeapon == BasicWeaponId &&
+             GameFlowManager.Instance.Progress.inventory.Contains(BasicWeaponId) ? WeaponBonus : 0);
 
         // ─── Runtime state ───────────────────────────────────────────────
         public int  PlayerHP          { get; private set; }
@@ -43,9 +51,14 @@ namespace JejakAsa
 
         public static readonly EnemyAction[] Pattern =
             { EnemyAction.Biasa, EnemyAction.Biasa, EnemyAction.Persiapan, EnemyAction.Kuat };
+        private static readonly EnemyAction[] Level3Pattern =
+            { EnemyAction.Biasa, EnemyAction.Persiapan, EnemyAction.Kuat };
+        private static readonly EnemyAction[] Level5Pattern =
+            { EnemyAction.Persiapan, EnemyAction.Kuat, EnemyAction.Biasa };
+        private EnemyAction[] CurrentPattern => BossLevel == 3 ? Level3Pattern : BossLevel == 5 ? Level5Pattern : Pattern;
 
         public EnemyAction LastEnemyAction { get; private set; }
-        public EnemyAction NextEnemyAction => Pattern[PatternIndex % Pattern.Length];
+        public EnemyAction NextEnemyAction => CurrentPattern[PatternIndex % CurrentPattern.Length];
         public int LastEnemyDamage { get; private set; }
 
         /// <summary>
@@ -53,7 +66,7 @@ namespace JejakAsa
         /// </summary>
         public bool ShowKuatWarning =>
             PatternIndex > 0 &&
-            Pattern[(PatternIndex - 1) % Pattern.Length] == EnemyAction.Persiapan;
+            CurrentPattern[(PatternIndex - 1) % CurrentPattern.Length] == EnemyAction.Persiapan;
 
         // ─── Events & singleton ──────────────────────────────────────────
         /// <summary>Hasil battle: true = menang, false = kalah. Dikirim sekali (U14).</summary>
@@ -182,11 +195,12 @@ namespace JejakAsa
         }
 
         /// <summary>Memulai battle baru dari HP penuh.</summary>
-        public void StartBattle()
+        public void StartBattle(int bossLevel = 0)
         {
             StopAllCoroutines();
             ResolveArenaVisuals();
 
+            BossLevel = bossLevel == 3 || bossLevel == 5 ? bossLevel : 0;
             hasStarted         = true;
             PlayerHP           = playerMaxHP;
             EnemyHP            = enemyMaxHP;
@@ -274,6 +288,48 @@ namespace JejakAsa
             return true;
         }
 
+        public bool EquipBasicWeapon()
+        {
+            if (SessionMenu.InputBlocked || !IsPlayerTurn || IsBattleOver || ActionLocked)
+                return false;
+            GameProgressData progress = GameFlowManager.Instance.Progress;
+            if (!progress.inventory.Contains(BasicWeaponId))
+                return false;
+            progress.equippedWeapon = progress.equippedWeapon == BasicWeaponId ? "" : BasicWeaponId;
+            lastPlayerActionText = progress.equippedWeapon == BasicWeaponId ? "Senjata dipakai (+5 serang)" : "Senjata dilepas";
+            return true;
+        }
+
+        public bool PlayerUseHealing(bool animated = false)
+        {
+            GameProgressData progress = GameFlowManager.Instance.Progress;
+            if (SessionMenu.InputBlocked || !IsPlayerTurn || IsBattleOver || ActionLocked ||
+                PlayerHP >= playerMaxHP || !progress.inventory.Remove(HealingItemId))
+                return false;
+
+            ActionLocked = true;
+            IsPlayerTurn = false;
+            IsGuarding = false;
+            int healed = Mathf.Min(HealingAmount, playerMaxHP - PlayerHP);
+            PlayerHP += healed;
+            lastPlayerActionText = $"Item: +{healed} HP";
+            SpawnPopup(playerVisual, $"+{healed} HP", Color.green);
+            if (animated)
+                StartCoroutine(HealingRoutine());
+            else
+                ResolveEnemyTurnMath("Item");
+            return true;
+        }
+
+        private IEnumerator HealingRoutine()
+        {
+            isAnimatingTurn = true;
+            yield return new WaitForSeconds(0.2f);
+            yield return new WaitWhile(() => SessionMenu.InputBlocked);
+            yield return EnemyTurnRoutine("Item");
+            isAnimatingTurn = false;
+        }
+
         // ─── Animated player action API (for HUD buttons & keyboard) ──────
 
         /// <summary>Memicu aksi Serang dengan animasi maju-mundur dan jeda giliran ~0,4 detik.</summary>
@@ -306,14 +362,15 @@ namespace JejakAsa
         private void ApplyPlayerAttackDamage()
         {
             int prev = EnemyHP;
-            EnemyHP = Mathf.Max(0, EnemyHP - attackDamage);
-            lastPlayerActionText = $"Serang → HP Musuh {prev} → {EnemyHP}";
-            SpawnPopup(enemyVisual, $"-{attackDamage}", new Color(1.0f, 0.35f, 0.25f, 1f));
+            int damage = Mathf.Max(1, CurrentAttackDamage - (BossLevel == 3 ? 3 : 0));
+            EnemyHP = Mathf.Max(0, EnemyHP - damage);
+            lastPlayerActionText = $"Serang → HP Musuh {prev} → {EnemyHP}" + (BossLevel == 3 ? " (armor -3)" : "");
+            SpawnPopup(enemyVisual, $"-{damage}", new Color(1.0f, 0.35f, 0.25f, 1f));
         }
 
         private void ResolveEnemyTurnMath(string playerActionLabel)
         {
-            EnemyAction action = Pattern[PatternIndex % Pattern.Length];
+            EnemyAction action = NextEnemyAction;
             LastEnemyAction = action;
             PatternIndex++;
 
@@ -335,6 +392,8 @@ namespace JejakAsa
                     break;
                 case EnemyAction.Kuat:
                     damage = guardedHit ? kuatGuarded : kuatDamage;
+                    if (BossLevel == 5)
+                        damage += 6;
                     desc = guardedHit
                         ? $"Serangan Kuat! ({damage} dmg, ditahan!)"
                         : $"Serangan Kuat! ({damage} dmg)";
@@ -656,6 +715,10 @@ namespace JejakAsa
                 TriggerPlayerAttackAnimated();
             else if (kb.digit2Key.wasPressedThisFrame)
                 TriggerPlayerDefendAnimated();
+            else if (kb.digit3Key.wasPressedThisFrame)
+                PlayerUseHealing(true);
+            else if (kb.digit4Key.wasPressedThisFrame)
+                EquipBasicWeapon();
         }
 
         private void UpdatePopups()
@@ -864,7 +927,7 @@ namespace JejakAsa
 
             DrawHPBar(new Rect(pCard.x + 12, pCard.y + 20, pCard.width - 24, 30), "HP", PlayerHP, playerMaxHP,
                 new Color(0.10f, 0.72f, 0.50f, 1f), ref hpBarPlayerTex);
-            GUI.Label(new Rect(pCard.x + 10, pCard.y + 54, pCard.width - 20, 20), "Serang: 10  |  Bertahan: ¼", CozyGuiTheme.HintStyle);
+            GUI.Label(new Rect(pCard.x + 10, pCard.y + 54, pCard.width - 20, 20), $"Serang: {CurrentAttackDamage}  |  Bertahan", CozyGuiTheme.HintStyle);
 
             // ── Pil Giliran (tengah atas) ───────────────────────────────
             float centerX = (sw - centerW) * 0.5f;
@@ -890,7 +953,7 @@ namespace JejakAsa
                 Rect warnRect = new Rect((sw - warnW) * 0.5f, topY + 64f, warnW, 30f);
                 CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerFailTex;
                 CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.68f, 0.14f, 0.14f);
-                GUI.Label(warnRect, "⚠  Serangan kuat berikutnya — gunakan Bertahan!", CozyGuiTheme.BannerStyle);
+                GUI.Label(warnRect, BossLevel == 5 ? "⚠  Serangan kuat boss +6 damage — gunakan Bertahan!" : "⚠  Serangan kuat berikutnya — gunakan Bertahan!", CozyGuiTheme.BannerStyle);
             }
 
             // ── Kartu Preman & Pola (kanan atas) ────────────────────────
@@ -898,22 +961,22 @@ namespace JejakAsa
             GUI.DrawTexture(new Rect(eCard.x + 3, eCard.y + 4, eCard.width, eCard.height), CozyGuiTheme.ShadowTex);
             GUI.Box(eCard, GUIContent.none, CozyGuiTheme.CardStyle);
             CozyGuiTheme.OutcomeHeaderStyle.normal.background = CozyGuiTheme.OutcomeFailTex;
-            GUI.Label(new Rect(eCard.x + 10, eCard.y - 11, Mathf.Min(134f, eCard.width - 20f), 22), "PREMAN", CozyGuiTheme.RibbonStyle);
+            GUI.Label(new Rect(eCard.x + 10, eCard.y - 11, Mathf.Min(134f, eCard.width - 20f), 22), BossLevel == 0 ? "PREMAN" : $"BOSS {BossLevel}", CozyGuiTheme.RibbonStyle);
 
             DrawHPBar(new Rect(eCard.x + 12, eCard.y + 20, eCard.width - 24, 30), "HP", EnemyHP, enemyMaxHP,
                 new Color(0.84f, 0.26f, 0.24f, 1f), ref hpBarEnemyTex);
 
             // Strip pola musuh langsung di bagian bawah kartu musuh
             float dotSize = 20f;
-            float dotsW = Pattern.Length * dotSize + (Pattern.Length - 1) * 4f;
+            float dotsW = CurrentPattern.Length * dotSize + (CurrentPattern.Length - 1) * 4f;
             float dotX = eCard.x + eCard.width - 10f - dotsW;
             float dotY = eCard.y + 55f;
             GUI.Label(new Rect(eCard.x + 10, dotY, Mathf.Max(40f, eCard.width - dotsW - 22f), 20), "Pola:", CozyGuiTheme.SubLabelStyle);
 
-            for (int i = 0; i < Pattern.Length; i++)
+            for (int i = 0; i < CurrentPattern.Length; i++)
             {
-                bool isNext = !IsBattleOver && (PatternIndex % Pattern.Length) == i;
-                string label = Pattern[i] switch
+                bool isNext = !IsBattleOver && (PatternIndex % CurrentPattern.Length) == i;
+                string label = CurrentPattern[i] switch
                 {
                     EnemyAction.Biasa     => "B",
                     EnemyAction.Persiapan => "P",
@@ -973,13 +1036,15 @@ namespace JejakAsa
                 summary = $"{lastPlayerActionText}   •   {lastEnemyActionText}";
             else
             {
-                summary = NextEnemyAction switch
-                {
-                    EnemyAction.Biasa     => "Preman bersiap menyerang (Biasa). Pilih tindakanmu!",
-                    EnemyAction.Persiapan => "Preman sedang ancang-ancang (Persiapan).",
-                    EnemyAction.Kuat      => "Awas! Serangan Kuat datang!",
-                    _ => ""
-                };
+                summary = BossLevel == 3 ? "Boss 3: armor mengurangi damage serangan sebesar 3." :
+                    BossLevel == 5 ? "Boss 5: serangan kuat memberi 6 damage tambahan." :
+                    NextEnemyAction switch
+                    {
+                        EnemyAction.Biasa     => "Preman bersiap menyerang (Biasa). Pilih tindakanmu!",
+                        EnemyAction.Persiapan => "Preman sedang ancang-ancang (Persiapan).",
+                        EnemyAction.Kuat      => "Awas! Serangan Kuat datang!",
+                        _ => ""
+                    };
             }
             GUI.Label(new Rect(inX, dockY + 10f, inW, 22f), summary, CozyGuiTheme.OutcomeDescStyle);
 
@@ -987,20 +1052,31 @@ namespace JejakAsa
             if (!IsBattleOver)
             {
                 bool canAct = IsPlayerTurn && !ActionLocked;
-                float btnW = (inW - 14f) * 0.5f;
+                float btnW = (inW - 18f) * 0.25f;
 
                 bool prevEnabled = GUI.enabled;
                 GUI.enabled = canAct;
 
-                if (GUI.Button(new Rect(inX, rowY, btnW, 40f), "⚔  Serang (10 Dmg)", canAct ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.LockedBtnStyle))
+                if (GUI.Button(new Rect(inX, rowY, btnW, 40f), $"Serang ({CurrentAttackDamage})", canAct ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.LockedBtnStyle))
                     TriggerPlayerAttackAnimated();
 
-                if (GUI.Button(new Rect(inX + btnW + 14f, rowY, btnW, 40f), "🛡  Bertahan", canAct ? CozyGuiTheme.AmberBtnStyle : CozyGuiTheme.LockedBtnStyle))
+                if (GUI.Button(new Rect(inX + btnW + 6f, rowY, btnW, 40f), "Bertahan", canAct ? CozyGuiTheme.AmberBtnStyle : CozyGuiTheme.LockedBtnStyle))
                     TriggerPlayerDefendAnimated();
+
+                GameProgressData progress = GameFlowManager.Instance.Progress;
+                int healingCount = 0;
+                foreach (string item in progress.inventory)
+                    if (item == HealingItemId) healingCount++;
+                GUI.enabled = canAct && PlayerHP < playerMaxHP && healingCount > 0;
+                if (GUI.Button(new Rect(inX + (btnW + 6f) * 2, rowY, btnW, 40f), $"Item +12 ({healingCount})", CozyGuiTheme.TealBtnStyle))
+                    PlayerUseHealing(true);
+                GUI.enabled = canAct && progress.inventory.Contains(BasicWeaponId);
+                if (GUI.Button(new Rect(inX + (btnW + 6f) * 3, rowY, btnW, 40f), progress.equippedWeapon == BasicWeaponId ? "Lepas" : "Senjata +5", CozyGuiTheme.AmberBtnStyle))
+                    EquipBasicWeapon();
 
                 GUI.enabled = prevEnabled;
 
-                string hint = canAct ? "[1] Serang   |   [2] Bertahan" : "Giliran sedang berlangsung...";
+                string hint = canAct ? "[1] Serang  [2] Bertahan  [3] Item  [4] Senjata" : "Giliran sedang berlangsung...";
                 GUI.Label(new Rect(inX, dockY + dockH - 24f, inW, 18f), hint, CozyGuiTheme.HintStyle);
             }
             else

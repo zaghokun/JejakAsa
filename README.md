@@ -20,7 +20,7 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Rendering | Universal Render Pipeline / URP |
 | Platform | Windows, single-player, keyboard dan mouse |
 | Kamera | Isometrik dengan orientasi tetap |
-| Kontrol | Input System resmi; CharacterController untuk gerak |
+| Kontrol | Input System resmi; CharacterController untuk gerak, tahan Shift kiri/kanan untuk lari |
 | Antarmuka | Unity UI / uGUI dan TextMeshPro; prompt/dialog U03 sudah tersedia |
 | Cakupan graybox saat ini | Satu peta, satu misi, tiga penerima, satu pengintimidasi, dan satu arena turn-based |
 | Arah revisi yang direncanakan | Prolog; satu map posko dengan lingkungan; satu map interior rumah; lima map level terpisah; boss level 3 dan 5; save/load. Belum diimplementasikan |
@@ -32,25 +32,25 @@ Tidak termasuk rancangan saat ini: multiplayer, akun/backend, database server, c
 
 ## Status saat ini
 
-### Ringkasan Progres Revisi Gameplay (R01–R15) · Rata-rata Progres: ~60%
+### Ringkasan Progres Revisi Gameplay (R01–R15)
 
 | Kode R | Fitur / Kebutuhan | Progres (%) | Status | Keterangan Singkat |
 |:---:|---|:---:|:---:|---|
 | **R01** | Kontrak alur siklus harian | **100%** | Selesai | `Rumah` ↔ `Kampung` ↔ `Posko`, 10/10 unit test lulus |
 | **R02** | Prolog dan pengantar boss | **15%** | Konsep | Naskah storyboard & draft pembuka |
-| **R03** | Posko graybox & gerbang bersama | **100%** | Selesai | `Posko.unity` ruangan indoor 16×11m, Pak Jonathan, Ophelia, bansos |
+| **R03** | Posko graybox & gerbang bersama | **100%** | Graybox | `Posko.unity` lapangan terbuka 28×24 m, Jonathan, Ophelia, bansos, satu gerbang; visual final menyusul |
 | **R04** | Rumah graybox & kamar Vicky | **100%** | Selesai | `Rumah.unity` kamar 14×10m, tidur, save 3 slot, Ibu |
-| **R05** | Lima map level & rotasi hari | **30%** | Berjalan | Level 1 aktif; siklus hari 1–5 di `GameFlowManager`; variasi L2–L5 menyusul |
+| **R05** | Lima map level & rotasi hari | — | Graybox | Lima scene dan pergantian hari tersedia; validasi layout final menyusul |
 | **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos 3 paket, trust, retry bersih di `PlayerInteraction.cs` |
-| **R07** | Dialog cerita Jonathan & Ophelia | **75%** | Berjalan | Briefing & laporan pagi/sore dinamis di `StoryNpcController.cs` |
+| **R07** | GUI dan progres dialog | — | Core graybox | Dialog berurutan dan nama pembicara tersedia; naskah final menyusul |
 | **R08** | Reward logistik level | **70%** | Berjalan | Reward 1x per level di posko via `ClaimLevelReward()` |
-| **R09** | Item dan weapon inventory | **25%** | Berjalan | Data inventori di `GameProgressData`; integrasi efek battle menyusul |
-| **R10** | Boss Level 3 & Level 5 | **30%** | Konsep | Desain Mr. Deddy (L3) & Mr. Gas Oke (L5) |
+| **R09** | Item dan weapon inventory | — | Core graybox | Item pemulih dan senjata memengaruhi battle; nilai sementara |
+| **R10** | Boss Level 3 & Level 5 | — | Core graybox | Boss dengan pola berbeda pada L3/L5; visual dan dialog final menyusul |
 | **R11** | Encounter preman 50/50 | **85%** | Berjalan | Peluang 50% mundur / 50% battle di `EncounterController.cs` (PlayMode verified) |
 | **R12** | Bantuan warga (Trust $\ge 1$) | **85%** | Berjalan | Warga membuka rute saat trust cukup di `EncounterController.cs` (PlayMode verified) |
 | **R13** | Save / Load 3 slot di rumah | **90%** | Berjalan | Simpan progres Slot 1..3 di kasur kamar Vicky via `GameFlowManager.SaveGame()` |
-| **R14** | Main Menu revisi | **40%** | Berjalan | Tombol Mulai aktif; menu load slot & setting visual menyusul |
-| **R15** | Regresi dan build | **70%** | Berjalan | 0 compile error/warning; 46 unit test lama + 10 unit test R01 lulus |
+| **R14** | Main Menu revisi | — | Core graybox | Mulai, Lanjutkan, Load tiga slot, dan Setting; visual final menyusul |
+| **R15** | Regresi dan build | — | Berjalan | Uji Play Mode tersedia; build rilis dan uji komputer kedua menyusul |
 
 ---
 
@@ -121,20 +121,28 @@ Daftar ini adalah **rencana dan status progres pekerjaan**. U01–U21 di atas te
 |:---:|---|:---:|:---:|---|
 | **R01** | Kontrak alur siklus harian | **100%** | Selesai | `GameFlowManager.cs`, `R01FlowContractTests.cs`, `r01-kontrak-alur.md` |
 | **R02** | Prolog dan pengantar boss | **15%** | Belum Mulai | Konsep narasi storyboard, cutscene pembuka |
-| **R03** | Posko graybox & gerbang bersama | **100%** | Selesai | `Posko.unity` (indoor 16×11 m), `PoskoGateController.cs`, `Jonathan`, `Ophelia` |
+| **R03** | Posko graybox & gerbang bersama | **100%** | Graybox | `Posko.unity` lapangan terbuka 28×24 m, `PoskoGateController.cs`, Jonathan, Ophelia |
 | **R04** | Rumah graybox & kamar Vicky | **100%** | Selesai | `Rumah.unity` (indoor 14×10 m), `HomeInteractionController.cs`, Kasur (Save/Tidur), `Ibu` |
-| **R05** | Lima map level & rotasi hari | **30%** | Berjalan | `Kampung.unity` aktif; siklus hari 1–5 di `GameFlowManager`; variasi layout level 2–5 menyusul |
+| **R05** | Lima map level & rotasi hari | — | Graybox | `Kampung.unity` dan `Kampung_L2`–`Kampung_L5`; jalur dan aset final menyusul |
 | **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos, trust counter, hasil misi, retry bersih di `PlayerInteraction.cs` |
-| **R07** | Dialog cerita Jonathan & Ophelia | **75%** | Berjalan | `StoryNpcController.cs` (briefing & laporan pagi/sore); dialog hari 2–5 sesuai storyboard |
+| **R07** | GUI dan progres dialog | — | Core graybox | `StoryNpcController.cs` dan `PlayerInteraction.cs` mendukung beberapa baris; naskah final menyusul |
 | **R08** | Reward logistik level | **70%** | Berjalan | `GameFlowManager.ClaimLevelReward()` tepat 1x per level setelah lapor & dialog Ophelia |
-| **R09** | Item dan weapon inventory | **25%** | Berjalan | Data inventori `GameProgressData.inventory`; integrasi efek pertempuran menyusul |
-| **R10** | Boss Level 3 & Level 5 | **30%** | Belum Mulai | Desain Mr. Deddy (L3) & Mr. Gas Oke (L5); arena battle & controller boss menyusul |
+| **R09** | Item dan weapon inventory | — | Core graybox | Item pemulih dan senjata terhubung battle dan progres; nilai sementara |
+| **R10** | Boss Level 3 & Level 5 | — | Core graybox | Encounter boss dan pola battle berbeda; visual dan cerita final menyusul |
 | **R11** | Encounter preman 50/50 | **85%** | Berjalan | Menghindar 50% mundur / 50% battle di `EncounterController.cs` (PlayMode verified) |
 | **R12** | Bantuan warga (Trust $\ge 1$) | **85%** | Berjalan | Bantuan warga membuka rute saat trust cukup di `EncounterController.cs` (PlayMode verified) |
 | **R13** | Save / Load 3 slot di rumah | **90%** | Berjalan | Simpan progres Slot 1..3 di kasur kamar Vicky via `GameFlowManager.SaveGame()` |
-| **R14** | Main Menu revisi | **40%** | Berjalan | Tombol Mulai Permainan aktif; visual load menu slot & setting menyusul |
-| **R15** | Regresi dan build | **70%** | Berjalan | 0 compile error/warning; 46 unit test lama + 10 unit test R01 lulus; build rilis akhir menyusul |
-| **TOTAL** | **Rata-rata Keseluruhan Core Gameplay** | **~60%** | **Fase Mid-Dev** | **Fondasi Alur 100% Selesai, Core Gameplay Aktif** |
+| **R14** | Main Menu revisi | — | Core graybox | Mulai, Lanjutkan, Load tiga slot dan Setting |
+| **R15** | Regresi dan build | — | Berjalan | Uji Play Mode terarah tersedia; build rilis akhir menyusul |
+| **TOTAL** | **Core Gameplay** | **—** | **Fase Mid-Dev** | **Progres final menunggu integrasi story, aset, dan build** |
+
+**Pembaruan core graybox:** lima scene level (`Kampung` dan `Kampung_L2`–`Kampung_L5`) sekarang terdaftar di Build Settings dan dipilih sesuai level aktif. Boss level 3 dan 5 harus dikalahkan selain menyelesaikan tiga pengantaran. GUI mendukung urutan beberapa baris dialog dengan nama pembicara; naskah cerita final belum dimasukkan. Main menu menyediakan Mulai, Lanjutkan, Load tiga slot dan Setting; penyimpanan di rumah meminta konfirmasi sebelum menimpa slot.
+
+Scene level dan karakter gameplay masih graybox; angka dan identitas item, aset, dialog cerita, dan build akhir belum diterima.
+
+**Item dan weapon sementara:** di battle, tombol **3 / Item** menampilkan jumlah item pemulih; penggunaannya memulihkan maksimum 12 HP, menghabiskan satu item dan satu giliran, dan tidak tersedia saat HP penuh. Tombol **4 / Senjata** memasang atau melepas `basic_weapon` untuk +5 damage; status pemasangan dan inventori tersimpan bersama progres. Reward diberikan sekali setelah laporan dan dialog: level 2 memberi senjata, sedangkan level lain memberi satu item pemulih. Belum ada menu inventori lengkap di luar battle maupun ikon atau model final.
+
+**Bukti core saat ini:** uji Play Mode `CampaignFiveLevelsTests` menyelesaikan lima hari, dua boss, reward dan fase Tamat; pemain dipindahkan ke titik interaksi selama uji alur. Uji terpisah mencapai ketiga penerima di tiap level menggunakan input gerak setelah encounter diselesaikan. Uji battle terarah lulus 14/14; regresi Play Mode sebelumnya 70/71, dengan satu uji menghindar diperbaiki dan lulus saat dijalankan terpisah. Build Windows dan uji komputer kedua belum dilakukan.
 
 ---
 
@@ -142,17 +150,17 @@ Daftar ini adalah **rencana dan status progres pekerjaan**. U01–U21 di atas te
 
 - [x] **R01 — Kontrak alur [100%]:** sepakati prolog → posko → map level → posko/laporan Jonathan → dialog Ophelia → interior rumah/istirahat → posko pada hari berikutnya. Rumah hanya menuju posko; tentukan syarat berhasil dan penanganan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan dibuktikan lewat 10 tes `R01FlowContractTests`.
 - [ ] **R02 — Prolog dan pengantar boss [15%]:** tampilkan Vicky yang baru lulus, kebutuhan kampung, sponsor, pendirian posko, dan perkenalan Jonathan serta Ophelia; berikan cuplikan Mr. Deddy dan boss terakhir sebelum gameplay utama.
-- [x] **R03 — Posko graybox [100%]:** buat map posko dan lingkungannya sebagai pusat briefing, laporan, serta interaksi Jonathan/Ophelia. Satu gerbang masuk/keluar membuka pilihan Rumah atau Level sesuai progres; kedatangan tidak langsung memicu ulang dialog; diimplementasikan di `Posko.unity` (ruangan interior 16×11 m) dan `PoskoGateController.cs`.
+- [x] **R03 — Posko graybox [100%]:** map posko berupa lapangan terbuka 28×24 m dengan area briefing, bantuan, Jonathan, Ophelia dan satu gerbang bersama. Pengambilan bantuan dan briefing diperlukan sebelum keberangkatan; visual final dan pemeriksaan build menyusul.
 - [x] **R04 — Rumah graybox [100%]:** buat map interior rumah tanpa tampilan luar sebagai tempat istirahat dan save, dengan interaksi orang tua sederhana. Keluar dari rumah hanya menuju posko; diimplementasikan di `Rumah.unity` (ruangan interior 14×10 m) dan `HomeInteractionController.cs`.
-- [ ] **R05 — Lima map level dan hari [30%]:** masing-masing level memiliki map terpisah dari posko, rumah, dan level lain; simpan level aktif, selesai/terbuka, serta hari. Level 3 memuat Mr. Deddy dan level 5 boss terakhir. Setelah istirahat, pemain kembali ke posko sebelum berangkat ke level berikutnya.
+- [ ] **R05 — Lima map level dan hari:** lima scene graybox dan pergantian hari tersedia; periksa layout final, jalur, boss, dan aset setelah integrasi.
 - [ ] **R06 — Hasil dan retry per level [85%]:** penyerahan, timer, trust, hasil battle, dan hasil misi berlaku pada level aktif; gagal dapat diulang tanpa menghapus progres level yang telah diselesaikan. Uji kemenangan, kegagalan, dan retry berulang.
 
 ### R2 — Cerita, reward, dan pertempuran
 
 - [ ] **R07 — Dialog dan progres cerita [75%]:** Jonathan memberi briefing serta menerima laporan; Ophelia memiliki perkembangan dialog setelah tiap level tanpa bonus pertempuran langsung. Pastikan dialog dan tahap cerita tidak terulang atau terlewat setelah memuat save.
 - [ ] **R08 — Reward [70%]:** dukung item dan weapon yang diperoleh setelah menyelesaikan level, melapor ke Jonathan, dan berbicara dengan Ophelia sesuai konsep awal; tiap reward diberikan sekali dan tercatat dalam progres.
-- [ ] **R09 — Item dan weapon [25%]:** pemain dapat memperoleh, melihat, dan menggunakan item serta memasang weapon; efeknya benar-benar memengaruhi battle, jumlah item berubah sesuai pemakaian, dan equipment tersimpan. Jenis, jumlah, serta angka efek ditentukan sebelum implementasi.
-- [ ] **R10 — Boss level 3 dan 5 [30%]:** kedua boss memiliki identitas, dialog, pola serangan, dan hasil menang/kalah yang terhubung ke progres level; uji bahwa boss kalah tidak menyerang lagi dan hasil tidak dikirim ganda.
+- [ ] **R09 — Item dan weapon:** item pemulih dan senjata sudah terhubung battle serta progres; nilai masih sementara dan perlu keputusan desain final.
+- [ ] **R10 — Boss level 3 dan 5:** mekanik boss sudah terhubung, termasuk kemenangan setelah tiga paket dan boss selesai; identitas visual, dialog, dan penerimaan final menyusul.
 - [ ] **R11 — Menghindar 50/50 [85%]:** jelaskan peluang sebelum dipilih; hasil berhasil menghindar dan gagal masuk battle masing-masing berlaku 50%, tanpa menggandakan encounter atau kehilangan state misi. Uji kedua hasil secara terkendali.
 - [ ] **R12 — Bantuan warga [85%]:** ketika syarat trust terpenuhi, pilihan bantuan menjalankan urutan warga membantu dan membuka jalan sebelum kendali kembali; saat tidak memenuhi syarat, alasan terkunci terlihat. Hubungkan animasi Role C saat tersedia.
 
@@ -178,12 +186,14 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 
 ### AB-D02 — Posko, rumah, dan gerbang graybox · R03–R04
 
-- [x] **A:** buat satu map posko berupa ruangan interior kantor sekretariat (`Posko.unity`, 16×11 m); buat satu map rumah yang langsung menampilkan interior (`Rumah.unity`, 14×10 m), tanpa membuat map luar rumah.
+- [x] **A:** buat satu map posko berupa lapangan terbuka graybox (`Posko.unity`, 28×24 m); rumah tetap berupa map interior (`Rumah.unity`, 14×10 m), tanpa map luar rumah.
 - [x] **A:** sediakan satu gerbang bersama di posko (`PoskoGateController.cs`); saat didekati pemain dapat memilih `Pulang ke Rumah`, `Berangkat ke Level`, atau `Batal`. Tujuan yang belum tersedia menunjukkan alasan sesuai progres.
 - [x] **A:** perpindahan rumah → posko memakai pintu/gerbang (`HomeInteractionController.cs`); dari rumah tidak ada akses langsung ke level.
 - [x] **A:** sediakan titik interaksi Jonathan, Ophelia, Ibu, tempat tidur (istirahat/save) dan titik transisi menggunakan graybox via `StoryNpcController.cs`.
 - [x] **B:** uji kedua arah transisi, batal, tujuan terkunci, input/fokus, collision serta spawn agar tidak memicu perpindahan berulang atau kehilangan state.
 - [x] **Bukti terima:** `Rumah.unity` dan `Posko.unity` terdaftar di Build Settings; transisi gerbang, dialog Pak Jonathan, Ophelia, dan Ibu berfungsi dengan kontrol WASD & E.
+- **Pembaruan posko:** kontrol Shift kiri/kanan menggandakan kecepatan jalan; animasi karakter lari dari lab belum terhubung ke gameplay. Area interaksi memilih objek terdekat, dan briefing serta pengambilan paket diperlukan sebelum berangkat.
+- **Uji terarah Play Mode:** `PoskoFlowIntegrationTests` membuktikan rumah → briefing dan ambil paket → tiga penyerahan → laporan Jonathan/Ophelia → rumah; uji alur memindahkan pemain ke titik interaksi. Uji rute terpisah memakai input gerak + Shift untuk mencapai semua titik posko; `U02MovementTests` memeriksa kecepatan kedua Shift dan kembali berjalan.
 
 ### AB-D03 — Progres, lima map, dan retry · R05–R06
 
@@ -276,13 +286,13 @@ Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis iku
 | C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Preview MC diuji; sembilan model sumber Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki sudah digenerate. Model baru belum rig/animasi atau terintegrasi. | Sebagian |
 | C-M04 | D4–D6 | Prefab briefing, HUD, dialog, encounter, battle UI, pause, dan hasil/retry. Main menu belum diprioritaskan. | Teks, anchor, fokus, tombol, serta state terkunci/aktif lengkap; referensi untuk pengikatan controller disertakan. Penyerahan prefab bukan bukti logika misi/battle sudah selesai. | Belum dilaporkan |
 | C-M05 | D5–D8 | Lingkungan modular, bangunan, jalan, paket, penanda penerima, dan dekor minimum. | Prefab diserahkan untuk mengganti graybox; A/B memasangnya dan memeriksa ulang jalur/collider. C tidak menimpa logika atau scene integrasi tanpa handoff. | Belum dilaporkan |
-| C-M06 | D7–D10 | Idle/jalan/lari dan respons visual serang, bertahan, kena, serta bantuan warga. | Preview lokal memiliki klip lari in-place bersama; integrasi ke controller A/B, bantuan warga, dan pemeriksaan di gameplay masih diperlukan. | Sebagian |
+| C-M06 | D7–D10 | Idle/jalan/lari dan respons visual serang, bertahan, kena, serta bantuan warga. | Lari Shift sudah mengubah kecepatan controller; preview lokal memiliki klip lari bersama, tetapi animasi karakter ke gameplay dan bantuan warga masih perlu integrasi. | Sebagian |
 | C-M07 | D11 | Prefab MainMenu, musik eksplorasi/battle, SFX tindakan utama, dan pencahayaan. | Prefab siap diikat A; audio dan sumber/lisensi tersedia; suara tidak bertumpuk ketika diuji bersama sistem transisi. | Belum dilaporkan |
 | C-M08 | D12–D14 | Pemeriksaan visual/UI/audio pada build terintegrasi. | U19/U20 diperiksa bersama A/B: tampilan 1920×1080 dan 1280×720, fokus UI, prompt, penanda, serta audio transisi benar. | Belum dilaporkan |
 | C-M09 | D15–D18 | Perbaikan keterbacaan dan performa visual berdasarkan playtest. | Masalah yang ditemukan pengguna ditutup, tampilan tidak menghambat navigasi, dan hasil pemeriksaan dicatat pada kandidat rilis. | Belum dilaporkan |
 | C-M10 | D19–D21 | Kredit aset, screenshot build aktual, dan materi demo final. | Kredit sesuai aset yang benar-benar dipakai; gambar/demo cocok dengan build rilis A/B, bukan hanya render konsep. | Belum dilaporkan |
 
-**Preview animasi C-M06:** `Unity/JejakAsa/Assets/_Project/AnimationLab/RerigLocal/RerigPreview.unity` adalah scene preview final dan menyediakan tombol **Lari** untuk 10 karakter Humanoid menggunakan satu klip Mixamo *Running* in-place yang berulang. Siklus diperiksa di Blender dan Play Mode Unity; kontrol/kecepatan lari di gameplay belum dibuat atau diuji. Folder `AnimationLab/` dan sumber `Blender/` diabaikan Git, sehingga aset preview ini belum ikut push/clone dan perlu handoff terpisah sebelum integrasi A/B.
+**Preview animasi C-M06:** `Unity/JejakAsa/Assets/_Project/AnimationLab/RerigLocal/RerigPreview.unity` adalah scene preview final dengan tombol **Lari** untuk 10 karakter Humanoid menggunakan satu klip Mixamo *Running* in-place yang berulang. Shift kiri/kanan menggerakkan controller gameplay lebih cepat, tetapi animasi lari belum dihubungkan ke karakter gameplay. Folder `AnimationLab/` dan sumber `Blender/` diabaikan Git, sehingga aset preview ini belum ikut push/clone dan perlu handoff terpisah sebelum integrasi A/B.
 
 ### Titik handoff dan penerimaan bersama
 
@@ -327,7 +337,7 @@ Sembilan generasi Meshy selesai dalam tiga tahap (termasuk warga laki-laki yang 
 - Salinan uji memakai Decimate non-destruktif di Blender dan diekspor sebagai [FBX preview Unity](Unity/JejakAsa/Assets/_Project/Art/Characters/MC/JejakAsa_MC_Unity_Test.fbx): 32.687 triangle; tinggi terukur 1,70 m setelah koreksi skala impor. Model asli tidak dikurangi.
 - [Prefab preview Unity](Unity/JejakAsa/Assets/_Project/Art/Characters/MC/MC_Meshy_Preview.prefab) memakai material URP/Lit dan base-color 2048×2048. Normal serta metallic/roughness asli tetap ada di GLB sumber, tetapi **belum dipetakan pada material preview**.
 - [Screenshot Play Mode Unity](docs/visual/meshy-mc-unity-preview.png): preview dipasang sementara sebagai child Player, collider asli dipertahankan, dan tidak ada collider baru pada visual. Pada smoke test terpisah, karakter bergerak dan satu penyerahan ke warga mengubah terkirim/trust dari 0 ke 1. Scene Kampung dikembalikan bersih dan Player tersimpan tetap capsule.
-- Model **belum ber-rig atau beranimasi**. Sumber memiliki 50.113 boundary edges; Decimate bukan retopology dan dapat merusak UV/deformasi. Preview 32.687 triangle masih di atas target karakter awal dan belum diprofilkan. Jangan gunakan sebagai karakter final sampai topology, tekstur, rig/skin, animasi, dan performanya diperiksa.
+- FBX **preview MC pada bagian ini** belum ber-rig atau beranimasi. Rig dan animasi terpisah sudah dicoba di `AnimationLab` lokal, tetapi belum diintegrasikan ke gameplay dan folder tersebut diabaikan Git. Sumber memiliki 50.113 boundary edges; Decimate bukan retopology dan dapat merusak UV/deformasi. Preview 32.687 triangle masih di atas target karakter awal dan belum diprofilkan.
 - Tidak ada job Meshy tambahan untuk optimasi atau rigging. Verifikasi biaya sebenarnya pada dashboard Meshy; jangan menyimpan API key dalam repository. Hak penggunaan aset generasi bergantung ketentuan akun yang digunakan.
 
 ## Membuka dan menjalankan proyek
@@ -335,9 +345,12 @@ Sembilan generasi Meshy selesai dalam tiga tahap (termasuk warga laki-laki yang 
 1. Clone repository ini. Di Unity Hub pilih **Add project from disk**, lalu pilih `Unity/JejakAsa`, bukan root repository atau folder `Assets`.
 2. Buka menggunakan Editor **6000.3.27f1**. Tunggu import dan pemulihan package dari `Packages/` selesai; pembukaan pertama dapat memerlukan internet.
 3. Untuk menguji alur lengkap, buka [`MainMenu.unity`](Unity/JejakAsa/Assets/_Project/Scenes/MainMenu.unity), tekan **Play**, lalu klik tab **Game**. Memulai langsung dari Kampung tetap berguna untuk debugging.
-4. Pilih **Mulai Permainan**. Bergerak dengan WASD atau panah; kamera mengikuti dengan sudut tetap.
-5. Dekati warga dan tekan E untuk menyerahkan bantuan; tutup dialog dengan Tutup, Enter, atau Esc.
-6. Esc saat eksplorasi atau battle membuka pause. Pada dialog Esc menutup dialog; pada panel preman Esc memilih menghindar. Keluar dari Play Mode sebelum mengedit scene.
+4. Pilih **Permainan Baru**, lalu konfirmasi. Bergerak dengan WASD atau panah; tahan Shift kiri/kanan untuk berlari.
+5. Keluar dari rumah dengan E. Di posko, bicara dengan Jonathan, ambil paket bantuan dengan E, lalu gunakan gerbang untuk berangkat ke level.
+6. Dekati penerima dan tekan E. Gunakan Enter, Spasi, Esc, atau tombol dialog untuk maju atau menutup sesuai jumlah baris.
+7. Saat encounter, pilih menghindar, battle, atau bantuan warga jika memenuhi syarat. Di battle gunakan **1 Serang**, **2 Bertahan**, **3 Item**, dan **4 Senjata**; item dan senjata harus sudah dimiliki.
+8. Setelah misi berhasil, konfirmasi hasil untuk kembali ke posko, lapor kepada Jonathan, bicara dengan Ophelia, lalu pulang melalui gerbang. Di tempat tidur rumah, simpan pada salah satu dari tiga slot atau istirahat untuk memajukan hari; penimpaan slot meminta konfirmasi.
+9. Esc di eksplorasi atau battle membuka pause. Pada dialog Esc memajukan atau menutup dialog; pada encounter preman biasa Esc memilih menghindar dengan peluang 50%. Keluar dari Play Mode sebelum mengedit scene. Save disimpan secara lokal melalui PlayerPrefs, bukan dalam repository.
 
 ### Pengujian manual U02
 

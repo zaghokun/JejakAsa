@@ -31,6 +31,7 @@ namespace JejakAsa
 
         [Header("Encounter Identity & Radius (U09)")]
         [SerializeField] private string encounterName = "Preman Kampung";
+        public bool isBoss;
         [SerializeField, TextArea(2, 4)] private string introDialogue = "Eits, mau ke mana bawa sembako banyak-banyak? Gang utama ini dijaga!";
         [SerializeField, Min(0.1f)] private float triggerRadius = 1.8f;
         [SerializeField, Min(0.2f)] private float rearmRadius = 2.5f;
@@ -57,11 +58,12 @@ namespace JejakAsa
         private Collider premanCollider;
 
         public string EncounterName => encounterName;
+        public bool IsBoss => isBoss;
         public bool IsEncounterOpen => isEncounterOpen;
         public bool IsResolved => isResolved;
         public bool IsAwaitingExit => awaitingExit;
         public bool HasBattleRequestPending => battleRequestPending;
-        public bool IsCitizenHelpAvailable => playerInteraction != null && playerInteraction.Trust >= 1 && !isResolved;
+        public bool IsCitizenHelpAvailable => !isBoss && playerInteraction != null && playerInteraction.Trust >= 1 && !isResolved;
         public GameObject ObstacleObject => obstacleObject;
         public GameObject PremanVisual => premanVisual;
         public GameObject ActiveMarkerObject => activeMarkerObject;
@@ -150,6 +152,7 @@ namespace JejakAsa
 
                 if (playerInteraction.Outcome != MissionOutcome.InProgress
                     || playerInteraction.IsDialogueOpen
+                    || StoryNpcController.AnyDialogueOpen
                     || playerInteraction.IsOutcomeOpen)
                 {
                     return;
@@ -216,6 +219,28 @@ namespace JejakAsa
             if (!isEncounterOpen || isResolved)
                 return;
 
+            if (isBoss)
+            {
+                statusFeedback = "Boss harus dikalahkan dalam battle.";
+                return;
+            }
+            if (UnityEngine.Random.value >= 0.5f)
+            {
+                TryRequestBattle();
+                return;
+            }
+
+            if (playerInteraction != null)
+            {
+                Vector3 away = playerInteraction.transform.position - transform.position;
+                away.y = 0f;
+                if (away.sqrMagnitude < 0.0001f)
+                    away = Vector3.back;
+                var controller = playerInteraction.GetComponent<CharacterController>();
+                if (controller != null && controller.enabled)
+                    controller.Move(away.normalized * Mathf.Max(0f, triggerRadius + 0.25f - away.magnitude));
+            }
+
             isEncounterOpen = false;
             awaitingExit = true;
             statusFeedback = "";
@@ -262,7 +287,7 @@ namespace JejakAsa
 
             if (!IsCitizenHelpAvailable)
             {
-                statusFeedback = "Bantu minimal satu warga terlebih dahulu.";
+                statusFeedback = isBoss ? "Boss harus dikalahkan dalam battle." : "Bantu minimal satu warga terlebih dahulu.";
                 return false;
             }
 
@@ -388,7 +413,7 @@ namespace JejakAsa
             float btnX = popX + 24f;
             float btnW = popW - 48f;
 
-            if (GUI.Button(new Rect(btnX, popY + 92f, btnW, 36f), "1. Menghindar (Lewat Jalur Memutar)", CozyGuiTheme.TealBtnStyle))
+            if (GUI.Button(new Rect(btnX, popY + 92f, btnW, 36f), isBoss ? "1. Menghindar (Tidak tersedia)" : "1. Menghindar (50% berhasil)", CozyGuiTheme.TealBtnStyle))
             {
                 AvoidEncounter();
             }
@@ -420,7 +445,7 @@ namespace JejakAsa
                 GUI.Button(helpBtnRect, "3. Bantuan Warga (Terkunci)", CozyGuiTheme.LockedBtnStyle);
                 GUI.enabled = previousEnabled;
 
-                GUI.Label(reasonRect, "Bantu minimal satu warga terlebih dahulu", CozyGuiTheme.LockReasonStyle);
+                GUI.Label(reasonRect, isBoss ? "Boss harus dikalahkan dalam battle." : "Bantu minimal satu warga terlebih dahulu", CozyGuiTheme.LockReasonStyle);
             }
 
             if (!string.IsNullOrEmpty(statusFeedback))

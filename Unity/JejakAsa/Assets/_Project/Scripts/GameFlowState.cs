@@ -38,6 +38,7 @@ namespace JejakAsa
 
         // Progres inventori dan level
         public List<string> inventory = new List<string>();
+        public string equippedWeapon = "";
         public List<int> completedLevels = new List<int>();
 
         public GameProgressData Clone()

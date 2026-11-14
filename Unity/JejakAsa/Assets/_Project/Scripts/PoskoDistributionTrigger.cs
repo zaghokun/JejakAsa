@@ -62,9 +62,49 @@ namespace JejakAsa
             if (isPlayerNear)
             {
                 Keyboard kb = Keyboard.current;
-                if (kb != null && kb.eKey.wasPressedThisFrame)
+                if (kb != null && kb.eKey.wasPressedThisFrame && IsNearestInteraction(this, playerTransform))
                 {
                     TryTakeBansos();
+                }
+            }
+        }
+
+        internal static bool IsNearestInteraction(MonoBehaviour candidate, Transform player)
+        {
+            MonoBehaviour nearest = null;
+            float nearestDistance = float.PositiveInfinity;
+
+            foreach (var gate in FindObjectsOfType<PoskoGateController>())
+            {
+                if (gate.gameObject.scene != candidate.gameObject.scene || !gate.isActiveAndEnabled)
+                    continue;
+                if (gate.IsMenuOpen)
+                    return false;
+                Consider(gate, gate.interactionRadius);
+            }
+            foreach (var npc in FindObjectsOfType<StoryNpcController>())
+            {
+                if (npc.gameObject.scene != candidate.gameObject.scene || !npc.isActiveAndEnabled)
+                    continue;
+                if (npc.IsDialogueOpen)
+                    return false;
+                Consider(npc, npc.interactionRadius);
+            }
+            foreach (var packages in FindObjectsOfType<PoskoDistributionTrigger>())
+            {
+                if (packages.gameObject.scene == candidate.gameObject.scene && packages.isActiveAndEnabled)
+                    Consider(packages, packages.interactionRadius);
+            }
+            return nearest == candidate;
+
+            void Consider(MonoBehaviour interaction, float radius)
+            {
+                float distance = (interaction.transform.position - player.position).sqrMagnitude;
+                if (radius >= 0f && distance <= radius * radius &&
+                    (distance < nearestDistance || (distance == nearestDistance && interaction.GetInstanceID() < nearest.GetInstanceID())))
+                {
+                    nearest = interaction;
+                    nearestDistance = distance;
                 }
             }
         }
@@ -76,10 +116,23 @@ namespace JejakAsa
 
             if (!alreadyPickedUp)
             {
+                var flow = GameFlowManager.Instance;
+                if (flow.CurrentPhase != DayPhase.PoskoBriefing && flow.CurrentPhase != DayPhase.DiLevel)
+                {
+                    feedbackText = "Bukan waktu pengambilan paket bansos.";
+                    feedbackTimer = 3.5f;
+                    return;
+                }
+                if (flow.CurrentPhase == DayPhase.PoskoBriefing && !flow.Progress.isBriefingDone)
+                {
+                    feedbackText = "Bicaralah dengan Pak Jonathan terlebih dahulu untuk briefing misi.";
+                    feedbackTimer = 3.5f;
+                    return;
+                }
+
                 if (GameFlowManager.Instance != null)
                 {
                     GameFlowManager.Instance.Progress.hasPickedUpBansos = true;
-                    GameFlowManager.Instance.CompleteBriefing();
                 }
 
                 if (playerInteraction != null)
