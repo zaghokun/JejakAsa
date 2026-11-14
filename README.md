@@ -276,11 +276,13 @@ Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis iku
 | C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Preview MC diuji; sembilan model sumber Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki sudah digenerate. Model baru belum rig/animasi atau terintegrasi. | Sebagian |
 | C-M04 | D4–D6 | Prefab briefing, HUD, dialog, encounter, battle UI, pause, dan hasil/retry. Main menu belum diprioritaskan. | Teks, anchor, fokus, tombol, serta state terkunci/aktif lengkap; referensi untuk pengikatan controller disertakan. Penyerahan prefab bukan bukti logika misi/battle sudah selesai. | Belum dilaporkan |
 | C-M05 | D5–D8 | Lingkungan modular, bangunan, jalan, paket, penanda penerima, dan dekor minimum. | Prefab diserahkan untuk mengganti graybox; A/B memasangnya dan memeriksa ulang jalur/collider. C tidak menimpa logika atau scene integrasi tanpa handoff. | Belum dilaporkan |
-| C-M06 | D7–D10 | Idle/jalan dan respons visual serang, bertahan, kena, serta bantuan warga. | Aksi terbaca dan dapat dipicu controller A/B; tidak membutuhkan animasi kompleks atau AI baru. | Belum dilaporkan |
+| C-M06 | D7–D10 | Idle/jalan/lari dan respons visual serang, bertahan, kena, serta bantuan warga. | Preview lokal memiliki klip lari in-place bersama; integrasi ke controller A/B, bantuan warga, dan pemeriksaan di gameplay masih diperlukan. | Sebagian |
 | C-M07 | D11 | Prefab MainMenu, musik eksplorasi/battle, SFX tindakan utama, dan pencahayaan. | Prefab siap diikat A; audio dan sumber/lisensi tersedia; suara tidak bertumpuk ketika diuji bersama sistem transisi. | Belum dilaporkan |
 | C-M08 | D12–D14 | Pemeriksaan visual/UI/audio pada build terintegrasi. | U19/U20 diperiksa bersama A/B: tampilan 1920×1080 dan 1280×720, fokus UI, prompt, penanda, serta audio transisi benar. | Belum dilaporkan |
 | C-M09 | D15–D18 | Perbaikan keterbacaan dan performa visual berdasarkan playtest. | Masalah yang ditemukan pengguna ditutup, tampilan tidak menghambat navigasi, dan hasil pemeriksaan dicatat pada kandidat rilis. | Belum dilaporkan |
 | C-M10 | D19–D21 | Kredit aset, screenshot build aktual, dan materi demo final. | Kredit sesuai aset yang benar-benar dipakai; gambar/demo cocok dengan build rilis A/B, bukan hanya render konsep. | Belum dilaporkan |
+
+**Preview animasi C-M06:** `Unity/JejakAsa/Assets/_Project/AnimationLab/RerigLocal/RerigPreview.unity` adalah scene preview final dan menyediakan tombol **Lari** untuk 10 karakter Humanoid menggunakan satu klip Mixamo *Running* in-place yang berulang. Siklus diperiksa di Blender dan Play Mode Unity; kontrol/kecepatan lari di gameplay belum dibuat atau diuji. Folder `AnimationLab/` dan sumber `Blender/` diabaikan Git, sehingga aset preview ini belum ikut push/clone dan perlu handoff terpisah sebelum integrasi A/B.
 
 ### Titik handoff dan penerimaan bersama
 
