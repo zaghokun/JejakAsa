@@ -44,7 +44,7 @@ Tidak termasuk rancangan saat ini: multiplayer, akun/backend, database server, c
 | **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos 3 paket, trust, retry bersih di `PlayerInteraction.cs` |
 | **R07** | GUI dan progres dialog | — | Core graybox | Dialog berurutan dan nama pembicara tersedia; naskah final menyusul |
 | **R08** | Reward logistik level | **70%** | Berjalan | Reward 1x per level di posko via `ClaimLevelReward()` |
-| **R09** | Item dan weapon inventory | — | Core graybox | Item pemulih dan senjata memengaruhi battle; nilai sementara |
+| **R09** | Item dan weapon inventory | — | Core graybox | Item dan senjata dapat dilihat di menu ingame; penggunaan terhubung battle, nilai sementara |
 | **R10** | Boss Level 3 & Level 5 | — | Core graybox | Boss dengan pola berbeda pada L3/L5; visual dan dialog final menyusul |
 | **R11** | Encounter preman 50/50 | **85%** | Berjalan | Peluang 50% mundur / 50% battle di `EncounterController.cs` (PlayMode verified) |
 | **R12** | Bantuan warga (Trust $\ge 1$) | **85%** | Berjalan | Warga membuka rute saat trust cukup di `EncounterController.cs` (PlayMode verified) |
@@ -127,7 +127,7 @@ Daftar ini adalah **rencana dan status progres pekerjaan**. U01–U21 di atas te
 | **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos, trust counter, hasil misi, retry bersih di `PlayerInteraction.cs` |
 | **R07** | GUI dan progres dialog | — | Core graybox | `StoryNpcController.cs` dan `PlayerInteraction.cs` mendukung beberapa baris; naskah final menyusul |
 | **R08** | Reward logistik level | **70%** | Berjalan | `GameFlowManager.ClaimLevelReward()` tepat 1x per level setelah lapor & dialog Ophelia |
-| **R09** | Item dan weapon inventory | — | Core graybox | Item pemulih dan senjata terhubung battle dan progres; nilai sementara |
+| **R09** | Item dan weapon inventory | — | Core graybox | Menu ingame untuk item/senjata, efek battle dan progres; nilai sementara |
 | **R10** | Boss Level 3 & Level 5 | — | Core graybox | Encounter boss dan pola battle berbeda; visual dan cerita final menyusul |
 | **R11** | Encounter preman 50/50 | **85%** | Berjalan | Menghindar 50% mundur / 50% battle di `EncounterController.cs` (PlayMode verified) |
 | **R12** | Bantuan warga (Trust $\ge 1$) | **85%** | Berjalan | Bantuan warga membuka rute saat trust cukup di `EncounterController.cs` (PlayMode verified) |
@@ -140,7 +140,9 @@ Daftar ini adalah **rencana dan status progres pekerjaan**. U01–U21 di atas te
 
 Scene level dan karakter gameplay masih graybox; angka dan identitas item, aset, dialog cerita, dan build akhir belum diterima.
 
-**Item dan weapon sementara:** di battle, tombol **3 / Item** menampilkan jumlah item pemulih; penggunaannya memulihkan maksimum 12 HP, menghabiskan satu item dan satu giliran, dan tidak tersedia saat HP penuh. Tombol **4 / Senjata** memasang atau melepas `basic_weapon` untuk +5 damage; status pemasangan dan inventori tersimpan bersama progres. Reward diberikan sekali setelah laporan dan dialog: level 2 memberi senjata, sedangkan level lain memberi satu item pemulih. Belum ada menu inventori lengkap di luar battle maupun ikon atau model final.
+**Item dan weapon sementara:** reward level 2 memberi `basic_weapon` (+5 damage); level lain memberi satu `healing_item` (hingga +12 HP), sekali setelah laporan dan dialog. Menu ingame menampilkan jumlah item dan status senjata. Item pemulih hanya dapat dipakai pada giliran battle saat HP belum penuh; penggunaan menghabiskan satu item dan satu giliran. Senjata dapat dipasang/dilepas dari menu ingame, atau pada giliran battle. Inventori dan senjata terpasang tersimpan bersama progres; ikon dan model final belum ada.
+
+**Menu ingame:** Esc membuka menu bergaya RPG dengan **Lanjutkan, Item, Senjata, Pengaturan, Muat, dan Keluar**. Pengaturan volume/mode layar tersimpan lokal; Muat meminta konfirmasi sebelum mengganti progres sesi. Keluar menyediakan pilihan kembali ke menu utama atau keluar game dengan konfirmasi. Tes Play Mode terarah menu, pause battle, dan retry lulus **11/11**; fungsi keluar aplikasi belum diuji pada build Windows.
 
 **Bukti core saat ini:** uji Play Mode `CampaignFiveLevelsTests` menyelesaikan lima hari, dua boss, reward dan fase Tamat; pemain dipindahkan ke titik interaksi selama uji alur. Uji terpisah mencapai ketiga penerima di tiap level menggunakan input gerak setelah encounter diselesaikan. Uji battle terarah lulus 14/14; regresi Play Mode sebelumnya 70/71, dengan satu uji menghindar diperbaiki dan lulus saat dijalankan terpisah. Build Windows dan uji komputer kedua belum dilakukan.
 
@@ -350,7 +352,7 @@ Sembilan generasi Meshy selesai dalam tiga tahap (termasuk warga laki-laki yang 
 6. Dekati penerima dan tekan E. Gunakan Enter, Spasi, Esc, atau tombol dialog untuk maju atau menutup sesuai jumlah baris.
 7. Saat encounter, pilih menghindar, battle, atau bantuan warga jika memenuhi syarat. Di battle gunakan **1 Serang**, **2 Bertahan**, **3 Item**, dan **4 Senjata**; item dan senjata harus sudah dimiliki.
 8. Setelah misi berhasil, konfirmasi hasil untuk kembali ke posko, lapor kepada Jonathan, bicara dengan Ophelia, lalu pulang melalui gerbang. Di tempat tidur rumah, simpan pada salah satu dari tiga slot atau istirahat untuk memajukan hari; penimpaan slot meminta konfirmasi.
-9. Esc di eksplorasi atau battle membuka pause. Pada dialog Esc memajukan atau menutup dialog; pada encounter preman biasa Esc memilih menghindar dengan peluang 50%. Keluar dari Play Mode sebelum mengedit scene. Save disimpan secara lokal melalui PlayerPrefs, bukan dalam repository.
+9. Esc saat eksplorasi atau battle membuka menu ingame. Pilih Item, Senjata, Pengaturan, Muat, Keluar, atau Lanjutkan; gunakan panah/Tab dan Enter atau mouse, dan Esc untuk kembali. Pada dialog Esc memajukan atau menutup dialog; pada encounter preman biasa Esc memilih menghindar dengan peluang 50%. Memuat dan keluar meminta konfirmasi. Save disimpan secara lokal melalui PlayerPrefs, bukan dalam repository.
 
 ### Pengujian manual U02
 

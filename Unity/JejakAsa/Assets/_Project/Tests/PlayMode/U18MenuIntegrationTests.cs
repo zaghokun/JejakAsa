@@ -37,6 +37,9 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
         Scene gameScene = SceneManager.GetActiveScene();
         Scene cleanScene = SceneManager.CreateScene("U18TestCleanup");
         SceneManager.SetActiveScene(cleanScene);
+        Scene battle = SceneManager.GetSceneByPath(BattlePath);
+        if (battle.IsValid() && battle.isLoaded && battle != gameScene)
+            yield return SceneManager.UnloadSceneAsync(battle);
         if (gameScene.IsValid() && gameScene.isLoaded)
             yield return SceneManager.UnloadSceneAsync(gameScene);
     }
@@ -64,6 +67,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
         Assert.That(BattleController.Active, Is.Not.Null);
         yield return Press(Key.Escape);
         Assert.That(Time.timeScale, Is.Zero);
+        yield return Press(Key.Digit6);
         yield return Press(Key.Digit2);
         yield return Press(Key.Digit1);
         Assert.That(Time.timeScale, Is.Zero, "Membatalkan konfirmasi harus tetap dalam pause.");
@@ -281,6 +285,172 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
         finally
         {
             flow.SetStateForTesting(previous);
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator PauseMenuManagesInventoryEquipmentSettingsAndExitWithoutLosingState()
+    {
+        GameFlowManager flow = GameFlowManager.Instance;
+        GameProgressData previous = flow.Progress.Clone();
+        string previousSpawn = flow.LastSpawnPoint;
+        const string volumeKey = "JejakAsa_MasterVolume";
+        const string slotKey = "JejakAsa_SaveSlot_3";
+        bool volumeExisted = PlayerPrefs.HasKey(volumeKey);
+        float previousPreference = PlayerPrefs.GetFloat(volumeKey);
+        float previousVolume = AudioListener.volume;
+        bool slotExisted = PlayerPrefs.HasKey(slotKey);
+        string previousSlot = PlayerPrefs.GetString(slotKey);
+        try
+        {
+            PlayerPrefs.SetFloat(volumeKey, 0.5f);
+            PlayerPrefs.DeleteKey(slotKey);
+            flow.StartNewCampaign();
+            flow.Progress.inventory.Add(BattleController.HealingItemId);
+            flow.Progress.inventory.Add(BattleController.BasicWeaponId);
+            yield return SceneManager.LoadSceneAsync(KampungPath, LoadSceneMode.Single);
+            var menu = Object.FindFirstObjectByType<SessionMenu>();
+            var player = Object.FindFirstObjectByType<PlayerController>();
+            yield return Press(Key.Escape);
+            Assert.That(menu.IsPaused, Is.True);
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(player.enabled, Is.False);
+            yield return Press(Key.Digit2);
+            yield return Press(Key.Digit1);
+            Assert.That(menu.MenuNotice, Does.Contain("battle"));
+            Assert.That(flow.Progress.inventory, Does.Contain(BattleController.HealingItemId));
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit3);
+            yield return Press(Key.Digit1);
+            Assert.That(flow.Progress.equippedWeapon, Is.EqualTo(BattleController.BasicWeaponId));
+            yield return Press(Key.Digit1);
+            Assert.That(flow.Progress.equippedWeapon, Is.Empty);
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit4);
+            yield return Press(Key.Digit2);
+            Assert.That(AudioListener.volume, Is.EqualTo(0.6f).Within(0.001f));
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit5);
+            yield return Press(Key.Digit3);
+            Assert.That(menu.MenuNotice, Does.Contain("kosong"));
+            Assert.That(menu.IsPaused, Is.True);
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit6);
+            yield return Press(Key.Digit3);
+            yield return Press(Key.Digit1);
+            Assert.That(menu.IsPaused, Is.True, "Membatalkan keluar tidak boleh melanjutkan permainan.");
+            yield return Press(Key.Digit1);
+            yield return Press(Key.Digit1);
+            Assert.That(menu.IsPaused, Is.False);
+            Assert.That(Time.timeScale, Is.EqualTo(1f));
+            Assert.That(player.enabled, Is.True);
+        }
+        finally
+        {
+            if (slotExisted) PlayerPrefs.SetString(slotKey, previousSlot);
+            else PlayerPrefs.DeleteKey(slotKey);
+            if (volumeExisted) PlayerPrefs.SetFloat(volumeKey, previousPreference);
+            else PlayerPrefs.DeleteKey(volumeKey);
+            PlayerPrefs.Save();
+            AudioListener.volume = previousVolume;
+            flow.SetStateForTesting(previous);
+            flow.LastSpawnPoint = previousSpawn;
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator PauseLoadRequiresConfirmationAndRestoresHomeWithoutOverwritingSave()
+    {
+        GameFlowManager flow = GameFlowManager.Instance;
+        GameProgressData previous = flow.Progress.Clone();
+        string previousSpawn = flow.LastSpawnPoint;
+        const string slotKey = "JejakAsa_SaveSlot_1";
+        const string timeKey = "JejakAsa_SaveSlot_1_Time";
+        bool hadSlot = PlayerPrefs.HasKey(slotKey);
+        bool hadTime = PlayerPrefs.HasKey(timeKey);
+        string oldSlot = PlayerPrefs.GetString(slotKey);
+        string oldTime = PlayerPrefs.GetString(timeKey);
+        try
+        {
+            flow.SetStateForTesting(new GameProgressData { currentDay = 2, currentLevel = 2, currentPhase = DayPhase.RumahMalam });
+            Assert.That(flow.SaveGame(1), Is.True);
+            string save = PlayerPrefs.GetString(slotKey);
+            flow.SetStateForTesting(new GameProgressData { currentDay = 4, currentLevel = 4, currentPhase = DayPhase.DiLevel, hasPickedUpBansos = true });
+            yield return SceneManager.LoadSceneAsync(KampungPath, LoadSceneMode.Single);
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit5);
+            yield return Press(Key.Digit1);
+            Assert.That(flow.CurrentDay, Is.EqualTo(4));
+            Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(KampungPath));
+            yield return Press(Key.Digit1);
+            Assert.That(flow.CurrentDay, Is.EqualTo(4), "Membatalkan muat tidak boleh mengubah progres.");
+            yield return Press(Key.Digit1);
+            yield return Press(Key.Digit2);
+            yield return null;
+            Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Rumah"));
+            Assert.That(flow.CurrentDay, Is.EqualTo(2));
+            Assert.That(PlayerPrefs.GetString(slotKey), Is.EqualTo(save));
+            Assert.That(Time.timeScale, Is.EqualTo(1f));
+        }
+        finally
+        {
+            if (hadSlot) PlayerPrefs.SetString(slotKey, oldSlot);
+            else PlayerPrefs.DeleteKey(slotKey);
+            if (hadTime) PlayerPrefs.SetString(timeKey, oldTime);
+            else PlayerPrefs.DeleteKey(timeKey);
+            PlayerPrefs.Save();
+            flow.SetStateForTesting(previous);
+            flow.LastSpawnPoint = previousSpawn;
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator PauseInventoryUsesItemAndWeaponDuringBattleTurn()
+    {
+        GameFlowManager flow = GameFlowManager.Instance;
+        GameProgressData previous = flow.Progress.Clone();
+        string previousSpawn = flow.LastSpawnPoint;
+        try
+        {
+            yield return SceneManager.LoadSceneAsync(MenuPath, LoadSceneMode.Single);
+            Object.FindFirstObjectByType<SessionMenu>().StartNewGame();
+            yield return null;
+            flow.Progress.inventory.Add(BattleController.HealingItemId);
+            flow.Progress.inventory.Add(BattleController.BasicWeaponId);
+            PlayerInteraction player = Object.FindFirstObjectByType<PlayerInteraction>();
+            var controller = player.GetComponent<CharacterController>();
+            controller.enabled = false;
+            player.transform.position = new Vector3(0f, 1f, -1.6f);
+            controller.enabled = true;
+            Physics.SyncTransforms();
+            yield return null;
+            yield return Press(Key.Digit2);
+            float deadline = Time.realtimeSinceStartup + 5f;
+            while ((BattleController.Active == null || !BattleController.Active.IsPlayerTurn) && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            var battle = BattleController.Active;
+            Assert.That(battle, Is.Not.Null);
+            Assert.That(battle.PlayerAttack(), Is.True);
+            Assert.That(battle.PlayerHP, Is.LessThan(battle.playerMaxHP));
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit2);
+            yield return Press(Key.Digit1);
+            Assert.That(flow.Progress.inventory, Does.Not.Contain(BattleController.HealingItemId));
+            Assert.That(Time.timeScale, Is.EqualTo(1f));
+            deadline = Time.realtimeSinceStartup + 5f;
+            while (battle.ActionLocked && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(battle.IsPlayerTurn, Is.True);
+            yield return Press(Key.Escape);
+            yield return Press(Key.Digit3);
+            yield return Press(Key.Digit1);
+            Assert.That(flow.Progress.equippedWeapon, Is.EqualTo(BattleController.BasicWeaponId));
+            Assert.That(battle.CurrentAttackDamage, Is.EqualTo(battle.attackDamage + 5));
+        }
+        finally
+        {
+            flow.SetStateForTesting(previous);
+            flow.LastSpawnPoint = previousSpawn;
         }
     }
 
