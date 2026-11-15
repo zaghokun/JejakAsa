@@ -84,10 +84,24 @@ namespace JejakAsa
             OnPhaseChanged?.Invoke(data.currentPhase);
         }
 
+        public bool CompleteProlog()
+        {
+            if (data.currentPhase != DayPhase.Prolog)
+                return false;
+            data.currentPhase = DayPhase.RumahPagi;
+            OnPhaseChanged?.Invoke(data.currentPhase);
+            return true;
+        }
+
         // ─── Navigasi Rumah -> Posko ─────────────────────────────────────
 
         public bool CanGoToPoskoFromHome(out string reason)
         {
+            if (data.currentPhase == DayPhase.Prolog)
+            {
+                reason = "Bicaralah dengan Ibu sebelum berangkat ke posko.";
+                return false;
+            }
             if (data.currentPhase == DayPhase.RumahMalam)
             {
                 reason = "Sudah larut malam. Istirahatlah di tempat tidur sebelum kembali ke posko besok pagi.";
@@ -108,7 +122,7 @@ namespace JejakAsa
             if (!CanGoToPoskoFromHome(out _))
                 return false;
 
-            if (data.currentPhase == DayPhase.Prolog || data.currentPhase == DayPhase.RumahPagi)
+            if (data.currentPhase == DayPhase.RumahPagi)
             {
                 data.currentPhase = DayPhase.PoskoBriefing;
                 OnPhaseChanged?.Invoke(data.currentPhase);

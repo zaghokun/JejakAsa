@@ -35,6 +35,9 @@ namespace JejakAsa
         private PlayerController movement;
         private bool movementWasEnabled;
         private static StoryNpcController activeDialogue;
+        private DialogueLine[] activeLines;
+        private System.Action sequenceCompleted;
+        public static event System.Action<string> SpeakerChanged;
         private static int escapeConsumedFrame = -1;
         internal static bool EscapeConsumedThisFrame => escapeConsumedFrame == Time.frameCount;
         internal static bool AnyDialogueOpen => activeDialogue != null;
@@ -62,7 +65,7 @@ namespace JejakAsa
             if (kb == null)
                 return;
 
-            if (isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
+            if (GameFlowManager.Instance.CurrentPhase != DayPhase.Prolog && isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
             {
                 OpenDialogue();
             }
@@ -76,14 +79,26 @@ namespace JejakAsa
 
         public void OpenDialogue()
         {
+            OpenDialogue(null, null);
+        }
+
+        public bool OpenSequence(DialogueLine[] lines, System.Action onCompleted)
+        {
+            return OpenDialogue(lines, onCompleted);
+        }
+
+        private bool OpenDialogue(DialogueLine[] lines, System.Action onCompleted)
+        {
             if (isDialogueOpen || AnyDialogueOpen)
-                return;
+                return false;
             var interaction = playerTransform != null ? playerTransform.GetComponent<PlayerInteraction>() : null;
             if (interaction != null && (interaction.IsDialogueOpen || interaction.IsEncounterOpen || interaction.IsOutcomeOpen || interaction.IsInBattle))
-                return;
+                return false;
 
             isDialogueOpen = true;
             activeDialogue = this;
+            activeLines = lines ?? dialogueLines;
+            sequenceCompleted = onCompleted;
             movement = playerTransform != null ? playerTransform.GetComponent<PlayerController>() : null;
             if (movement != null)
             {
@@ -156,6 +171,9 @@ namespace JejakAsa
                     }
                     break;
             }
+            if (activeLines != null && activeLines.Length > 0)
+                SpeakerChanged?.Invoke(activeLines[0].speaker);
+            return true;
         }
 
         public void CloseDialogue()
@@ -163,12 +181,13 @@ namespace JejakAsa
             if (!isDialogueOpen || dialogueAdvanceFrame == Time.frameCount)
                 return;
             dialogueAdvanceFrame = Time.frameCount;
-            if (dialogueLines != null && dialogueLineIndex + 1 < dialogueLines.Length)
+            if (activeLines != null && dialogueLineIndex + 1 < activeLines.Length)
             {
                 dialogueLineIndex++;
+                SpeakerChanged?.Invoke(activeLines[dialogueLineIndex].speaker);
                 return;
             }
-            if (dialogueLines != null && dialogueLines.Length > 1)
+            if (sequenceCompleted == null && activeLines != null && activeLines.Length > 1)
             {
                 if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoBriefing)
                     GameFlowManager.Instance.CompleteBriefing();
@@ -183,7 +202,15 @@ namespace JejakAsa
                     GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{dialogueDay}");
                 }
             }
+            var completed = sequenceCompleted;
             EndDialogue();
+            completed?.Invoke();
+        }
+
+        public void CancelSequence()
+        {
+            if (sequenceCompleted != null)
+                EndDialogue();
         }
 
         private void EndDialogue()
@@ -192,6 +219,9 @@ namespace JejakAsa
                 return;
             isDialogueOpen = false;
             activeDialogue = null;
+            activeLines = null;
+            sequenceCompleted = null;
+            SpeakerChanged?.Invoke(null);
             if (movement != null)
                 movement.enabled = movementWasEnabled;
         }
@@ -241,13 +271,13 @@ namespace JejakAsa
                 GUI.DrawTexture(new Rect(cardX + 4, cardY + 6, cardW, cardH), CozyGuiTheme.ShadowTex);
                 GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
 
-                bool configured = dialogueLines != null && dialogueLines.Length > 0;
-                string speaker = configured && !string.IsNullOrEmpty(dialogueLines[dialogueLineIndex].speaker)
-                    ? dialogueLines[dialogueLineIndex].speaker : characterName;
-                string text = configured ? dialogueLines[dialogueLineIndex].text : currentDialogueText;
-                GUI.Label(new Rect(cardX + 18, cardY + 14, 160, 24), speaker.ToUpper(), CozyGuiTheme.RibbonStyle);
+                bool configured = activeLines != null && activeLines.Length > 0;
+                string speaker = configured && !string.IsNullOrEmpty(activeLines[dialogueLineIndex].speaker)
+                    ? activeLines[dialogueLineIndex].speaker : characterName;
+                string text = configured ? activeLines[dialogueLineIndex].text : currentDialogueText;
+                GUI.Label(new Rect(cardX + 18, cardY + 14, 160, 24), sequenceCompleted != null ? speaker : speaker.ToUpper(), CozyGuiTheme.RibbonStyle);
                 GUI.Label(new Rect(cardX + 18, cardY + 44, cardW - 36, 75), text, CozyGuiTheme.DialogueTextStyle);
-                bool hasNext = configured && dialogueLineIndex + 1 < dialogueLines.Length;
+                bool hasNext = configured && dialogueLineIndex + 1 < activeLines.Length;
                 GUI.Label(new Rect(cardX + 18, cardY + cardH - 24, cardW - 150, 18), "Enter / Spasi / Esc", CozyGuiTheme.HintStyle);
                 if (GUI.Button(new Rect(cardX + cardW - 125, cardY + cardH - 30, 105, 24), hasNext ? "Lanjut" : "Tutup"))
                     CloseDialogue();

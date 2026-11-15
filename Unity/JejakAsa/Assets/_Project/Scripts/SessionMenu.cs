@@ -194,7 +194,7 @@ namespace JejakAsa
         {
             Time.timeScale = 1f;
             if (GameFlowManager.Instance != null)
-                GameFlowManager.Instance.StartNewCampaign();
+                GameFlowManager.Instance.StartNewCampaign(true);
             GameFlowManager.Instance.LastSpawnPoint = null;
 
             SceneManager.LoadScene("Assets/_Project/Scenes/Rumah.unity", LoadSceneMode.Single);
