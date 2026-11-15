@@ -40,7 +40,7 @@ Tidak termasuk rancangan saat ini: multiplayer, akun/backend, database server, c
 | **R02** | Prolog dan pengantar boss | **15%** | Konsep | Naskah storyboard & draft pembuka |
 | **R03** | Posko graybox & gerbang bersama | **100%** | Graybox | `Posko.unity` lapangan terbuka 28×24 m, Jonathan, Ophelia, bansos, satu gerbang; visual final menyusul |
 | **R04** | Rumah graybox & kamar Vicky | **100%** | Selesai | `Rumah.unity` kamar 14×10m, tidur, save 3 slot, Ibu |
-| **R05** | Lima map level & rotasi hari | — | Graybox | Lima scene dan pergantian hari tersedia; validasi layout final menyusul |
+| **R05** | Lima map level & rotasi hari | **80%** | Desain & Scene | 5 scene aktif; rancangan eskalasi & diferensiasi gameplay L1–L5 terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
 | **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos 3 paket, trust, retry bersih di `PlayerInteraction.cs` |
 | **R07** | GUI dan progres dialog | — | Core graybox | Dialog berurutan dan nama pembicara tersedia; naskah final menyusul |
 | **R08** | Reward logistik level | **70%** | Berjalan | Reward 1x per level di posko via `ClaimLevelReward()` |
@@ -123,7 +123,7 @@ Daftar ini adalah **rencana dan status progres pekerjaan**. U01–U21 di atas te
 | **R02** | Prolog dan pengantar boss | **15%** | Belum Mulai | Konsep narasi storyboard, cutscene pembuka |
 | **R03** | Posko graybox & gerbang bersama | **100%** | Graybox | `Posko.unity` lapangan terbuka 28×24 m, `PoskoGateController.cs`, Jonathan, Ophelia |
 | **R04** | Rumah graybox & kamar Vicky | **100%** | Selesai | `Rumah.unity` (indoor 14×10 m), `HomeInteractionController.cs`, Kasur (Save/Tidur), `Ibu` |
-| **R05** | Lima map level & rotasi hari | — | Graybox | `Kampung.unity` dan `Kampung_L2`–`Kampung_L5`; jalur dan aset final menyusul |
+| **R05** | Lima map level & rotasi hari | **80%** | Desain & Scene | `Kampung.unity` dan `Kampung_L2`–`Kampung_L5`; spesifikasi gameplay per level di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
 | **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos, trust counter, hasil misi, retry bersih di `PlayerInteraction.cs` |
 | **R07** | GUI dan progres dialog | — | Core graybox | `StoryNpcController.cs` dan `PlayerInteraction.cs` mendukung beberapa baris; naskah final menyusul |
 | **R08** | Reward logistik level | **70%** | Berjalan | `GameFlowManager.ClaimLevelReward()` tepat 1x per level setelah lapor & dialog Ophelia |
@@ -146,6 +146,13 @@ Scene level dan karakter gameplay masih graybox; angka dan identitas item, aset,
 
 **Bukti core saat ini:** uji Play Mode `CampaignFiveLevelsTests` menyelesaikan lima hari, dua boss, reward dan fase Tamat; pemain dipindahkan ke titik interaksi selama uji alur. Uji terpisah mencapai ketiga penerima di tiap level menggunakan input gerak setelah encounter diselesaikan. Uji battle terarah lulus 14/14; regresi Play Mode sebelumnya 70/71, dengan satu uji menghindar diperbaiki dan lulus saat dijalankan terpisah. Build Windows dan uji komputer kedua belum dilakukan.
 
+  **Desain & Diferensiasi Gameplay 5 Level (R05 / AB-D03):** Untuk mencegah pengulangan monoton antar-level, setiap hari menghadirkan eskalasi tantangan dan mekanik unik (spesifikasi lengkap di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md)):
+  - **Level 1 (Hari 1 — Langkah Pertama):** Tutorial dasar; jalur gang lurus terbuka, 1 preman statis di tengah (peluang menghindar tinggi), timer 180s.
+  - **Level 2 (Hari 2 — Genangan Banjir & Rute Tikus):** Gang utama tergenang air/lumpur (*environmental hazard*, speed lari -50%) dan terblokir sampah; pemain mencari jalan tikus memutar, timer 160s, reward `basic_weapon`.
+  - **Level 3 (Hari 3 — Pemerasan & Boss Mr. Deddy):** Blokade ganda preman; wajib memanfaatkan Bantuan Warga (`Trust >= 1`) untuk membuka rute kroco; diakhiri duel wajib melawan Mid-Boss Mr. Deddy, timer 170s.
+  - **Level 4 (Hari 4 — Waktu Kritis & Preman Patroli):** Preman patroli dinamis bergerak bolak-balik di persimpangan gang (*moving hazard*); warga lansia sakit butuh bantuan cepat, timer diperketat 145s.
+  - **Level 5 (Hari 5 — Puncak Krisis & Final Boss Mr. Gas Oke):** Tata letak mini-labirin dengan barikade seng dan drum; pertarungan klimaks melawan Mr. Gas Oke; penyaluran paket terakhir menamatkan permainan (`DayPhase.Tamat`).
+
 ---
 
 ### R1 — Alur dunia dan progres
@@ -154,7 +161,7 @@ Scene level dan karakter gameplay masih graybox; angka dan identitas item, aset,
 - [ ] **R02 — Prolog dan pengantar boss [15%]:** tampilkan Vicky yang baru lulus, kebutuhan kampung, sponsor, pendirian posko, dan perkenalan Jonathan serta Ophelia; berikan cuplikan Mr. Deddy dan boss terakhir sebelum gameplay utama.
 - [x] **R03 — Posko graybox [100%]:** map posko berupa lapangan terbuka 28×24 m dengan area briefing, bantuan, Jonathan, Ophelia dan satu gerbang bersama. Pengambilan bantuan dan briefing diperlukan sebelum keberangkatan; visual final dan pemeriksaan build menyusul.
 - [x] **R04 — Rumah graybox [100%]:** buat map interior rumah tanpa tampilan luar sebagai tempat istirahat dan save, dengan interaksi orang tua sederhana. Keluar dari rumah hanya menuju posko; diimplementasikan di `Rumah.unity` (ruangan interior 14×10 m) dan `HomeInteractionController.cs`.
-- [ ] **R05 — Lima map level dan hari:** lima scene graybox dan pergantian hari tersedia; periksa layout final, jalur, boss, dan aset setelah integrasi.
+- [x] **R05 — Lima map level dan hari [80%]:** lima scene graybox (`Kampung` dan `Kampung_L2`–`Kampung_L5`) dan rotasi siklus hari telah berjalan; rancangan diferensiasi mekanik tiap level terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md). Detail visual final menyusul bersama Role C.
 - [ ] **R06 — Hasil dan retry per level [85%]:** penyerahan, timer, trust, hasil battle, dan hasil misi berlaku pada level aktif; gagal dapat diulang tanpa menghapus progres level yang telah diselesaikan. Uji kemenangan, kegagalan, dan retry berulang.
 
 ### R2 — Cerita, reward, dan pertempuran
