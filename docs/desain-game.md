@@ -3,31 +3,29 @@
 ## 1. Gambaran Umum
 
 - **Judul game:** Jejak Asa
-- **Genre:** RPG 3D dengan kamera isometrik tetap, eksplorasi, pengantaran misi, dan pertarungan turn-based.
+- **Genre:** Game 3D dengan kamera isometrik tetap, eksplorasi dan pengantaran misi.
 - **Platform:** PC.
 - **Engine:** Unity.
 - **Tema:** Solidaritas warga dan upaya membantu masyarakat menghadapi kemiskinan serta hambatan distribusi bantuan.
-- **Inspirasi visual/mekanik:** struktur eksplorasi dan pertarungan RPG Maker, diwujudkan sebagai game 3D.
+- **Inspirasi visual/mekanik:** eksplorasi RPG Maker, diwujudkan sebagai game 3D.
 
 ## 2. Premis Cerita
 
 Seorang mahasiswa yang baru lulus kembali ke kampung halamannya di Jakarta Utara. Ia melihat warga di lingkungannya masih menghadapi kemiskinan dan kesulitan memperoleh bantuan. Ia mulai membantu dengan mengantarkan bantuan sosial kepada warga.
 
-Dalam perjalanan, ia menghadapi intimidasi dari sekelompok orang yang ingin menghentikan distribusi. Pemain menentukan cara melewati mereka: menghindar, bertengkar, atau meminta bantuan warga.
-
-Warga bukan sekadar penerima bantuan: mereka dapat membantu tokoh utama dan ikut menentukan keberhasilan misi.
+Dalam perjalanan, ia menghadapi intimidasi dari sekelompok orang yang ingin menghentikan distribusi. Warga bukan sekadar penerima bantuan: mereka memiliki peran dalam cerita dan kehidupan kampung.
 
 ## 3. Tujuan Pemain
 
-Menyelesaikan pengantaran bantuan dengan mengatur waktu dan rute, sambil menjaga kepercayaan warga serta memilih cara menghadapi intimidasi.
+Menyelesaikan pengantaran bantuan dengan mengatur waktu dan rute.
 
 ## 4. Siklus Permainan Utama
 
 1. Berbicara dengan warga dan mengetahui kebutuhan serta lokasi penerima bantuan.
 2. Menerima bantuan yang perlu dibagikan dan memulai misi dengan batas waktu.
-3. Menjelajahi lingkungan, memilih jalur, dan menghindari atau menghadapi musuh.
+3. Menjelajahi lingkungan dan memilih jalur pengantaran.
 4. Mengantarkan bantuan kepada warga yang dituju.
-5. Menerima hasil misi dan melihat perubahan kepercayaan warga atau akses bantuan pada misi berikutnya.
+5. Melapor di posko, berbicara dengan Ophelia, lalu pulang untuk menyimpan dan beristirahat.
 
 ## 5. Mekanik Utama
 
@@ -38,35 +36,14 @@ Menyelesaikan pengantaran bantuan dengan mengatur waktu dan rute, sambil menjaga
 - Pemain memilih urutan serta jalur pengantaran.
 - Batas waktu menjadi tantangan mengatur perjalanan. Kegagalan mencapai semua tujuan tidak membuat warga menjadi pihak yang disalahkan.
 
-### Intimidasi dan pilihan pemain
+### Arah mendatang — belum diimplementasikan
 
-Saat menghadapi musuh yang mengintimidasi, pemain memilih salah satu tindakan:
-
-- **Menghindar:** melewati ancaman tanpa pertarungan, dengan kemungkinan harus mengambil jalur lain.
-- **Bertengkar:** masuk ke arena pertarungan turn-based.
-- **Meminta bantuan warga:** warga membantu mengalihkan perhatian atau membuka jalan. Pilihan ini tersedia bila kondisi misi atau kepercayaan warga memungkinkan.
-
-Timer pengantaran berhenti selama pertarungan agar pemain tidak kehilangan waktu karena berada di layar battle.
-
-### Pertarungan turn-based
-
-- Pemain dan musuh bergiliran melakukan aksi.
-- Pertarungan berfokus pada mengatasi intimidasi, bukan kekerasan berat.
-- Hasil pertarungan membuka kembali jalur pengantaran.
-
-Detail aksi, statistik, dan item belum ditetapkan; tentukan setelah prototipe alur eksplorasi terasa menyenangkan.
-
-### Kepercayaan warga
-
-- Kepercayaan meningkat ketika pemain membantu warga dan menyelesaikan pengantaran.
-- Kepercayaan dapat membuka bantuan warga pada misi berikutnya.
-- Kepercayaan memengaruhi dukungan yang tersedia, bukan nilai atau martabat warga.
+Preman direncanakan mengejar pemain ketika berada dalam radius; kontak mengurangi timer. Lumpur atau genangan pada setiap level direncanakan memperlambat gerak. Mekanik ini belum ada dalam permainan.
 
 ## 6. Kondisi Misi
 
 - **Berhasil:** bantuan sampai kepada penerima sebelum batas waktu.
-- **Berhasil sebagian:** sebagian bantuan terkirim; cerita menunjukkan dampaknya tanpa menyalahkan warga yang belum menerima bantuan.
-- **Gagal:** waktu habis sebelum pengantaran selesai. Pemain dapat mencoba misi lagi atau melanjutkan cerita sesuai rancangan level.
+- **Gagal:** waktu habis sebelum pengantaran selesai. Pemain dapat mengulang misi.
 
 ## 7. Arah Cerita dan Karakter
 
@@ -85,25 +62,11 @@ Detail aksi, statistik, dan item belum ditetapkan; tentukan setelah prototipe al
 
 - Visual 3D low-poly dengan kamera isometrik tetap; model dan lingkungan dibuat sederhana agar sesuai dengan cakupan proyek.
 - Lingkungan kampung perkotaan dibuat fiktif dan menghormati warga yang menjadi inspirasi.
-- Musik eksplorasi bernuansa hangat; musik pertarungan lebih tegang.
-- Efek suara sederhana untuk dialog, interaksi, dan pertarungan.
+- Musik eksplorasi bernuansa hangat.
+- Efek suara sederhana untuk dialog dan interaksi.
 
-## 10. Batas Prototipe Pertama
+## 10. Cakupan dan status
 
-Buat satu bagian kecil permainan yang mencakup:
+Alur mencakup lima level dan lima hari, rumah, posko, interaksi, dialog, jeda, penyimpanan, dan pengantaran bertimer. P01 tetap dipertahankan; pekerjaan P01 tidak dilanjutkan dalam revisi ini.
 
-- Satu area lingkungan 3D.
-- Tokoh utama dan beberapa warga.
-- Satu misi dengan beberapa pengantaran dan timer.
-- Satu pertemuan musuh dengan pilihan menghindar, bertengkar, atau meminta bantuan warga.
-- Satu pertarungan turn-based.
-- Hasil misi yang memperlihatkan perubahan kepercayaan warga.
-
-Tunda boss terakhir, banyak peta, banyak jenis musuh, percabangan cerita besar, dan sistem ekonomi sampai siklus inti ini terbukti berjalan.
-
-## 11. Hal yang Belum Diputuskan
-
-- Judul final dan nama karakter.
-- Durasi timer serta jumlah penerima per misi.
-- Detail aturan pertarungan dan konsekuensi jika kalah.
-- Apakah misi gagal dapat diulang atau cerita berlanjut dengan hasil berbeda.
+Rencana prototipe sebelumnya yang mencakup pertemuan dengan pilihan, pertarungan, dan perubahan kepercayaan adalah historis, bukan kriteria penerimaan saat ini.

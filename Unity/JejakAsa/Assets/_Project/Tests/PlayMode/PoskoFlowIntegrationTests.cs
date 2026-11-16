@@ -39,7 +39,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
     }
 
     [UnityTest]
-    public IEnumerator GateLoadsEachLevelWithItsOwnLayoutAndBoss()
+    public IEnumerator GateLoadsEachLevelWithItsOwnLayout()
     {
         GameFlowManager flow = GameFlowManager.Instance;
         GameProgressData previous = flow.Progress.Clone();
@@ -66,8 +66,8 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
                 var house = GameObject.Find("Rumah_01");
                 Assert.That(house, Is.Not.Null);
                 Assert.That(housePositions.Add(house.transform.position), Is.True, "Each level must have its own layout.");
-                var encounters = Object.FindObjectsByType<EncounterController>(FindObjectsSortMode.None);
-                Assert.That(System.Array.FindAll(encounters, e => e.IsBoss).Length, Is.EqualTo(level == 3 || level == 5 ? 1 : 0));
+                var residents = Object.FindObjectsByType<InteractionTarget>(FindObjectsSortMode.None);
+                Assert.That(System.Array.FindAll(residents, r => r.IsRecipient).Length, Is.EqualTo(3));
             }
         }
         finally

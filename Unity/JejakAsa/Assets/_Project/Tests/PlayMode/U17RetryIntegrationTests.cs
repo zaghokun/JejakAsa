@@ -12,24 +12,30 @@ using UnityEngine.TestTools;
 public sealed class U17RetryIntegrationTests : InputTestFixture
 {
     private const string KampungPath = "Assets/_Project/Scenes/Kampung.unity";
-    private const string BattlePath = "Assets/_Project/Scenes/Battle.unity";
     private readonly List<Behaviour> suspended = new List<Behaviour>();
     private Keyboard keyboard;
     private float previousTimeScale;
-    private bool battleWasLoaded;
     private Scene kampung;
+    private GameProgressData previousProgress;
+    private string previousSpawn;
 
     public override void Setup()
     {
         base.Setup();
         previousTimeScale = Time.timeScale;
-        battleWasLoaded = SceneManager.GetSceneByPath(BattlePath).isLoaded;
+        var flow = GameFlowManager.Instance;
+        previousProgress = flow.Progress.Clone();
+        previousSpawn = flow.LastSpawnPoint;
+        flow.SetStateForTesting(new GameProgressData
+        {
+            currentDay = 1, currentLevel = 1, currentPhase = DayPhase.DiLevel,
+            isBriefingDone = true, hasPickedUpBansos = true
+        });
+        flow.LastSpawnPoint = null;
         Time.timeScale = 1f;
         keyboard = InputSystem.AddDevice<Keyboard>();
 
         // Isolate the fixture from gameplay and cameras in the test runner's open scenes.
-        Suspend<EncounterController>();
-        Suspend<BattleTransition>();
         Suspend<PlayerInteraction>();
         Suspend<PlayerController>();
         Suspend<Camera>();
@@ -45,51 +51,42 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
     [UnityTearDown]
     public IEnumerator UnloadScenes()
     {
-        // Stop the transition coroutine before unloading a battle it may have started.
         if (kampung.IsValid() && kampung.isLoaded)
             yield return SceneManager.UnloadSceneAsync(kampung);
-        Scene battle = SceneManager.GetSceneByPath(BattlePath);
-        if (!battleWasLoaded && battle.IsValid() && battle.isLoaded)
-            yield return SceneManager.UnloadSceneAsync(battle);
 
         for (int i = suspended.Count - 1; i >= 0; i--)
             if (suspended[i] != null)
                 suspended[i].enabled = true;
         suspended.Clear();
+        GameFlowManager.Instance.SetStateForTesting(previousProgress);
+        GameFlowManager.Instance.LastSpawnPoint = previousSpawn;
     }
 
     [UnityTest]
-    public IEnumerator ThreeLossesAndRetriesRestoreTheCompleteMissionSession()
+    public IEnumerator ThreeTimeoutsAndRetriesRestoreTheCompleteMissionSession()
     {
-        Assert.That(battleWasLoaded, Is.False, "The battle scene must not already be loaded by another session.");
         yield return SceneManager.LoadSceneAsync(KampungPath, LoadSceneMode.Additive);
         kampung = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
         PlayerInteraction player = null;
-        BattleTransition transition = null;
-        EncounterController encounter = null;
         InteractionTarget[] targets = null;
         foreach (GameObject root in kampung.GetRootGameObjects())
         {
             if (root.TryGetComponent(out PlayerInteraction found))
             {
                 player = found;
-                transition = root.GetComponent<BattleTransition>();
             }
             if (root.name == "U02_Graybox")
             {
-                encounter = root.GetComponentInChildren<EncounterController>(true);
                 targets = root.GetComponentsInChildren<InteractionTarget>(true);
             }
         }
         Assert.That(player, Is.Not.Null);
-        Assert.That(transition, Is.Not.Null);
-        Assert.That(encounter, Is.Not.Null);
         Assert.That(targets, Is.Not.Null);
         InteractionTarget recipient = System.Array.Find(targets, target => target.IsRecipient);
         Assert.That(recipient, Is.Not.Null);
         Vector3 spawn = player.transform.position;
         Quaternion spawnRotation = player.transform.rotation;
-        transition.SetPostBattleDelayForTests(0f);
+        string progress = JsonUtility.ToJson(GameFlowManager.Instance.Progress);
         yield return null;
         for (int session = 0; session <= 3; session++)
         {
@@ -101,13 +98,8 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
             Assert.That(player.TimeRemaining, Is.GreaterThan(178f).And.LessThanOrEqualTo(180f));
             foreach (InteractionTarget target in targets)
                 if (target.IsRecipient) Assert.That(target.IsDelivered, Is.False);
-            Assert.That(encounter.IsResolved, Is.False);
-            Assert.That(encounter.IsEncounterOpen, Is.False);
-            Assert.That(encounter.IsAwaitingExit, Is.False);
-            Assert.That(encounter.HasBattleRequestPending, Is.False);
-            Assert.That(encounter.ObstacleObject.activeSelf, Is.True);
-            Assert.That(encounter.PremanVisual.activeSelf, Is.True);
             Assert.That(player.GetComponent<PlayerController>().enabled, Is.True);
+            Assert.That(JsonUtility.ToJson(GameFlowManager.Instance.Progress), Is.EqualTo(progress));
             AssertSingleCameraAndListener();
             if (session == 3)
                 break;
@@ -122,39 +114,15 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
             Assert.That(player.Trust, Is.EqualTo(1));
             yield return Press(Key.Escape);
 
-            Teleport(player, new Vector3(encounter.transform.position.x, 1f, encounter.transform.position.z - 1.6f));
-            yield return null;
-            Assert.That(encounter.IsEncounterOpen, Is.True);
-            float frozenTime = player.TimeRemaining;
-            yield return Press(Key.Digit2);
-            float deadline = Time.realtimeSinceStartup + 5f;
-            while ((BattleController.Active == null || !BattleController.Active.IsPlayerTurn) && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            BattleController battle = BattleController.Active;
-            Assert.That(battle, Is.Not.Null);
-            Assert.That(transition.IsInBattle, Is.True);
-            AssertSingleCameraAndListener();
-            yield return new WaitForSecondsRealtime(0.1f);
-            Assert.That(player.TimeRemaining, Is.EqualTo(frozenTime));
-            for (int attack = 0; attack < 4; attack++)
-                Assert.That(battle.PlayerAttack(), Is.True);
-            Assert.That(battle.IsBattleOver, Is.True);
-            Assert.That(battle.PlayerWon, Is.False);
-
-            deadline = Time.realtimeSinceStartup + 5f;
-            while (transition.IsInBattle && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That(transition.IsInBattle, Is.False);
-            Assert.That(SceneManager.GetSceneByPath(BattlePath).isLoaded, Is.False);
-            AssertSingleCameraAndListener();
+            player.SetTimeRemaining(0f);
             Assert.That(player.Outcome, Is.EqualTo(MissionOutcome.PartialSuccess));
-            Assert.That(player.OutcomeReason, Does.Contain("Kalah battle"));
+            Assert.That(player.OutcomeReason, Does.Contain("Waktu"));
             Assert.That(player.IsOutcomeOpen, Is.True);
             Assert.That(player.DeliveredCount, Is.EqualTo(1));
             Assert.That(player.PackagesRemaining, Is.EqualTo(2));
             Assert.That(player.Trust, Is.EqualTo(1));
             Assert.That(recipient.IsDelivered, Is.True);
-            Assert.That(player.TimeRemaining, Is.EqualTo(frozenTime).Within(0.1f));
+            Assert.That(player.TimeRemaining, Is.Zero);
 
             yield return new WaitForSecondsRealtime(0.45f);
             yield return Press(Key.Enter);

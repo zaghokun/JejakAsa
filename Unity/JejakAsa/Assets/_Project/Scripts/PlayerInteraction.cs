@@ -10,8 +10,8 @@ namespace JejakAsa
     {
         InProgress,
         Success,        // 3/3 paket terantar tepat waktu (U08)
-        PartialSuccess, // 1-2 paket terantar, waktu habis / kalah battle (U08)
-        Failed          // 0 paket terantar, waktu habis / kalah battle (U08)
+        PartialSuccess, // 1-2 paket terantar, waktu habis (U08)
+        Failed          // 0 paket terantar, waktu habis (U08)
     }
 
     [DefaultExecutionOrder(-10)]
@@ -69,8 +69,6 @@ namespace JejakAsa
         public InteractionTarget CurrentTarget { get; private set; }
         public InteractionTarget DialogueTarget { get; private set; }
         public bool IsDialogueOpen { get; private set; }
-        public bool IsEncounterOpen => EncounterController.AnyOpen;
-        public bool IsInBattle => BattleTransition.Active != null && BattleTransition.Active.IsInBattle;
 
         public int PackagesRemaining => packagesRemaining;
         public int DeliveredCount => deliveredCount;
@@ -78,22 +76,6 @@ namespace JejakAsa
         public float TimeRemaining => timeRemaining;
         public bool IsTimeExpired => timeRemaining <= 0f;
         public bool IsMissionCompleted => deliveredCount >= initialPackages;
-
-        private bool IsLevelObjectiveCompleted
-        {
-            get
-            {
-                if (!IsMissionCompleted)
-                    return false;
-                var flow = GameFlowManager.Instance;
-                if (flow == null || flow.CurrentPhase != DayPhase.DiLevel || (flow.CurrentLevel != 3 && flow.CurrentLevel != 5))
-                    return true;
-                foreach (var encounter in EncounterController.Active)
-                    if (encounter != null && encounter.gameObject.scene == gameObject.scene && encounter.IsBoss && encounter.IsResolved)
-                        return true;
-                return false;
-            }
-        }
 
         public MissionOutcome Outcome => outcome;
         public string OutcomeReason => outcomeReason;
@@ -176,9 +158,9 @@ namespace JejakAsa
             }
 
             // U06 & U07: Timer hanya berkurang saat eksplorasi aktif, misi aktif & misi masih berlangsung
-            if (!IsDialogueOpen && !IsEncounterOpen && !IsInBattle && outcome == MissionOutcome.InProgress && isMissionActive)
+            if (!IsDialogueOpen && outcome == MissionOutcome.InProgress && isMissionActive)
             {
-                if (IsLevelObjectiveCompleted)
+                if (IsMissionCompleted)
                 {
                     // U07: Penyerahan ke-3 sah -> Berhasil (tidak boleh ditimpa gagal/parsial)
                     SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
@@ -199,14 +181,6 @@ namespace JejakAsa
                         }
                     }
                 }
-            }
-
-            if (IsEncounterOpen || IsInBattle)
-            {
-                CurrentTarget = null;
-                if (promptPanel != null && promptPanel.activeSelf)
-                    promptPanel.SetActive(false);
-                return;
             }
 
             Keyboard keyboard = Keyboard.current;
@@ -272,7 +246,7 @@ namespace JejakAsa
 
                 Debug.Log($"[U04/U05/U06/U07] Bansos berhasil diserahkan ke {DialogueTarget.DisplayName}! Paket: {packagesRemaining}/3, Kepercayaan: {trust}/3, Sisa Waktu: {FormattedTimeRemaining}");
 
-                if (IsLevelObjectiveCompleted)
+                if (IsMissionCompleted)
                 {
                     SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
                     Debug.Log("[U05/U07/U08] SELURUH 3 PENERIMA SELESAI! Misi pengantaran bansos berhasil diselesaikan.");
@@ -419,11 +393,6 @@ namespace JejakAsa
                 }
             }
 
-            for (int i = 0; i < EncounterController.Active.Count; i++)
-            {
-                EncounterController.Active[i]?.ResetEncounter();
-            }
-
             // Kembalikan posisi pemain ke pos awal bersih (U17)
             CharacterController cc = GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
@@ -478,7 +447,7 @@ namespace JejakAsa
                 dialogueBody.text = DialogueTarget.Dialogue;
             }
 
-            if (IsLevelObjectiveCompleted)
+            if (IsMissionCompleted)
             {
                 SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
             }
@@ -505,22 +474,6 @@ namespace JejakAsa
                 }
             }
             return nearest;
-        }
-
-        public void SetEncounterMovementLock(bool locked)
-        {
-            if (locked)
-            {
-                CurrentTarget = null;
-                if (promptPanel != null)
-                    promptPanel.SetActive(false);
-                if (movement != null)
-                    movement.enabled = false;
-            }
-            else if (movement != null && !IsDialogueOpen && !isOutcomeOpen && !IsEncounterOpen && !IsInBattle)
-            {
-                movement.enabled = true;
-            }
         }
 
         public void OpenSystemDialogue(string title, string body)
@@ -593,7 +546,7 @@ namespace JejakAsa
             {
                 OpenOutcome();
             }
-            else if (movement != null && !IsEncounterOpen)
+            else if (movement != null)
             {
                 movement.enabled = movementWasEnabled;
             }
@@ -615,7 +568,7 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (IsInBattle || SessionMenu.InputBlocked)
+            if (SessionMenu.InputBlocked)
                 return;
 
             CozyGuiTheme.EnsureInitialized();
