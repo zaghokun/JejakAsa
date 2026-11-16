@@ -2,7 +2,7 @@
 
 **Bantuan sampai, harapan tumbuh.**
 
-Game tugas akhir Grafika Komputer: RPG 3D low-poly tentang lulusan baru yang kembali ke kampung fiktif di Jakarta Utara untuk membantu distribusi bantuan sosial. Pemain mengatur rute, mengantar bantuan, dan menghadapi intimidasi dengan menghindar, bertengkar, atau meminta dukungan warga.
+Game tugas akhir Grafika Komputer: game eksplorasi 3D low-poly tentang lulusan baru yang kembali ke kampung fiktif di Jakarta Utara untuk membantu distribusi bantuan sosial. Pemain mengatur rute dan mengantar bantuan kepada warga sebelum waktu habis.
 
 Tema utama adalah SDG 1 — Tanpa Kemiskinan, didukung SDG 11 — Kota dan Permukiman Berkelanjutan serta SDG 16 — Perdamaian, Keadilan, dan Kelembagaan yang Tangguh. Game tidak mengklaim bahwa bantuan sesaat menyelesaikan kemiskinan atau bahwa warga adalah penerima pasif.
 
@@ -22,50 +22,29 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Kamera | Isometrik dengan orientasi tetap |
 | Kontrol | Input System resmi; CharacterController untuk gerak, tahan Shift kiri/kanan untuk lari |
 | Antarmuka | Unity UI / uGUI dan TextMeshPro; prompt/dialog U03 sudah tersedia |
-| Cakupan graybox saat ini | Satu peta, satu misi, tiga penerima, satu pengintimidasi, dan satu arena turn-based |
-| Arah revisi yang direncanakan | Prolog; satu map posko dengan lingkungan; satu map interior rumah; lima map level terpisah; boss level 3 dan 5; save/load. Belum diimplementasikan |
+| Cakupan graybox saat ini | Posko, rumah, lima map level, tiga penerima per level, timer, dialog, hasil dan retry |
+| Rencana berikutnya | Preman mengejar dalam radius tertentu dan mengurangi timer saat menyentuh pemain; lumpur/genangan memperlambat gerak. Keduanya belum diimplementasikan |
 | Waktu | Rencana awal 21 hari dan cadangan hingga 28 hari; estimasi untuk cakupan revisi perlu disusun ulang |
 
-Urutan development **gameplay-first**: loop Kampung dan battle graybox telah tersambung ke main menu. Revisi progres lima level memerlukan perubahan core sebelum integrasi aset final.
+Urutan development **gameplay-first**: loop pengantaran dan progres harian tersedia sebagai graybox; integrasi cerita, aset final, rintangan baru, dan pengujian akhir menyusul.
 
-Tidak termasuk rancangan saat ini: multiplayer, akun/backend, database server, crafting, serta chapter tambahan di luar lima level yang direncanakan.
+Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertempuran; juga multiplayer, akun/backend, database server, crafting, serta chapter di luar lima level.
 
 ## Status saat ini
 
-### Ringkasan Progres Revisi Gameplay (R01–R15)
+### Ringkasan revisi
 
-| Kode R | Fitur / Kebutuhan | Progres (%) | Status | Keterangan Singkat |
-|:---:|---|:---:|:---:|---|
-| **R01** | Kontrak alur siklus harian | **100%** | Selesai | `Rumah` ↔ `Kampung` ↔ `Posko`, 10/10 unit test lulus |
-| **R02** | Prolog dan pengantar boss | **15%** | Konsep | Naskah storyboard & draft pembuka |
-| **R03** | Posko graybox & gerbang bersama | **100%** | Graybox | `Posko.unity` lapangan terbuka 28×24 m, Jonathan, Ophelia, bansos, satu gerbang; visual final menyusul |
-| **R04** | Rumah graybox & kamar Vicky | **100%** | Selesai | `Rumah.unity` kamar 14×10m, tidur, save 3 slot, Ibu |
-| **R05** | Lima map level & rotasi hari | **80%** | Desain & Scene | 5 scene aktif; rancangan eskalasi & diferensiasi gameplay L1–L5 terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
-| **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos 3 paket, trust, retry bersih di `PlayerInteraction.cs` |
-| **R07** | GUI dan progres dialog | — | Core graybox | Dialog berurutan dan nama pembicara tersedia; naskah final menyusul |
-| **R08** | Reward logistik level | **70%** | Berjalan | Reward 1x per level di posko via `ClaimLevelReward()` |
-| **R09** | Item dan weapon inventory | — | Core graybox | Item dan senjata dapat dilihat di menu ingame; penggunaan terhubung battle, nilai sementara |
-| **R10** | Boss Level 3 & Level 5 | — | Core graybox | Boss dengan pola berbeda pada L3/L5; visual dan dialog final menyusul |
-| **R11** | Encounter preman 50/50 | **85%** | Berjalan | Peluang 50% mundur / 50% battle di `EncounterController.cs` (PlayMode verified) |
-| **R12** | Bantuan warga (Trust $\ge 1$) | **85%** | Berjalan | Warga membuka rute saat trust cukup di `EncounterController.cs` (PlayMode verified) |
-| **R13** | Save / Load 3 slot di rumah | **90%** | Berjalan | Simpan progres Slot 1..3 di kasur kamar Vicky via `GameFlowManager.SaveGame()` |
-| **R14** | Main Menu revisi | — | Core graybox | Mulai, Lanjutkan, Load tiga slot, dan Setting; visual final menyusul |
-| **R15** | Regresi dan build | — | Berjalan | Uji Play Mode tersedia; build rilis dan uji komputer kedua menyusul |
+| Kode | Kebutuhan | Status |
+| --- | --- | --- |
+| R01, R03–R06 | Alur harian, rumah, posko, lima map, pengantaran, timer, hasil dan retry | Core graybox tersedia; rancangan diferensiasi 5 level terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
+| R02, R07 | Prolog dan dialog cerita berurutan | Naskah dan core dialog tersedia; integrasi cerita final menyusul |
+| R08–R12 | Reward, item/weapon, boss battle, encounter pilihan dan bantuan warga untuk membuka jalan | Dikeluarkan dari cakupan revisi |
+| R13–R14 | Save/load tiga slot, menu utama dan menu ingame | Core tersedia; verifikasi ulang setelah revisi |
+| R15 | Regresi dan build | Uji ulang dan build revisi diperlukan |
 
----
+**Belum diimplementasikan:** preman mengejar ketika pemain masuk radius dan mengurangi waktu saat kontak; lumpur/genangan memperlambat pemain. Posisi, nilai radius, penalti dan perlambatan akan ditentukan saat implementasi.
 
-- **U01 selesai untuk A/B berdasarkan konfirmasi anggota tim:** proyek hasil clone dan build awal dapat dijalankan. Verifikasi setup anggota C belum dilaporkan.
-- **U02 lulus di Unity Editor:** lima tes Play Mode lulus, meliputi gerak, collision, kamera, dan penelusuran jalur pada Kampung aktual. Tes jalur diulang sesudah tinggi pembatas diubah dan tetap lulus.
-- **U03 lulus di Unity Editor:** enam tes interaksi lulus, termasuk beberapa target berdekatan, batas jarak, tahan E, kunci gerak, serta dialog Kampung yang ditutup melalui klik mouse. Bersama lima regresi U02, total sebelas tes Play Mode lulus.
-- Source sudah mendukung WASD/panah dengan kecepatan awal 3,5 meter/detik, gerak relatif kamera, normalisasi diagonal, gravitasi, dan kamera follow dengan sudut tetap.
-- Peta, karakter, menu, dan UI masih graybox; model MC Meshy belum dipasang permanen.
-- **U16–U18 versi graybox tersedia:** pause, tiga kali retry, main menu, dan konfirmasi kembali. Seluruh **36 tes Play Mode** lulus di Unity Editor setelah integrasi; tes mencakup pause saat serangan tertunda dan tiga retry sesudah kalah battle.
-- U19–U21 tetap menunggu verifikasi build, pendengaran audio dan integrasi visual final, termasuk pengujian komputer kedua. Musik CC0 yang terpasang hanya untuk graybox.
-- Build graybox Windows berhasil dibuat di `Unity/JejakAsa/Builds/Windows-Graybox-U21/JejakAsa.exe` dan menu pembukanya terlihat saat executable dijalankan di komputer ini. Pengujian alur executable dan komputer kedua belum dilakukan.
-
-![Dialog warga pada scene Kampung saat pengujian Play Mode U03](docs/visual/u03-interaksi.png)
-
-Cuplikan runtime aktual, bukan render konsep atau visual final. UI sederhana ini dapat diganti oleh prefab visual C tanpa memindahkan logika interaksi.
+Save lama tetap mempertahankan field inventori/reward untuk kompatibilitas data, tanpa fungsi gameplay. Aset dan visual final belum menjadi bagian penerimaan revisi ini.
 
 ## Pembagian tiga role
 
@@ -73,113 +52,22 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
-| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, encounter, integrasi scene dan build | Loop misi dan menu graybox tersambung; uji pengguna dan build pada komputer lain masih diperlukan. |
-| B — Battle dan verifikasi | Giliran, HP/aksi, pola musuh, hasil battle, transisi serta regresi | Battle, pause, kembali ke menu, dan tiga retry setelah kalah tercakup dalam 36 tes Play Mode yang lulus di Unity Editor. |
-| C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Preview MC bertekstur sudah diuji; rig, animasi, model warga/musuh, dan integrasi final masih diperlukan. |
+| A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, integrasi scene dan build | Loop misi dan menu graybox tersedia; revisi perlu diuji. |
+| B — Verifikasi dan rintangan | Regresi alur, timer, retry dan save/load; implementasi rintangan pada tahap berikutnya | Pengejaran dan perlambatan belum dikerjakan. |
+| C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Integrasi final dan pengujian bersama A/B masih diperlukan. |
 
-## Tracking penerimaan
+## Tracking penerimaan dan revisi core
 
-`[x]` berarti kriterianya telah dibuktikan atau dikonfirmasi dengan sumber bukti yang disebutkan. `[ ]` berarti belum selesai atau belum diverifikasi; keberadaan penanda/aset saja bukan kelulusan fitur.
+Hasil uji graybox lama tidak otomatis membuktikan revisi ini. Kriteria battle, boss, item/weapon, encounter pilihan, dan reward sebelumnya tidak berlaku lagi.
 
-- [x] **U01 — Setup awal A/B:** clone bersih dan build Windows awal berjalan; berdasarkan konfirmasi tim. Tidak menyatakan build U02 sudah tersedia.
-- [x] **U02 — Gerak dan collision:** kecepatan lurus/diagonal setara, tidak menembus rumah, dan jalur wajib dapat dilalui. A: implementasi; B: regresi/verifikasi; lima tes Play Mode lulus.
-- [x] **U03 — Satu interaksi:** target aktif terdekat dalam radius horizontal 1,8 meter mendapat prompt E; satu penekanan membuka satu dialog, bukan semua warga atau berulang saat E ditahan. Enam tes interaksi lulus, termasuk UI aktual dan klik Tutup.
-- [x] **U04 — Penyerahan valid:** paket, status penerima, dan trust berubah sekali saat penyerahan via tombol E; transaksi tunggal dan dialog warga bervariasi; regresi diuji lewat U04DeliveryTests.
-- [x] **U05 — Penerima dan urutan:** tiga penerima dapat diantar dengan urutan bebas; penerima selesai tidak menerima paket lagi; selesai otomatis saat 3/3; diuji lewat U05OrderTests.
-- [x] **U06 — Timer per state:** timer 180s aktif saat eksplorasi, membeku saat dialog terbuka dan saat misi selesai; penyerahan terlambat ditolak; diuji lewat U06TimerTests.
-- [X] **U07 — Prioritas akhir misi:** penyerahan terlambat ditolak; keberhasilan sah tidak ditimpa hasil gagal ganda.
-- [X] **U08 — Hasil misi:** berhasil/parsial/gagal, penerima selesai, dan penyebab akhir sesuai sesi.
-- [X] **U09 — Menghindar:** status selesai dipertahankan berdasarkan laporan/merge tim; tidak dijalankan ulang pada pengujian preview MC.
-- [X] **U10 — Bantuan warga:** terkunci dengan alasan pada trust 0; tersedia setelah satu pengantaran dan benar-benar membuka jalan tanpa battle.
-- [x] **U11 — Menang battle:** urutan Serang ×3, Bertahan, Serang ×2 menang dengan HP pemain 4 pada angka baseline; diuji lewat `U11BattleTests` di Unity Editor.
-- [x] **U12 — Kalah battle:** empat Serang beruntun kalah pada serangan kuat pertama; penyebab akhir sesuai; diuji lewat `U11BattleTests` dan `U15BattleIntegrationTests` di Unity Editor.
-- [x] **U13 — Guard sekali pakai:** Bertahan pada giliran Persiapan tidak terbawa ke serangan berikutnya; diuji lewat `U11BattleTests` di Unity Editor.
-- [x] **U14 — Aksi battle tunggal:** aksi tetap terkunci sampai lawan dan pemain selesai kembali ke posisi setelah animasi; musuh HP 0 tidak membalas dan hasil dikirim sekali. Regresi arena nyata untuk serangan biasa dan kuat serta tes battle terarah lulus.
-- [x] **U15 — Kembali dari battle:** timer, paket, trust, dan penerima tetap; musuh selesai tidak muncul lagi pada sesi itu; diuji lewat `U15BattleIntegrationTests` dan Play Mode di Unity Editor.
-- [x] **U16 — Pause battle:** aksi tertunda berhenti dan resume menyelesaikan satu giliran tanpa damage ganda; diuji dengan `U16PauseIntegrationTests`.
-- [x] **U17 — Retry bersih:** tiga pengulangan setelah kalah battle dengan satu penyerahan mereset misi, spawn, penerima, dan encounter; diuji dengan `U17RetryIntegrationTests`.
-- [ ] **U18 — Menu**
-  - [x] Mulai, batal kembali ke menu, kembali dari battle, dan sesi baru diuji pada Play Mode.
-  - [ ] Tombol Keluar diuji pada executable.
-- [ ] **U19 — Kamera dan audio final**
-  - [x] Satu kamera/listener dan pergantian musik graybox tanpa sumber ganda diuji pada Play Mode.
-  - [ ] Audio didengar secara manual dan diuji ulang setelah aset final terintegrasi.
-- [ ] **U20 — UI**
-  - [x] Skala UI disesuaikan; menu, HUD, encounter di 1080p serta battle di 1080p/720p ditinjau di Game View.
-  - [ ] Seluruh prompt, layar dan input diperiksa pada kedua resolusi dan setelah aset final terpasang.
-- [ ] **U21 — Build final komputer kedua**
-  - [x] Build Windows graybox berhasil dibuat dan menu pembuka tampil pada komputer ini.
-  - [ ] Menu, misi, retry, dan keluar diuji pada komputer lain tanpa Editor atau internet setelah aset final terintegrasi.
+- [ ] **R01, R03–R06 — Siklus dan misi:** uji rumah → posko → level → laporan → rumah untuk lima hari, tiga penerima per map, timer, hasil dan retry.
+- [ ] **R02, R07 — Cerita:** hubungkan prolog dan dialog sesuai [storyboard](docs/storyboard-dialog-jejak-asa.md); jaga urutan dialog setelah retry dan load.
+- [ ] **Preman pengejar — rencana:** uji pemicu radius, pengejaran dan pengurangan waktu saat kontak setelah mekanik diimplementasikan.
+- [ ] **Lumpur/genangan — rencana:** uji perlambatan dan pemulihan kecepatan setelah mekanik diimplementasikan.
+- [ ] **R13–R14 — Save/load dan menu:** uji tiga slot, konfirmasi overwrite/load/keluar, serta menu ingame Lanjutkan, Pengaturan, Muat dan Keluar.
+- [ ] **R15, U19–U21 — Integrasi dan build:** uji seluruh alur, kamera, audio, UI, build Windows dan komputer kedua setelah integrasi akhir.
 
-## Tracker revisi core gameplay A/B
-
-Daftar ini adalah **rencana dan status progres pekerjaan**. U01–U21 di atas tetap mencatat bukti graybox lama; kelulusannya tidak otomatis membuktikan revisi lima level. Semua item di bawah baru boleh dicentang setelah implementasi dan kriteria penerimaannya dibuktikan. Aset, animasi, dan UI final tetap ditangani bersama Role C pada tahap berikutnya.
-
-### Tabel Ringkasan Progres per Kebutuhan (R01–R15)
-
-| Kode R | Kebutuhan Gameplay | Progres | Status | Komponen Terkait |
-|:---:|---|:---:|:---:|---|
-| **R01** | Kontrak alur siklus harian | **100%** | Selesai | `GameFlowManager.cs`, `R01FlowContractTests.cs`, `r01-kontrak-alur.md` |
-| **R02** | Prolog dan pengantar boss | **15%** | Belum Mulai | Konsep narasi storyboard, cutscene pembuka |
-| **R03** | Posko graybox & gerbang bersama | **100%** | Graybox | `Posko.unity` lapangan terbuka 28×24 m, `PoskoGateController.cs`, Jonathan, Ophelia |
-| **R04** | Rumah graybox & kamar Vicky | **100%** | Selesai | `Rumah.unity` (indoor 14×10 m), `HomeInteractionController.cs`, Kasur (Save/Tidur), `Ibu` |
-| **R05** | Lima map level & rotasi hari | **80%** | Desain & Scene | `Kampung.unity` dan `Kampung_L2`–`Kampung_L5`; spesifikasi gameplay per level di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
-| **R06** | Hasil & retry per level | **85%** | Berjalan | Timer 180s, bansos, trust counter, hasil misi, retry bersih di `PlayerInteraction.cs` |
-| **R07** | GUI dan progres dialog | — | Core graybox | `StoryNpcController.cs` dan `PlayerInteraction.cs` mendukung beberapa baris; naskah final menyusul |
-| **R08** | Reward logistik level | **70%** | Berjalan | `GameFlowManager.ClaimLevelReward()` tepat 1x per level setelah lapor & dialog Ophelia |
-| **R09** | Item dan weapon inventory | — | Core graybox | Menu ingame untuk item/senjata, efek battle dan progres; nilai sementara |
-| **R10** | Boss Level 3 & Level 5 | — | Core graybox | Encounter boss dan pola battle berbeda; visual dan cerita final menyusul |
-| **R11** | Encounter preman 50/50 | **85%** | Berjalan | Menghindar 50% mundur / 50% battle di `EncounterController.cs` (PlayMode verified) |
-| **R12** | Bantuan warga (Trust $\ge 1$) | **85%** | Berjalan | Bantuan warga membuka rute saat trust cukup di `EncounterController.cs` (PlayMode verified) |
-| **R13** | Save / Load 3 slot di rumah | **90%** | Berjalan | Simpan progres Slot 1..3 di kasur kamar Vicky via `GameFlowManager.SaveGame()` |
-| **R14** | Main Menu revisi | — | Core graybox | Mulai, Lanjutkan, Load tiga slot dan Setting |
-| **R15** | Regresi dan build | — | Berjalan | Uji Play Mode terarah tersedia; build rilis akhir menyusul |
-| **TOTAL** | **Core Gameplay** | **—** | **Fase Mid-Dev** | **Progres final menunggu integrasi story, aset, dan build** |
-
-**Pembaruan core graybox:** lima scene level (`Kampung` dan `Kampung_L2`–`Kampung_L5`) sekarang terdaftar di Build Settings dan dipilih sesuai level aktif. Boss level 3 dan 5 harus dikalahkan selain menyelesaikan tiga pengantaran. GUI mendukung urutan beberapa baris dialog dengan nama pembicara; naskah cerita final belum dimasukkan. Main menu menyediakan Mulai, Lanjutkan, Load tiga slot dan Setting; penyimpanan di rumah meminta konfirmasi sebelum menimpa slot.
-
-Scene level dan karakter gameplay masih graybox; angka dan identitas item, aset, dialog cerita, dan build akhir belum diterima.
-
-**Item dan weapon sementara:** reward level 2 memberi `basic_weapon` (+5 damage); level lain memberi satu `healing_item` (hingga +12 HP), sekali setelah laporan dan dialog. Menu ingame menampilkan jumlah item dan status senjata. Item pemulih hanya dapat dipakai pada giliran battle saat HP belum penuh; penggunaan menghabiskan satu item dan satu giliran. Senjata dapat dipasang/dilepas dari menu ingame, atau pada giliran battle. Inventori dan senjata terpasang tersimpan bersama progres; ikon dan model final belum ada.
-
-**Menu ingame:** Esc membuka menu bergaya RPG dengan **Lanjutkan, Item, Senjata, Pengaturan, Muat, dan Keluar**. Pengaturan volume/mode layar tersimpan lokal; Muat meminta konfirmasi sebelum mengganti progres sesi. Keluar menyediakan pilihan kembali ke menu utama atau keluar game dengan konfirmasi. Tes Play Mode terarah menu, pause battle, dan retry lulus **11/11**; fungsi keluar aplikasi belum diuji pada build Windows.
-
-**Bukti core saat ini:** uji Play Mode `CampaignFiveLevelsTests` menyelesaikan lima hari, dua boss, reward dan fase Tamat; pemain dipindahkan ke titik interaksi selama uji alur. Uji terpisah mencapai ketiga penerima di tiap level menggunakan input gerak setelah encounter diselesaikan. Uji battle terarah lulus 14/14; regresi Play Mode sebelumnya 70/71, dengan satu uji menghindar diperbaiki dan lulus saat dijalankan terpisah. Build Windows dan uji komputer kedua belum dilakukan.
-
-  **Desain & Diferensiasi Gameplay 5 Level (R05 / AB-D03):** Untuk mencegah pengulangan monoton antar-level, setiap hari menghadirkan eskalasi tantangan dan mekanik unik (spesifikasi lengkap di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md)):
-  - **Level 1 (Hari 1 — Langkah Pertama):** Tutorial dasar; jalur gang lurus terbuka, 1 preman statis di tengah (peluang menghindar tinggi), timer 180s.
-  - **Level 2 (Hari 2 — Genangan Banjir & Rute Tikus):** Gang utama tergenang air/lumpur (*environmental hazard*, speed lari -50%) dan terblokir sampah; pemain mencari jalan tikus memutar, timer 160s, reward `basic_weapon`.
-  - **Level 3 (Hari 3 — Pemerasan & Boss Mr. Deddy):** Blokade ganda preman; wajib memanfaatkan Bantuan Warga (`Trust >= 1`) untuk membuka rute kroco; diakhiri duel wajib melawan Mid-Boss Mr. Deddy, timer 170s.
-  - **Level 4 (Hari 4 — Waktu Kritis & Preman Patroli):** Preman patroli dinamis bergerak bolak-balik di persimpangan gang (*moving hazard*); warga lansia sakit butuh bantuan cepat, timer diperketat 145s.
-  - **Level 5 (Hari 5 — Puncak Krisis & Final Boss Mr. Gas Oke):** Tata letak mini-labirin dengan barikade seng dan drum; pertarungan klimaks melawan Mr. Gas Oke; penyaluran paket terakhir menamatkan permainan (`DayPhase.Tamat`).
-
----
-
-### R1 — Alur dunia dan progres
-
-- [x] **R01 — Kontrak alur [100%]:** sepakati prolog → posko → map level → posko/laporan Jonathan → dialog Ophelia → interior rumah/istirahat → posko pada hari berikutnya. Rumah hanya menuju posko; tentukan syarat berhasil dan penanganan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan dibuktikan lewat 10 tes `R01FlowContractTests`.
-- [ ] **R02 — Prolog dan pengantar boss [15%]:** tampilkan Vicky yang baru lulus, kebutuhan kampung, sponsor, pendirian posko, dan perkenalan Jonathan serta Ophelia; berikan cuplikan Mr. Deddy dan boss terakhir sebelum gameplay utama.
-- [x] **R03 — Posko graybox [100%]:** map posko berupa lapangan terbuka 28×24 m dengan area briefing, bantuan, Jonathan, Ophelia dan satu gerbang bersama. Pengambilan bantuan dan briefing diperlukan sebelum keberangkatan; visual final dan pemeriksaan build menyusul.
-- [x] **R04 — Rumah graybox [100%]:** buat map interior rumah tanpa tampilan luar sebagai tempat istirahat dan save, dengan interaksi orang tua sederhana. Keluar dari rumah hanya menuju posko; diimplementasikan di `Rumah.unity` (ruangan interior 14×10 m) dan `HomeInteractionController.cs`.
-- [x] **R05 — Lima map level dan hari [80%]:** lima scene graybox (`Kampung` dan `Kampung_L2`–`Kampung_L5`) dan rotasi siklus hari telah berjalan; rancangan diferensiasi mekanik tiap level terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md). Detail visual final menyusul bersama Role C.
-- [ ] **R06 — Hasil dan retry per level [85%]:** penyerahan, timer, trust, hasil battle, dan hasil misi berlaku pada level aktif; gagal dapat diulang tanpa menghapus progres level yang telah diselesaikan. Uji kemenangan, kegagalan, dan retry berulang.
-
-### R2 — Cerita, reward, dan pertempuran
-
-- [ ] **R07 — Dialog dan progres cerita [75%]:** Jonathan memberi briefing serta menerima laporan; Ophelia memiliki perkembangan dialog setelah tiap level tanpa bonus pertempuran langsung. Pastikan dialog dan tahap cerita tidak terulang atau terlewat setelah memuat save.
-- [ ] **R08 — Reward [70%]:** dukung item dan weapon yang diperoleh setelah menyelesaikan level, melapor ke Jonathan, dan berbicara dengan Ophelia sesuai konsep awal; tiap reward diberikan sekali dan tercatat dalam progres.
-- [ ] **R09 — Item dan weapon:** item pemulih dan senjata sudah terhubung battle serta progres; nilai masih sementara dan perlu keputusan desain final.
-- [ ] **R10 — Boss level 3 dan 5:** mekanik boss sudah terhubung, termasuk kemenangan setelah tiga paket dan boss selesai; identitas visual, dialog, dan penerimaan final menyusul.
-- [ ] **R11 — Menghindar 50/50 [85%]:** jelaskan peluang sebelum dipilih; hasil berhasil menghindar dan gagal masuk battle masing-masing berlaku 50%, tanpa menggandakan encounter atau kehilangan state misi. Uji kedua hasil secara terkendali.
-- [ ] **R12 — Bantuan warga [85%]:** ketika syarat trust terpenuhi, pilihan bantuan menjalankan urutan warga membantu dan membuka jalan sebelum kendali kembali; saat tidak memenuhi syarat, alasan terkunci terlihat. Hubungkan animasi Role C saat tersedia.
-
-### R3 — Penyimpanan, menu, dan penerimaan
-
-- [ ] **R13 — Save/load [90%]:** simpan dan pulihkan progres level/hari, tahap cerita/dialog, reward, item, weapon, serta state yang diperlukan untuk melanjutkan; istirahat di rumah mendukung save. Uji tutup-buka game dan pastikan save lama tidak tertimpa tanpa konfirmasi.
-- [ ] **R14 — Main Menu revisi [40%]:** sediakan Mulai, Lanjutkan, Load, dan Setting yang berfungsi; Lanjutkan/Load menjelaskan saat save belum tersedia. Tentukan dan terapkan jumlah slot, perilaku overwrite, serta pengaturan yang disimpan.
-- [ ] **R15 — Regresi dan build [70%]:** uji alur prolog sampai level 5, dua boss, retry, save/load, pause, reward sekali, pergantian hari, serta kamera/audio/UI. Buat build dari source yang sama dan uji pada komputer kedua; ulangi setelah aset final diintegrasikan.
-
-**Keputusan desain yang belum disepakati:** jumlah slot save, apakah ada autosave selain save di rumah, detail reward/weapon, dan jumlah serta susunan penerima tiap level. Nama boss terakhir dikonfirmasi pengguna sebagai **Mr. Gas Oke**. R08 mempertahankan syarat berbicara dengan Ophelia sesuai ide awal; bila interaksi itu nantinya dibuat opsional, aturan reward harus disesuaikan terlebih dahulu. Aturan 50/50 perlu menjelaskan apakah timer berhenti dan ke mana pemain kembali saat berhasil menghindar.
+Mr. Deddy dan Mr. Gas Oke tetap tokoh cerita, bukan boss battle. Detail penempatan rintangan, rancangan eskalasi 5 level ([docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md)), jumlah penerima final tiap level, aset dan dialog final masih perlu disepakati.
 
 ## Paket delivery revisi A/B
 
@@ -188,10 +76,10 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 ### AB-D01 — Kontrak alur dan pembagian kerja · R01
 
 - [x] **A:** petakan transisi `rumah → posko → map level → posko → rumah`, state siang/istirahat, titik masuk/keluar, serta kondisi berhasil dan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan diterapkan di `GameFlowManager.cs`.
-- [x] **B:** sepakati kontrak data dan urutan giliran untuk battle, encounter, hasil misi, reward, retry, dan save/load bersama A; dibuktikan dengan 10 tes Play Mode di `R01FlowContractTests.cs`.
+- [ ] **B:** verifikasi kontrak hasil misi, retry, dan save/load setelah revisi.
 - [x] **A/B + C:** sepakati skala, penempatan gerbang, batas area interaksi, kebutuhan visual/animasi, dan kepemilikan scene/file berdasarkan [C-D01](docs/cd01-arah-visual.md).
-- [x] **A/B:** putuskan jumlah slot save (3 slot manual di rumah), tidak ada autosave tengah level, batas trust bantuan warga minimal 1 penyerahan, reward 1x per level di posko, serta menghindar 50/50.
-- [x] **Bukti terima:** urutan, kondisi gagal, keputusan terbuka, dan tanggung jawab tiap role tersedia untuk ditinjau A/B/C di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan diverifikasi lewat unit test `R01FlowContractTests`.
+- [x] **A/B:** tiga slot save manual di rumah; tidak ada autosave tengah level.
+- [ ] **Bukti terima:** verifikasi ulang kontrak [R01](docs/r01-kontrak-alur.md) setelah revisi.
 
 ### AB-D02 — Posko, rumah, dan gerbang graybox · R03–R04
 
@@ -207,47 +95,37 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 ### AB-D03 — Progres, lima map, dan retry · R05–R06
 
 - [ ] **A:** buat lima map level yang terpisah dari posko, rumah dan satu sama lain. Aset modular boleh digunakan ulang, tetapi tiap map memiliki layout dan penempatan sendiri.
-- [ ] **A:** alirkan level aktif, progres terbuka/selesai, hari, spawn dan hasil antara posko, level, battle, dan rumah. Level berikutnya tidak tersedia sebelum syarat hari dan istirahat terpenuhi.
-- [ ] **A/B:** sesuaikan penyerahan, timer, trust dan hasil untuk level aktif. Level 3/5 menyediakan pemicu boss; syarat kapan level dinyatakan selesai mengikuti keputusan AB-D01.
-- [ ] **B:** uji berhasil, waktu habis, kalah battle, retry berulang dan kembali ke posko; retry mengulang level aktif tanpa menghapus progres level sebelumnya atau menggandakan event.
+- [ ] **A:** alirkan level aktif, progres, hari, spawn dan hasil antara posko, level dan rumah; level berikutnya mengikuti progres dan istirahat.
+- [ ] **A/B:** uji penyerahan, timer, trust dan hasil pada setiap level. Tiga pengantaran tepat waktu menyelesaikan level.
+- [ ] **B:** uji berhasil, waktu habis, retry berulang dan kembali ke posko tanpa menghapus progres sebelumnya.
 - [ ] **Bukti terima:** lima map dapat diakses sesuai progres; transisi, hasil, timer, penerima, dan retry lulus pada map nyata. Layout final divalidasi ulang bersama C-D03.
 
-### AB-D04 — Prolog, dialog, dan reward · R02, R07–R08
+### AB-D04 — Prolog dan dialog · R02, R07
 
-- [ ] **A:** hubungkan prolog dan pengantar kedua boss serta dialog Vicky, Jonathan, Ophelia dan orang tua mengikuti [storyboard draft](docs/storyboard-dialog-jejak-asa.md); gunakan tampilan sementara yang dapat dibaca.
-- [ ] **A:** implementasikan urutan briefing → level → laporan Jonathan → dialog Ophelia → reward → pulang, termasuk penutup level 5 tanpa membuka level 6.
-- [ ] **B:** pastikan tahap dialog dan reward tersimpan, tidak terlewat atau terulang keliru setelah perpindahan/retry/load; reward diberikan tepat satu kali per level sesuai kontrak.
-- [ ] **A/B + C:** tentukan pemicu, pose/animasi, dan format handoff dialog sebelum menghubungkan C-D04/C-D05/C-D06.
-- [ ] **Bukti terima:** prolog dan satu siklus lengkap dapat dimainkan; perubahan dialog sesudah level 1–5 dan reward sekali per level diverifikasi.
+- [ ] **A:** hubungkan prolog dan dialog mengikuti [storyboard](docs/storyboard-dialog-jejak-asa.md).
+- [ ] **A/B:** uji briefing → level → laporan Jonathan → dialog Ophelia → pulang dan penutup level 5; pastikan tahap dialog tetap benar setelah retry/load.
+- [ ] **A/B + C:** tentukan pemicu, pose/animasi dan handoff dialog.
 
-### AB-D05 — Encounter dan bantuan warga · R11–R12
+### AB-D05 — Preman pengejar · rencana
 
-- [ ] **A:** tampilkan pilihan menghindar dengan peluang **50% berhasil / 50% battle**, bertengkar, dan bantuan warga; jelaskan alasan pilihan bantuan terkunci.
-- [ ] **A/B:** terapkan kedua hasil menghindar, jalur kembali/posisi aman, serta aturan timer yang disepakati; pilihan tidak boleh menyebabkan encounter atau hasil battle ganda.
-- [ ] **A:** hubungkan bantuan warga dengan urutan animasi dari C-D06; kendali pemain dan penghalang berubah pada waktu yang tepat.
-- [ ] **B:** uji kedua cabang acak secara terkendali, trust belum/cukup, pause saat bantuan, kembali dari battle, serta state level yang tetap benar.
-- [ ] **Bukti terima:** semua pilihan encounter berfungsi pada map level; animasi warga dan perubahan akses terbukti saat aset C-D06 sudah terpasang.
+- [ ] Tentukan radius, penalti waktu, perilaku setelah kontak dan penempatan; implementasikan dan uji pada tahap berikutnya.
 
-### AB-D06 — Item, weapon, dan boss · R09–R10
+### AB-D06 — Rintangan permukaan · rencana
 
-- [ ] **B:** implementasikan item dan weapon yang telah disepakati: dapat diperoleh, dilihat, digunakan/dipasang, memengaruhi pertempuran dan mengubah jumlah bila diperlukan.
-- [ ] **B:** integrasikan Mr. Deddy pada level 3 dan boss terakhir pada level 5 dengan pola, peringatan, serta hasil menang/kalah yang dibedakan.
-- [ ] **A:** hubungkan pemicu boss, hasil level dan pengembalian ke map level/posko sesuai alur yang disepakati; pertahankan data misi sepanjang transisi battle.
-- [ ] **B:** uji penggunaan item habis, weapon terpasang, pola dua boss, pause saat aksi, kematian lawan tanpa serangan balasan, dan hasil tunggal.
-- [ ] **Bukti terima:** kedua boss dan equipment terbukti bekerja bersama progres level; animasi/visual dapat memakai graybox sampai C-D04/C-D06 diterima.
+- [ ] Tentukan penempatan lumpur/genangan dan tingkat perlambatan; implementasikan dan uji masuk/keluar area pada tahap berikutnya.
 
 ### AB-D07 — Save/load dan main menu · R13–R14
 
-- [ ] **A:** implementasikan simpan dan muat untuk hari, level terbuka/selesai, tahap cerita, reward, item dan weapon, termasuk aturan istirahat di rumah.
+- [ ] **A:** simpan dan muat hari, level terbuka/selesai dan tahap cerita, termasuk aturan istirahat di rumah.
 - [ ] **A:** ubah Main Menu menjadi `Mulai`, `Lanjutkan`, `Load`, dan `Setting`; kondisi tanpa save, pemilihan slot, overwrite, dan setting mengikuti keputusan AB-D01.
 - [ ] **B:** uji simpan → tutup → buka → lanjut, pemilihan save, game baru dan konfirmasi overwrite; gagal menyimpan/memuat tidak boleh diam-diam menghapus data lama atau membuka hari berikutnya.
 - [ ] **A/B + C:** hubungkan menu/save UI C-D05 setelah state dan input-nya disepakati; periksa kamera/audio saat berganti scene.
-- [ ] **Bukti terima:** progres yang disimpan pulih pada executable, termasuk item/reward, dan semua tombol yang ditampilkan benar-benar berfungsi.
+- [ ] **Bukti terima:** progres yang disimpan pulih pada executable dan semua tombol yang ditampilkan berfungsi.
 
 ### AB-D08 — Integrasi, regresi, dan build · R15
 
 - [ ] **A/B + C:** gabungkan aset C-D02–C-D07 secara bertahap; pertahankan controller/collider/trigger dan periksa jalur setiap map setelah penggantian visual.
-- [ ] **B:** jalankan regresi terintegrasi dari prolog sampai akhir level 5, termasuk semua transisi map, dua boss, semua cabang encounter, pause, retry, reward, save/load, dan pergantian hari.
+- [ ] **B:** jalankan regresi terintegrasi dari prolog sampai akhir level 5, termasuk transisi map, pause, retry, save/load dan pergantian hari.
 - [ ] **A/B + C:** periksa kamera/audio, keterbacaan dan fokus UI pada 1280×720 serta 1920×1080, performa dan daftar lisensi/aset yang benar-benar dipakai.
 - [ ] **A/B:** buat build Windows dari source yang sama dan uji menu, misi, save/load, retry, keluar, serta offline pada komputer kedua; catat hasil dan masalah.
 - [ ] **Bukti terima:** bukti uji dan build terintegrasi tersedia; tidak ada blocker. Kriteria final C-D08 dan U19–U21 tetap diperiksa ulang, bukan otomatis lulus.
@@ -267,20 +145,19 @@ Tabel ini mempertahankan rencana dan bukti awal; status dan hari D tidak otomati
 | --- | --- | --- | --- | --- |
 | AB-M01 | D1 | Setup proyek, repository, clone, dan build awal. Satu anggota menyiapkan; anggota lain memeriksa. | Proyek 6000.3.27f1 hasil clone dan build awal berjalan. Bukti U01 berdasarkan konfirmasi anggota A/B; tidak menunggu laporan C untuk menutup milestone A/B ini. | Selesai |
 | AB-M02 | D2–D3 | A: graybox navigasi, gerak, collision, kamera. B: regresi dan uji jalur. | U02 lulus: lima tes Play Mode serta pengujian ulang jalur setelah perubahan pembatas. Tidak mencakup input lock state atau loop misi. | Selesai |
-| AB-M03 | D2–D3 | B: arena Battle mandiri. A/B: kontrak data, hasil menang/kalah, dan tanggung jawab state. | Arena `Battle.unity` dapat dibuka sendiri, titik karakter tersedia, dan kontrak `BattleController` disepakati tanpa ketergantungan pada MainMenu; diuji di Unity Editor. | Selesai |
-| AB-M04 | D4–D7 | A: interaksi, input lock per state, tiga penerima, paket/trust, timer, hasil, pause, retry. B membantu verifikasi batas dan regresi. | U04–U08 dan tiga retry setelah kalah tercakup dalam 36 tes Play Mode; pause eksplorasi juga perlu dicoba manual pada build. | Sebagian |
-| AB-M05 | D3–D7 | B: HP, Serang/Bertahan, pola lawan, telegraph, giliran, menang/kalah. A membantu menguji kontrak hasil. | `Battle.unity` dapat dimainkan mandiri; seluruh 6 tes `U11BattleTests` (U11–U14) lulus di Unity Editor dan tidak mengirim hasil ganda. | Selesai |
-| AB-M06 | D8–D10 | A: encounter, menghindar, trust/bantuan warga. A/B: transisi battle additive, kembali ke sesi, pause battle, dan reset. | U15–U17 dan transisi kamera diuji di Play Mode; pengujian manual terintegrasi tetap diperlukan. | Sebagian |
-| AB-M07 | D11 | A: MainMenu, navigasi, konfirmasi keluar sesi. B memeriksa masuk/keluar misi dan regresi battle. | Menu graybox dan kembali dari battle diuji dengan keyboard di Play Mode; uji Keluar pada build dan integrasi visual C belum selesai. | Sebagian |
+| AB-M03 | D2–D3 | Arena battle lama | Dihapus dari cakupan revisi. | Tidak berlaku |
+| AB-M04 | D4–D7 | Interaksi, penerima, paket/trust, timer, hasil, pause, retry. | Uji ulang dengan aturan pengantaran revisi. | Sebagian |
+| AB-M05–AB-M06 | D3–D10 | Battle dan encounter lama | Dihapus dari cakupan revisi; pengejaran dan perlambatan adalah rencana terpisah. | Tidak berlaku |
+| AB-M07 | D11 | MainMenu, navigasi dan konfirmasi keluar sesi. | Uji ulang menu dan keluar pada build revisi. | Sebagian |
 | AB-M08 | D12–D14 | Integrasi aset/UI/audio dari C, pengujian alpha, dan pembekuan fitur. | Semua fitur wajib tersambung; U19/U20 diuji bersama C pada build terintegrasi. Belum cukup jika hanya scene percobaan yang bekerja. | Belum |
 | AB-M09 | D15–D18 | Playtest, perbaikan, kalibrasi angka, regresi, dan release candidate. | Catatan playtest nyata; tidak ada blocker atau tombol kosong; kandidat rilis cocok dengan source dan aturan terbaru. | Belum |
 | AB-M10 | D19–D21 | Stabilisasi, build bersih, pengujian komputer kedua, dan pengumpulan source/build. | U21 lulus; build final, source, bukti uji, serta known issues non-blocking siap. | Belum |
 
-**Batas status saat ini:** 36/36 tes Play Mode lulus di Unity Editor. UI dan audio masih graybox; penerimaan visual/audio final serta uji komputer kedua belum dilakukan. U19–U21 bukan dinyatakan final sebelum pengujian ulang setelah integrasi aset.
+**Batas status saat ini:** bukti Play Mode lama bukan bukti revisi terbaru. UI dan audio masih graybox; penerimaan visual/audio final serta uji komputer kedua belum dilakukan.
 
 ### Jalur C — Visual, level, UI, dan audio
 
-**C-D01 dalam pengerjaan:** [arah visual dan hasil uji skala](docs/cd01-arah-visual.md) serta [checklist delivery Role C](docs/daftar-aset-role-c.md). Pengguna menyetujui arah visual dan model Meshy Vicky yang sudah ada serta memberi referensi tokoh lain. Uji collider sederhana dan 5/5 tes gerak/rute graybox lama lulus; jalur map revisi belum diuji karena scene belum tersedia.
+**C-D01 dalam pengerjaan:** [arah visual dan hasil uji skala](docs/cd01-arah-visual.md) serta [checklist delivery Role C](docs/daftar-aset-role-c.md). Pengguna menyetujui arah visual dan model Meshy Vicky serta memberi referensi tokoh lain. Jalur map perlu diuji ulang setelah perubahan.
 
 **Katalog lingkungan lokal:** `Blender/AssetLibrary_Staging/JejakAsa_Environment_Catalog.blend` berisi 340 entri sumber/variasi sebelumnya serta **20 objek rumah** yang di-append pengguna. Rumah `house_1`–`house_20` dikelompokkan dalam collection `House20`; tekstur rumah sudah dikemas. Sebagian parent aset lain disesuaikan untuk display katalog, **bukan skala final Unity**; 20 rumah mempertahankan skala dan posisi saat di-append. Model MC dan arsip asli tidak diubah.
 
@@ -291,12 +168,12 @@ Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis iku
 | ID | Target | Output yang diserahkan C | Kriteria selesai / bukti | Status |
 | --- | --- | --- | --- | --- |
 | C-M01 | D1–D2 | Setup proyek C, skala/palet, daftar kebutuhan aset, serta sumber/lisensi. | C dapat membuka proyek yang sama; daftar kebutuhan dan sumber aset dapat ditinjau. U01 A/B tidak otomatis membuktikan setup C. | Belum dilaporkan |
-| C-M02 | D2 | Rancangan layout dan penempatan tujuan bersama A/B. | Pos awal, tiga tujuan, gang utama, jalur memutar, serta titik encounter disepakati. Graybox buatan A/B sudah tersedia; kontribusi/handoff C tetap perlu dikonfirmasi. | Belum dilaporkan |
-| C-M03 | D3–D5 | Prefab visual pemain, warga, dan musuh low-poly. | Preview MC diuji; sembilan model sumber Jonathan, Ophelia, Mr. Gas Oke, Mr. Deddy, Ayah, Ibu, Preman, warga perempuan, dan warga laki-laki sudah digenerate. Model baru belum rig/animasi atau terintegrasi. | Sebagian |
-| C-M04 | D4–D6 | Prefab briefing, HUD, dialog, encounter, battle UI, pause, dan hasil/retry. Main menu belum diprioritaskan. | Teks, anchor, fokus, tombol, serta state terkunci/aktif lengkap; referensi untuk pengikatan controller disertakan. Penyerahan prefab bukan bukti logika misi/battle sudah selesai. | Belum dilaporkan |
+| C-M02 | D2 | Rancangan layout dan penempatan tujuan bersama A/B. | Pos awal, tujuan, gang dan rintangan yang direncanakan disepakati. | Belum dilaporkan |
+| C-M03 | D3–D5 | Prefab visual pemain, warga dan tokoh cerita low-poly. | Preview karakter tersedia; integrasi dan penerimaan final masih diperlukan. | Sebagian |
+| C-M04 | D4–D6 | Prefab briefing, HUD, dialog, pause dan hasil/retry. | Teks, anchor, fokus, tombol dan state lengkap; referensi pengikatan controller disertakan. | Belum dilaporkan |
 | C-M05 | D5–D8 | Lingkungan modular, bangunan, jalan, paket, penanda penerima, dan dekor minimum. | Prefab diserahkan untuk mengganti graybox; A/B memasangnya dan memeriksa ulang jalur/collider. C tidak menimpa logika atau scene integrasi tanpa handoff. | Belum dilaporkan |
-| C-M06 | D7–D10 | Idle/jalan/lari dan respons visual serang, bertahan, kena, serta bantuan warga. | Lari Shift sudah mengubah kecepatan controller; preview lokal memiliki klip lari bersama, tetapi animasi karakter ke gameplay dan bantuan warga masih perlu integrasi. | Sebagian |
-| C-M07 | D11 | Prefab MainMenu, musik eksplorasi/battle, SFX tindakan utama, dan pencahayaan. | Prefab siap diikat A; audio dan sumber/lisensi tersedia; suara tidak bertumpuk ketika diuji bersama sistem transisi. | Belum dilaporkan |
+| C-M06 | D7–D10 | Idle/jalan/lari, berbicara, memberi/menerima bantuan dan animasi cerita. | Preview lokal memiliki klip bersama; integrasi animasi ke gameplay perlu diuji. | Sebagian |
+| C-M07 | D11 | Prefab MainMenu, musik eksplorasi, SFX tindakan utama dan pencahayaan. | Prefab dan sumber/lisensi siap; suara tidak bertumpuk saat transisi. | Belum dilaporkan |
 | C-M08 | D12–D14 | Pemeriksaan visual/UI/audio pada build terintegrasi. | U19/U20 diperiksa bersama A/B: tampilan 1920×1080 dan 1280×720, fokus UI, prompt, penanda, serta audio transisi benar. | Belum dilaporkan |
 | C-M09 | D15–D18 | Perbaikan keterbacaan dan performa visual berdasarkan playtest. | Masalah yang ditemukan pengguna ditutup, tampilan tidak menghambat navigasi, dan hasil pemeriksaan dicatat pada kandidat rilis. | Belum dilaporkan |
 | C-M10 | D19–D21 | Kredit aset, screenshot build aktual, dan materi demo final. | Kredit sesuai aset yang benar-benar dipakai; gambar/demo cocok dengan build rilis A/B, bukan hanya render konsep. | Belum dilaporkan |
@@ -307,16 +184,16 @@ Folder `Blender/` diabaikan Git; katalog dan arsip tersebut **tidak otomatis iku
 
 ### Titik handoff dan penerimaan bersama
 
-- **D2:** A/B dan C menyepakati layout, skala, penempatan penanda, serta kebutuhan referensi prefab. A/B membekukan kontrak logika misi/battle.
+- **D2:** A/B dan C menyepakati layout, skala, penempatan penanda dan kontrak logika misi.
 - **D6:** C menyerahkan prefab UI awal. A/B menghubungkannya ke logika nyata. Jika visual belum final, A/B tetap membuktikan loop dengan UI sederhana yang berfungsi; tidak menunggu semua aset selesai.
-- **D10–D12:** visual, animasi, UI, dan audio digabungkan dengan sistem misi/battle. Perubahan layout atau collider memerlukan uji jalur kembali. Milestone aset dan milestone logika tidak saling menggantikan.
+- **D10–D12:** visual, animasi, UI dan audio digabungkan dengan sistem misi. Perubahan layout atau collider memerlukan uji jalur kembali.
 - **D14:** alpha dan pembekuan fitur diperiksa bersama. U19/U20 hanya dicentang sesudah hasil integrasi diuji, bukan ketika prefab diserahkan.
 - **D21:** kedua jalur bertemu pada build/source final yang sama. Kebutuhan kontribusi C tidak dihapus hanya karena milestone A/B sudah selesai, dan sebaliknya.
-- **D22–D28:** cadangan bersama hanya untuk pengujian, perbaikan bug, dan latihan presentasi; bukan tempat menunda fitur wajib atau menambah map/boss.
+- **D22–D28:** cadangan bersama hanya untuk pengujian, perbaikan bug dan latihan presentasi.
 
 ### Pekerjaan berikutnya
 
-1. A/B dan C meninjau **AB-D01** bersama: kontrak level, gerbang, save, reward, pembagian file, serta layout C-D01.
+1. A/B dan C meninjau **AB-D01** bersama: kontrak level, gerbang, save, pembagian file, serta layout C-D01.
 2. A/B menyiapkan posko/rumah dan progres dalam graybox melalui AB-D02–AB-D03; C menyiapkan aset secara paralel setelah kebutuhan tiap paket jelas.
 3. Uji manual graybox sebelumnya tetap berguna sebagai baseline; ulangi skenario yang terdampak setelah revisi dan integrasi aset. U19–U21 final tidak otomatis lulus.
 
@@ -359,9 +236,8 @@ Sembilan generasi Meshy selesai dalam tiga tahap (termasuk warga laki-laki yang 
 4. Pilih **Permainan Baru**, lalu konfirmasi. Bergerak dengan WASD atau panah; tahan Shift kiri/kanan untuk berlari.
 5. Keluar dari rumah dengan E. Di posko, bicara dengan Jonathan, ambil paket bantuan dengan E, lalu gunakan gerbang untuk berangkat ke level.
 6. Dekati penerima dan tekan E. Gunakan Enter, Spasi, Esc, atau tombol dialog untuk maju atau menutup sesuai jumlah baris.
-7. Saat encounter, pilih menghindar, battle, atau bantuan warga jika memenuhi syarat. Di battle gunakan **1 Serang**, **2 Bertahan**, **3 Item**, dan **4 Senjata**; item dan senjata harus sudah dimiliki.
-8. Setelah misi berhasil, konfirmasi hasil untuk kembali ke posko, lapor kepada Jonathan, bicara dengan Ophelia, lalu pulang melalui gerbang. Di tempat tidur rumah, simpan pada salah satu dari tiga slot atau istirahat untuk memajukan hari; penimpaan slot meminta konfirmasi.
-9. Esc saat eksplorasi atau battle membuka menu ingame. Pilih Item, Senjata, Pengaturan, Muat, Keluar, atau Lanjutkan; gunakan panah/Tab dan Enter atau mouse, dan Esc untuk kembali. Pada dialog Esc memajukan atau menutup dialog; pada encounter preman biasa Esc memilih menghindar dengan peluang 50%. Memuat dan keluar meminta konfirmasi. Save disimpan secara lokal melalui PlayerPrefs, bukan dalam repository.
+7. Setelah misi berhasil, konfirmasi hasil untuk kembali ke posko, lapor kepada Jonathan, bicara dengan Ophelia, lalu pulang. Di tempat tidur rumah, simpan pada salah satu dari tiga slot atau istirahat untuk memajukan hari; penimpaan slot meminta konfirmasi.
+8. Esc saat eksplorasi membuka menu ingame: Lanjutkan, Pengaturan, Muat, atau Keluar. Memuat dan keluar meminta konfirmasi. Save disimpan lokal melalui PlayerPrefs, bukan dalam repository.
 
 ### Pengujian manual U02
 
@@ -382,29 +258,24 @@ Visual masih sederhana. Kamera belum memiliki penanganan occlusion bangunan atau
 
 Pemilihan target berdasarkan jarak pada bidang XZ dan status aktif, bukan arah hadap pemain. Skenario beberapa warga berdekatan, jarak tepat di batas, dan target yang hilang diuji otomatis; tidak perlu mengubah layout utama untuk mencobanya.
 
-### Pengujian manual U16–U21 pada build graybox
+### Pengujian manual pada build revisi
 
-Gunakan seluruh folder `Unity/JejakAsa/Builds/Windows-Graybox-U21/`, bukan hanya `.exe`. Jalankan `JejakAsa.exe` dan catat langkah, hasil, serta screenshot bila ada masalah.
+Build lama tidak mencerminkan revisi. Buat build baru, lalu catat langkah, hasil, serta screenshot bila ada masalah:
 
-1. **Menu:** pilih Mulai dengan mouse dan ulangi dengan keyboard. Di eksplorasi tekan Esc → Menu Utama → Batal; sesi tetap sama dan masih dijeda. Pilih Lanjutkan lalu pastikan bisa bergerak. Ulangi dengan konfirmasi kembali: mulai lagi harus menghasilkan 3 paket dan trust 0.
-2. **Pause eksplorasi:** saat timer berjalan tekan Esc, tunggu sekitar 10 detik, lalu lanjutkan. Timer tidak boleh berkurang selama jeda. Esc saat dialog warga menutup dialog; Esc pada pilihan preman memilih menghindar.
-3. **Pause battle:** antar satu paket, dekati preman dan pilih `2` Bertengkar. Tekan `1` Serang, segera Esc, dan tunggu beberapa detik: animasi/HP/giliran tidak boleh berubah. Lanjutkan; satu serangan lawan harus selesai sekali saja. Ulangi ketika menunggu animasi serangan kuat.
-4. **Retry tiga kali:** dari sesi dengan minimal satu penyerahan, kalah dengan menekan Serang empat kali. Pada hasil parsial pilih Ulang Misi. Pastikan 3 paket, 0 warga, trust 0, timer kembali mendekati 03:00, spawn awal, penerima belum ditolong, preman dan penghalang kembali. Ulangi kalah dan retry hingga tiga kali.
-5. **Kemenangan dan pilihan lain:** pada sesi baru pilih Bertengkar dan gunakan Serang ×3, Bertahan ×1, Serang ×2; pemain seharusnya menang dengan HP 4. Setelah kembali, data misi tetap dan gang utama terbuka. Coba juga Menghindar, lalu pada sesi lain antar satu paket dan pilih Bantuan Warga.
-6. **Kamera, audio, UI:** dengarkan musik eksplorasi, battle, kembali, dan setelah retry; tidak boleh ada dua musik bertumpuk. Periksa menu, prompt warga, alasan bantuan terkunci, HUD, dialog, pause, battle, dan hasil dengan mouse serta keyboard pada 1920×1080 dan 1280×720; semua teks/tombol harus terbaca dan tidak terpotong.
-7. **Build komputer kedua:** salin seluruh folder build ke komputer Windows lain, putuskan internet dan pastikan Unity Editor tidak diperlukan. Uji Mulai, satu penyerahan, battle, retry, kembali ke menu, dan Keluar. Ulangi setelah aset final terpasang sebelum menutup U21.
+1. Uji menu, jeda timer, dialog dan kembali ke sesi dengan mouse serta keyboard.
+2. Antar bantuan pada lima level; periksa hasil dan pergantian hari.
+3. Biarkan waktu habis setelah satu penyerahan, pilih ulang misi tiga kali, dan periksa paket, penerima, timer serta progres level sebelumnya.
+4. Uji save/load dan konfirmasi penggantian slot, kamera, audio serta UI pada 1920×1080 dan 1280×720.
+5. Salin seluruh folder build ke komputer Windows lain dan uji tanpa Editor atau internet, termasuk keluar aplikasi.
 
 ### Musik sementara untuk graybox
 
-- Eksplorasi: [Loop Town — Fupi](https://opengameart.org/content/loop-town), CC0.
-- Battle: [Urban Battle — MintoDog](https://opengameart.org/content/urban-battle), CC0.
-
-Kedua musik bersifat sementara dan boleh diganti saat integrasi audio Role C; periksa kembali transisi dan kredit aset yang benar-benar dipakai pada build final.
+Eksplorasi: [Loop Town — Fupi](https://opengameart.org/content/loop-town), CC0. Periksa kembali kredit aset yang benar-benar dipakai pada build final.
 
 
 ### Pengujian otomatis Play Mode
 
-Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan seluruh tes. Hasil terakhir di Editor: **36/36 lulus**, termasuk retry tiga kali, pause saat aksi battle, alur menu, dan pergantian musik.
+Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Regresi terarah setelah penghapusan sistem lama: **42/42 lulus** di Editor, mencakup alur lima level, rute, penyerahan, timer, retry, menu dan save/load. Ini belum membuktikan build atau integrasi aset final.
 
 Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes integrasi memuat Kampung aktual untuk menelusuri rute atau membuka dialog dan mengklik Tutup dengan input mouse. Scene percobaan dibongkar dan input fixture dipulihkan setelah selesai. Jangan menghentikan runner atau mengubah scene di tengah tes.
 
@@ -414,7 +285,7 @@ Jika layout berubah, tinjau waypoint pada tes rute serta buktikan semua penerima
 
 1. Keluar dari Play Mode dan simpan scene.
 2. Buka **File → Build Profiles** dan aktifkan Windows.
-3. Pastikan urutan scene aktif adalah `MainMenu`, `Kampung`, lalu `Battle`; scene contoh tidak perlu diaktifkan.
+3. Pastikan scene aktif meliputi `MainMenu`, `Rumah`, `Posko`, `Kampung`, dan `Kampung_L2`–`Kampung_L5`; scene contoh tidak perlu diaktifkan.
 4. Build ke folder baru di `Unity/JejakAsa/Builds/`, bukan ke dalam `Assets`.
 5. Jalankan executable di luar Editor dan bagikan seluruh folder hasil build jika diperlukan, bukan `.exe` saja.
 
@@ -429,7 +300,7 @@ Unity/JejakAsa/
     Scenes/Kampung.unity           Scene gameplay awal
     Scripts/                      Gerak, kamera, target NPC, dan interaksi
     Materials/                    Material graybox
-    Tests/PlayMode/               Regresi U02 dan U03
+    Tests/PlayMode/               Regresi gerak, misi, alur dan menu
   Assets/TextMesh Pro/             Resource font/settings/shader bawaan TMP
   Packages/                       Manifest dan lock file package
   ProjectSettings/                Konfigurasi dan versi Editor
@@ -446,8 +317,7 @@ docs/                             Acuan desain, rencana, presentasi, bukti visua
 - [Tes interaksi](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U03InteractionTests.cs)
 - [Tes dialog dan mouse di Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U03KampungInteractionTests.cs)
 - [Desain game](docs/desain-game.md)
-- [Rencana kerja acuan](docs/rencana-development-jejak-asa.md)
-- [Presentasi desain](<docs/Kelompok Jejak Asa.pptx>)
+- [Rencana kerja awal (historis)](docs/rencana-development-jejak-asa.md) dan [presentasi awal](<docs/Kelompok Jejak Asa.pptx>); cakupan gameplay mengikuti revisi pada README dan storyboard.
 
 ### Resource UI dan lisensi
 

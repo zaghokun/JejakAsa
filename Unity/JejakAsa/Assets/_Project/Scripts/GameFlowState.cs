@@ -36,7 +36,7 @@ namespace JejakAsa
         public bool isOpheliaTalkDone;
         public bool hasClaimedReward;
 
-        // Progres inventori dan level
+        // Legacy save fields are retained without gameplay effects.
         public List<string> inventory = new List<string>();
         public string equippedWeapon = "";
         public List<int> completedLevels = new List<int>();
@@ -56,7 +56,6 @@ namespace JejakAsa
             isLevelCompleted = false;
             isReportDone = false;
             isOpheliaTalkDone = false;
-            hasClaimedReward = false;
         }
     }
 

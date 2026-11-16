@@ -12,7 +12,6 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
 {
     private const string MenuPath = "Assets/_Project/Scenes/MainMenu.unity";
     private const string KampungPath = "Assets/_Project/Scenes/Kampung.unity";
-    private const string BattlePath = "Assets/_Project/Scenes/Battle.unity";
     private Keyboard keyboard;
     private float oldTimeScale;
 
@@ -37,15 +36,12 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
         Scene gameScene = SceneManager.GetActiveScene();
         Scene cleanScene = SceneManager.CreateScene("U18TestCleanup");
         SceneManager.SetActiveScene(cleanScene);
-        Scene battle = SceneManager.GetSceneByPath(BattlePath);
-        if (battle.IsValid() && battle.isLoaded && battle != gameScene)
-            yield return SceneManager.UnloadSceneAsync(battle);
         if (gameScene.IsValid() && gameScene.isLoaded)
             yield return SceneManager.UnloadSceneAsync(gameScene);
     }
 
     [UnityTest]
-    public IEnumerator MenuStartsSessionAndReturningFromBattleRequiresConfirmation()
+    public IEnumerator MenuStartsSessionAndReturningRequiresConfirmation()
     {
         yield return SceneManager.LoadSceneAsync(MenuPath, LoadSceneMode.Single);
         Object.FindFirstObjectByType<SessionMenu>().StartNewGame();
@@ -54,29 +50,16 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
         PlayerInteraction player = Object.FindFirstObjectByType<PlayerInteraction>();
         Assert.That(player, Is.Not.Null);
         Assert.That(player.PackagesRemaining, Is.EqualTo(3));
-        var controller = player.GetComponent<CharacterController>();
-        controller.enabled = false;
-        player.transform.position = new Vector3(0f, 1f, -1.6f);
-        controller.enabled = true;
-        Physics.SyncTransforms();
-        yield return null;
-        yield return Press(Key.Digit2);
-        float deadline = Time.realtimeSinceStartup + 5f;
-        while ((BattleController.Active == null || !BattleController.Active.IsPlayerTurn) && Time.realtimeSinceStartup < deadline)
-            yield return null;
-        Assert.That(BattleController.Active, Is.Not.Null);
         yield return Press(Key.Escape);
         Assert.That(Time.timeScale, Is.Zero);
-        yield return Press(Key.Digit6);
+        yield return Press(Key.Digit4);
         yield return Press(Key.Digit2);
         yield return Press(Key.Digit1);
         Assert.That(Time.timeScale, Is.Zero, "Membatalkan konfirmasi harus tetap dalam pause.");
-        Assert.That(SceneManager.GetSceneByPath(BattlePath).isLoaded, Is.True);
         yield return Press(Key.Digit2);
         yield return Press(Key.Digit2);
         yield return null;
         Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(MenuPath));
-        Assert.That(SceneManager.GetSceneByPath(BattlePath).isLoaded, Is.False);
         Assert.That(Time.timeScale, Is.EqualTo(1f));
         Object.FindFirstObjectByType<SessionMenu>().StartNewGame();
         yield return null;
@@ -289,7 +272,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     }
 
     [UnityTest]
-    public IEnumerator PauseMenuManagesInventoryEquipmentSettingsAndExitWithoutLosingState()
+    public IEnumerator PauseMenuManagesSettingsLoadAndExitWithoutLosingState()
     {
         GameFlowManager flow = GameFlowManager.Instance;
         GameProgressData previous = flow.Progress.Clone();
@@ -306,8 +289,6 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             PlayerPrefs.SetFloat(volumeKey, 0.5f);
             PlayerPrefs.DeleteKey(slotKey);
             flow.StartNewCampaign();
-            flow.Progress.inventory.Add(BattleController.HealingItemId);
-            flow.Progress.inventory.Add(BattleController.BasicWeaponId);
             yield return SceneManager.LoadSceneAsync(KampungPath, LoadSceneMode.Single);
             var menu = Object.FindFirstObjectByType<SessionMenu>();
             var player = Object.FindFirstObjectByType<PlayerController>();
@@ -316,26 +297,15 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             Assert.That(Time.timeScale, Is.Zero);
             Assert.That(player.enabled, Is.False);
             yield return Press(Key.Digit2);
-            yield return Press(Key.Digit1);
-            Assert.That(menu.MenuNotice, Does.Contain("battle"));
-            Assert.That(flow.Progress.inventory, Does.Contain(BattleController.HealingItemId));
-            yield return Press(Key.Escape);
-            yield return Press(Key.Digit3);
-            yield return Press(Key.Digit1);
-            Assert.That(flow.Progress.equippedWeapon, Is.EqualTo(BattleController.BasicWeaponId));
-            yield return Press(Key.Digit1);
-            Assert.That(flow.Progress.equippedWeapon, Is.Empty);
-            yield return Press(Key.Escape);
-            yield return Press(Key.Digit4);
             yield return Press(Key.Digit2);
             Assert.That(AudioListener.volume, Is.EqualTo(0.6f).Within(0.001f));
             yield return Press(Key.Escape);
-            yield return Press(Key.Digit5);
+            yield return Press(Key.Digit3);
             yield return Press(Key.Digit3);
             Assert.That(menu.MenuNotice, Does.Contain("kosong"));
             Assert.That(menu.IsPaused, Is.True);
             yield return Press(Key.Escape);
-            yield return Press(Key.Digit6);
+            yield return Press(Key.Digit4);
             yield return Press(Key.Digit3);
             yield return Press(Key.Digit1);
             Assert.That(menu.IsPaused, Is.True, "Membatalkan keluar tidak boleh melanjutkan permainan.");
@@ -378,7 +348,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             flow.SetStateForTesting(new GameProgressData { currentDay = 4, currentLevel = 4, currentPhase = DayPhase.DiLevel, hasPickedUpBansos = true });
             yield return SceneManager.LoadSceneAsync(KampungPath, LoadSceneMode.Single);
             yield return Press(Key.Escape);
-            yield return Press(Key.Digit5);
+            yield return Press(Key.Digit3);
             yield return Press(Key.Digit1);
             Assert.That(flow.CurrentDay, Is.EqualTo(4));
             Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(KampungPath));
@@ -404,55 +374,6 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
         }
     }
 
-    [UnityTest]
-    public IEnumerator PauseInventoryUsesItemAndWeaponDuringBattleTurn()
-    {
-        GameFlowManager flow = GameFlowManager.Instance;
-        GameProgressData previous = flow.Progress.Clone();
-        string previousSpawn = flow.LastSpawnPoint;
-        try
-        {
-            yield return SceneManager.LoadSceneAsync(MenuPath, LoadSceneMode.Single);
-            Object.FindFirstObjectByType<SessionMenu>().StartNewGame();
-            yield return null;
-            flow.Progress.inventory.Add(BattleController.HealingItemId);
-            flow.Progress.inventory.Add(BattleController.BasicWeaponId);
-            PlayerInteraction player = Object.FindFirstObjectByType<PlayerInteraction>();
-            var controller = player.GetComponent<CharacterController>();
-            controller.enabled = false;
-            player.transform.position = new Vector3(0f, 1f, -1.6f);
-            controller.enabled = true;
-            Physics.SyncTransforms();
-            yield return null;
-            yield return Press(Key.Digit2);
-            float deadline = Time.realtimeSinceStartup + 5f;
-            while ((BattleController.Active == null || !BattleController.Active.IsPlayerTurn) && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            var battle = BattleController.Active;
-            Assert.That(battle, Is.Not.Null);
-            Assert.That(battle.PlayerAttack(), Is.True);
-            Assert.That(battle.PlayerHP, Is.LessThan(battle.playerMaxHP));
-            yield return Press(Key.Escape);
-            yield return Press(Key.Digit2);
-            yield return Press(Key.Digit1);
-            Assert.That(flow.Progress.inventory, Does.Not.Contain(BattleController.HealingItemId));
-            Assert.That(Time.timeScale, Is.EqualTo(1f));
-            deadline = Time.realtimeSinceStartup + 5f;
-            while (battle.ActionLocked && Time.realtimeSinceStartup < deadline)
-                yield return null;
-            Assert.That(battle.IsPlayerTurn, Is.True);
-            yield return Press(Key.Escape);
-            yield return Press(Key.Digit3);
-            yield return Press(Key.Digit1);
-            Assert.That(flow.Progress.equippedWeapon, Is.EqualTo(BattleController.BasicWeaponId));
-            Assert.That(battle.CurrentAttackDamage, Is.EqualTo(battle.attackDamage + 5));
-        }
-        finally
-        {
-            flow.SetStateForTesting(previous);
-            flow.LastSpawnPoint = previousSpawn;
-        }
-    }
 
     private IEnumerator Press(Key key)
     {

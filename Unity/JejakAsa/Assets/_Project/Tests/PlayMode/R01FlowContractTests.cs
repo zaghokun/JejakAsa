@@ -211,50 +211,6 @@ namespace JejakAsa
             Assert.AreEqual(DayPhase.RumahMalam, flow.CurrentPhase);
         }
 
-        [Test]
-        public void ClaimLevelReward_GivenExactlyOnce_AfterReportAndOpheliaTalk()
-        {
-            flow.GoToPoskoFromHome();
-            flow.CompleteBriefing();
-            flow.Progress.hasPickedUpBansos = true;
-            flow.DepartToLevel();
-            flow.OnLevelSuccess();
-
-            // Klaim sebelum lapor -> gagal
-            Assert.IsFalse(flow.ClaimLevelReward("BansosKit_L1"));
-
-            flow.CompleteReport();
-            flow.CompleteOpheliaTalk();
-
-            // Klaim pertama kali -> sukses
-            bool claimed = flow.ClaimLevelReward("BansosKit_L1");
-            Assert.IsTrue(claimed);
-            Assert.IsTrue(flow.Progress.hasClaimedReward);
-            CollectionAssert.Contains(flow.Progress.inventory, "BansosKit_L1");
-            CollectionAssert.Contains(flow.Progress.inventory, BattleController.HealingItemId);
-
-            // Klaim kedua kali di level yang sama -> ditolak
-            bool claimAgain = flow.ClaimLevelReward("BansosKit_L1");
-            Assert.IsFalse(claimAgain);
-            Assert.AreEqual(2, flow.Progress.inventory.Count);
-        }
-
-        [Test]
-        public void LevelTwoRewardGrantsWeaponOnce()
-        {
-            flow.SetStateForTesting(new GameProgressData
-            {
-                currentDay = 2,
-                currentLevel = 2,
-                currentPhase = DayPhase.PoskoLaporan,
-                isReportDone = true,
-                isOpheliaTalkDone = true
-            });
-            Assert.IsTrue(flow.ClaimLevelReward("BansosKit_L2"));
-            CollectionAssert.Contains(flow.Progress.inventory, BattleController.BasicWeaponId);
-            Assert.IsFalse(flow.ClaimLevelReward("BansosKit_L2"));
-            Assert.AreEqual(2, flow.Progress.inventory.Count);
-        }
 
         [Test]
         public void RestInHome_AdvancesDay_AndResetsDailyFlagsCleanly()
@@ -266,7 +222,6 @@ namespace JejakAsa
             flow.OnLevelSuccess();
             flow.CompleteReport();
             flow.CompleteOpheliaTalk();
-            flow.ClaimLevelReward("BansosKit_L1");
             flow.GoHomeFromPosko();
 
             Assert.AreEqual(DayPhase.RumahMalam, flow.CurrentPhase);
@@ -286,11 +241,9 @@ namespace JejakAsa
             Assert.IsFalse(flow.Progress.isLevelCompleted);
             Assert.IsFalse(flow.Progress.isReportDone);
             Assert.IsFalse(flow.Progress.isOpheliaTalkDone);
-            Assert.IsFalse(flow.Progress.hasClaimedReward);
 
-            // Progres permanen (inventory & level selesai) tetap utuh
+            // Progres level selesai tetap utuh.
             CollectionAssert.Contains(flow.Progress.completedLevels, 1);
-            CollectionAssert.Contains(flow.Progress.inventory, "BansosKit_L1");
         }
 
         [Test]
@@ -338,23 +291,24 @@ namespace JejakAsa
                 isLevelCompleted = true,
                 isReportDone = true,
                 isOpheliaTalkDone = true,
-                hasClaimedReward = true
+                hasClaimedReward = true,
+                equippedWeapon = "legacy_weapon"
             };
             testData.completedLevels.Add(1);
             testData.completedLevels.Add(2);
             testData.inventory.Add("Reward_L1");
             testData.inventory.Add("Reward_L2");
 
-            flow.SetStateForTesting(testData);
-
-            // Simpan ke Slot 2
+            PlayerPrefs.SetString("JejakAsa_SaveSlot_2", JsonUtility.ToJson(testData));
+            Assert.IsTrue(flow.LoadGame(2));
+            Assert.IsTrue(flow.RestAndAdvanceDay());
             bool saved = flow.SaveGame(2);
             Assert.IsTrue(saved);
             Assert.IsTrue(GameFlowManager.HasSave(2));
 
             SaveSlotMeta meta = GameFlowManager.GetSlotMeta(2);
-            Assert.AreEqual(3, meta.day);
-            Assert.AreEqual(3, meta.level);
+            Assert.AreEqual(4, meta.day);
+            Assert.AreEqual(4, meta.level);
 
             // Reset flow ke game baru
             flow.StartNewCampaign();
@@ -363,11 +317,14 @@ namespace JejakAsa
             // Muat kembali dari Slot 2
             bool loaded = flow.LoadGame(2);
             Assert.IsTrue(loaded);
-            Assert.AreEqual(3, flow.CurrentDay);
-            Assert.AreEqual(3, flow.CurrentLevel);
-            Assert.AreEqual(DayPhase.RumahMalam, flow.CurrentPhase);
+            Assert.AreEqual(4, flow.CurrentDay);
+            Assert.AreEqual(4, flow.CurrentLevel);
+            Assert.AreEqual(DayPhase.RumahPagi, flow.CurrentPhase);
             Assert.AreEqual(2, flow.Progress.completedLevels.Count);
             Assert.AreEqual(2, flow.Progress.inventory.Count);
+            CollectionAssert.AreEqual(testData.inventory, flow.Progress.inventory);
+            Assert.AreEqual("legacy_weapon", flow.Progress.equippedWeapon);
+            Assert.IsTrue(flow.Progress.hasClaimedReward);
         }
     }
 }

@@ -31,7 +31,6 @@ namespace JejakAsa
         private int dialogueLineIndex;
         private int dialogueAdvanceFrame = -1;
         private DayPhase dialoguePhase;
-        private int dialogueDay;
         private PlayerController movement;
         private bool movementWasEnabled;
         private static StoryNpcController activeDialogue;
@@ -92,7 +91,7 @@ namespace JejakAsa
             if (isDialogueOpen || AnyDialogueOpen)
                 return false;
             var interaction = playerTransform != null ? playerTransform.GetComponent<PlayerInteraction>() : null;
-            if (interaction != null && (interaction.IsDialogueOpen || interaction.IsEncounterOpen || interaction.IsOutcomeOpen || interaction.IsInBattle))
+            if (interaction != null && (interaction.IsDialogueOpen || interaction.IsOutcomeOpen))
                 return false;
 
             isDialogueOpen = true;
@@ -107,7 +106,6 @@ namespace JejakAsa
             }
             int day = GameFlowManager.Instance.CurrentDay;
             DayPhase phase = GameFlowManager.Instance.CurrentPhase;
-            dialogueDay = day;
             dialoguePhase = phase;
             dialogueLineIndex = 0;
             dialogueAdvanceFrame = -1;
@@ -125,10 +123,7 @@ namespace JejakAsa
                     {
                         currentDialogueText = $"\"Kerja bagus Vicky! Semua laporan penyaluran bansos Hari ke-{day} sudah kuterima dengan baik. Jangan lupa sapa Ophelia sebelum kamu pulang istirahat.\"";
                         if (dialogueLines == null || dialogueLines.Length <= 1)
-                        {
                             GameFlowManager.Instance.CompleteReport();
-                            GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{day}");
-                        }
                     }
                     else
                     {
@@ -143,12 +138,9 @@ namespace JejakAsa
                     }
                     else if (phase == DayPhase.PoskoLaporan)
                     {
-                        currentDialogueText = $"\"Vicky, kamu hebat bisa selesaikan rute hari ini! Ini ada bekal dan catatan tambahan untukmu. Istirahatlah dengan baik ya nanti di rumah.\"";
+                        currentDialogueText = "\"Vicky, kamu hebat bisa selesaikan rute hari ini! Istirahatlah dengan baik ya nanti di rumah.\"";
                         if (dialogueLines == null || dialogueLines.Length <= 1)
-                        {
                             GameFlowManager.Instance.CompleteOpheliaTalk();
-                            GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{day}");
-                        }
                     }
                     else
                     {
@@ -192,15 +184,9 @@ namespace JejakAsa
                 if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoBriefing)
                     GameFlowManager.Instance.CompleteBriefing();
                 else if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoLaporan)
-                {
                     GameFlowManager.Instance.CompleteReport();
-                    GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{dialogueDay}");
-                }
                 else if (npcType == StoryNpcType.Ophelia && dialoguePhase == DayPhase.PoskoLaporan)
-                {
                     GameFlowManager.Instance.CompleteOpheliaTalk();
-                    GameFlowManager.Instance.ClaimLevelReward($"BekalLogistik_Hari{dialogueDay}");
-                }
             }
             var completed = sequenceCompleted;
             EndDialogue();

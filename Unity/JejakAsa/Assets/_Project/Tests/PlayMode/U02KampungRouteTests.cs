@@ -41,31 +41,20 @@ public sealed class U02KampungRouteTests : InputTestFixture
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Kampung.unity", LoadSceneMode.Additive);
         loadedScene = SceneManager.GetSceneByPath("Assets/_Project/Scenes/Kampung.unity");
         Transform player = null;
-        GameObject levelRoot = null;
         foreach (GameObject root in loadedScene.GetRootGameObjects())
         {
             if (root.TryGetComponent(out PlayerController movement))
                 player = movement.transform;
-            if (root.name == "U02_Graybox")
-                levelRoot = root;
         }
         Assert.That(player, Is.Not.Null, "The level must contain its playable character.");
 
-        // 1. Jalur memutar (Gang_Memutar) harus tembus meski penghadang preman aktif
+        // Jalur memutar menuju penerima.
         yield return WalkRoute(player, new[] {
             new Vector2(-12f, -2.5f), new Vector2(-8f, -2.5f),
             new Vector2(-8f, 2f), new Vector2(0f, 2f), new Vector2(12f, 2f)
         });
 
-        // 2. Setelah penghadang di Gang Utama diselesaikan, jalur utama juga dapat dilalui penuh
-        if (levelRoot != null)
-        {
-            foreach (EncounterController enc in levelRoot.GetComponentsInChildren<EncounterController>(true))
-            {
-                enc.ResolveFromBattleVictory();
-            }
-        }
-
+        // Jalur utama menuju penerima.
         CharacterController controller = player.GetComponent<CharacterController>();
         controller.enabled = false;
         player.position = new Vector3(-12f, 1f, -11f);

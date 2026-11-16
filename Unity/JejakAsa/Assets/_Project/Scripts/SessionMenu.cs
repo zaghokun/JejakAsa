@@ -23,11 +23,9 @@ namespace JejakAsa
         private bool confirming;
         private int selected;
         private float previousTimeScale;
-        private enum MenuPage { Main, Load, Settings, ConfirmNew, Items, Equipment, Exit, ConfirmQuit, ConfirmLoad }
+        private enum MenuPage { Main, Load, Settings, ConfirmNew, Exit, ConfirmQuit, ConfirmLoad }
         private MenuPage page;
         private int pendingLoadSlot;
-        private BattleController pendingBattleAction;
-        private bool pendingHealing;
         private Vector2 menuScroll;
         private GUIStyle rpgText;
         private GUIStyle rpgSmall;
@@ -51,7 +49,6 @@ namespace JejakAsa
 
         private void OnDisable()
         {
-            pendingBattleAction = null;
             if (IsPaused)
                 Resume();
             if (active == this)
@@ -60,13 +57,6 @@ namespace JejakAsa
 
         private void Update()
         {
-            if (pendingBattleAction != null && !IsPaused && Time.frameCount != blockedFrame)
-            {
-                BattleController battle = pendingBattleAction;
-                pendingBattleAction = null;
-                if (!(pendingHealing ? battle.PlayerUseHealing(true) : battle.EquipBasicWeapon()))
-                    Debug.LogWarning("Aksi dari menu tidak dapat dijalankan karena kondisi battle berubah.");
-            }
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
                 return;
@@ -81,7 +71,7 @@ namespace JejakAsa
                     else if (page != MenuPage.Main) ShowPage(MenuPage.Main);
                     else Resume();
                 }
-                else if ((interaction == null || !interaction.IsDialogueOpen) && !EncounterController.AnyOpen &&
+                else if ((interaction == null || !interaction.IsDialogueOpen) &&
                     !StoryNpcController.AnyDialogueOpen && !StoryNpcController.EscapeConsumedThisFrame)
                 {
                     Pause();
@@ -213,49 +203,11 @@ namespace JejakAsa
                 return page == MenuPage.Main ? 5 : page == MenuPage.Load || page == MenuPage.Settings ? 4 : 2;
             if (confirming || page == MenuPage.ConfirmQuit || page == MenuPage.ConfirmLoad)
                 return 2;
-            if (page == MenuPage.Main) return 6;
-            if (page == MenuPage.Items) return ItemCount() + 1;
-            if (page == MenuPage.Equipment) return 2;
+            if (page == MenuPage.Main) return 4;
             if (page == MenuPage.Settings || page == MenuPage.Load) return 4;
             return 3;
         }
 
-        private int ItemCount()
-        {
-            var inventory = GameFlowManager.Instance.Progress.inventory;
-            int count = 0;
-            for (int i = 0; i < inventory.Count; i++)
-                if (!string.IsNullOrEmpty(inventory[i]) && inventory[i] != BattleController.BasicWeaponId &&
-                    inventory.IndexOf(inventory[i]) == i)
-                    count++;
-            return count;
-        }
-
-        private string ItemAt(int index)
-        {
-            var inventory = GameFlowManager.Instance.Progress.inventory;
-            for (int i = 0; i < inventory.Count; i++)
-            {
-                string item = inventory[i];
-                if (string.IsNullOrEmpty(item) || item == BattleController.BasicWeaponId || inventory.IndexOf(item) != i)
-                    continue;
-                if (index-- == 0) return item;
-            }
-            return null;
-        }
-
-        private int ItemQuantity(string item)
-        {
-            int count = 0;
-            foreach (string entry in GameFlowManager.Instance.Progress.inventory)
-                if (entry == item) count++;
-            return count;
-        }
-
-        private static string ItemName(string item)
-        {
-            return item == BattleController.HealingItemId ? "Pemulih HP" : item;
-        }
 
         private void ContinueGame()
         {
@@ -345,58 +297,9 @@ namespace JejakAsa
             else if (page == MenuPage.Main)
             {
                 if (choice == 0) Resume();
-                else if (choice == 1) ShowPage(MenuPage.Items);
-                else if (choice == 2) ShowPage(MenuPage.Equipment);
-                else if (choice == 3) ShowPage(MenuPage.Settings);
-                else if (choice == 4) ShowPage(MenuPage.Load);
+                else if (choice == 1) ShowPage(MenuPage.Settings);
+                else if (choice == 2) ShowPage(MenuPage.Load);
                 else ShowPage(MenuPage.Exit);
-            }
-            else if (page == MenuPage.Items)
-            {
-                string item = ItemAt(choice);
-                if (item == null) ShowPage(MenuPage.Main);
-                else if (item != BattleController.HealingItemId)
-                    notice = "Catatan hadiah ini tidak dapat digunakan sebagai item battle.";
-                else
-                {
-                    BattleController battle = BattleController.Active;
-                    if (battle == null || battle.IsBattleOver)
-                        notice = "Item pemulih hanya dapat digunakan saat battle.";
-                    else if (!battle.IsPlayerTurn || battle.ActionLocked)
-                        notice = "Tunggu giliranmu untuk menggunakan item.";
-                    else if (battle.PlayerHP >= battle.playerMaxHP)
-                        notice = "HP sudah penuh.";
-                    else
-                    {
-                        pendingBattleAction = battle;
-                        pendingHealing = true;
-                        Resume();
-                    }
-                }
-            }
-            else if (page == MenuPage.Equipment)
-            {
-                if (choice == 1) { ShowPage(MenuPage.Main); return; }
-                var progress = GameFlowManager.Instance.Progress;
-                if (!progress.inventory.Contains(BattleController.BasicWeaponId))
-                    notice = "Senjata dasar belum dimiliki.";
-                else if (BattleController.Active != null && !BattleController.Active.IsBattleOver)
-                {
-                    BattleController battle = BattleController.Active;
-                    if (!battle.IsPlayerTurn || battle.ActionLocked)
-                        notice = "Tunggu giliranmu untuk mengganti senjata.";
-                    else
-                    {
-                        pendingBattleAction = battle;
-                        pendingHealing = false;
-                        Resume();
-                    }
-                }
-                else
-                {
-                    progress.equippedWeapon = progress.equippedWeapon == BattleController.BasicWeaponId ? "" : BattleController.BasicWeaponId;
-                    notice = progress.equippedWeapon == "" ? "Senjata dilepas." : "Senjata dasar dipasang.";
-                }
             }
             else if (page == MenuPage.Settings) ApplySetting(choice);
             else if (page == MenuPage.Load)
@@ -458,20 +361,11 @@ namespace JejakAsa
                 switch (index)
                 {
                     case 0: return "Lanjutkan";
-                    case 1: return "Item";
-                    case 2: return "Senjata";
-                    case 3: return "Pengaturan";
-                    case 4: return "Muat";
+                    case 1: return "Pengaturan";
+                    case 2: return "Muat";
                     default: return "Keluar";
                 }
             }
-            if (page == MenuPage.Items)
-            {
-                string item = ItemAt(index);
-                return item == null ? "Kembali" : ItemName(item) + "  x" + ItemQuantity(item);
-            }
-            if (page == MenuPage.Equipment)
-                return index == 0 ? "Senjata dasar  +5" : "Kembali";
             if (page == MenuPage.Settings)
                 return index == 0 ? "Volume -  (" + Mathf.RoundToInt(AudioListener.volume * 100) + "%)" :
                     index == 1 ? "Volume +" : index == 2 ? "Layar penuh: " + (Screen.fullScreen ? "Ya" : "Tidak") : "Kembali";
@@ -517,16 +411,6 @@ namespace JejakAsa
             if (confirming) detail = "Kembali ke menu utama? Progres sesi yang belum disimpan akan hilang.";
             else if (page == MenuPage.ConfirmQuit) detail = "Keluar dari game? Progres sesi yang belum disimpan akan hilang.";
             else if (page == MenuPage.ConfirmLoad) detail = "Muat slot " + pendingLoadSlot + "? Progres sesi yang belum disimpan akan diganti.";
-            else if (page == MenuPage.Items)
-            {
-                string item = ItemAt(selected);
-                detail = item == null ? "Tidak ada item yang dipilih." : ItemName(item) + "\nJumlah: " + ItemQuantity(item) +
-                    (item == BattleController.HealingItemId ? "\nPulihkan hingga 12 HP; pilih saat giliran battle." : "\nCatatan hadiah; tidak dapat digunakan di battle.");
-            }
-            else if (page == MenuPage.Equipment)
-                detail = progress.inventory.Contains(BattleController.BasicWeaponId)
-                    ? "Senjata dasar: +5 serangan\n" + (progress.equippedWeapon == BattleController.BasicWeaponId ? "Status: dipasang" : "Status: belum dipasang") + "\nPilih untuk mengganti."
-                    : "Senjata dasar belum dimiliki.\nDiperoleh dari reward level 2.";
             else if (page == MenuPage.Settings) detail = "Atur volume dan mode layar. Pengaturan tersimpan di perangkat ini.";
             else if (page == MenuPage.Load) detail = "Pilih slot save dari rumah.\nMemuat akan meminta konfirmasi terlebih dahulu.";
             else if (page == MenuPage.Exit) detail = "Pilih kembali ke menu utama atau keluar game.";
@@ -537,7 +421,6 @@ namespace JejakAsa
             GUI.Label(new Rect(status.x + 20f, y + height - 28f, status.width - 40f, 20f), "Panah / Tab + Enter   •   Esc kembali", rpgSmall);
 
             string heading = confirming || page == MenuPage.ConfirmQuit || page == MenuPage.ConfirmLoad ? "KONFIRMASI" :
-                page == MenuPage.Items ? "ITEM" : page == MenuPage.Equipment ? "SENJATA" :
                 page == MenuPage.Settings ? "PENGATURAN" : page == MenuPage.Load ? "MUAT" : page == MenuPage.Exit ? "KELUAR" : "PERINTAH";
             GUI.Label(new Rect(commands.x + 14f, y + 16f, commands.width - 28f, 28f), heading, rpgText);
             int count = OptionCount();

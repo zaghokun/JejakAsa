@@ -203,7 +203,7 @@ namespace JejakAsa
             return true;
         }
 
-        // ─── Aktivitas di Posko (Sore: Laporan & Ophelia & Reward) ───────
+        // ─── Aktivitas di Posko (Sore: Laporan & Ophelia) ────────────────
 
         public bool CompleteReport()
         {
@@ -223,21 +223,6 @@ namespace JejakAsa
             return true;
         }
 
-        public bool ClaimLevelReward(string rewardId)
-        {
-            if (data.currentPhase != DayPhase.PoskoLaporan || data.hasClaimedReward)
-                return false;
-
-            if (!data.isReportDone || !data.isOpheliaTalkDone)
-                return false;
-
-            if (!string.IsNullOrEmpty(rewardId))
-                data.inventory.Add(rewardId);
-            data.inventory.Add(data.currentLevel == 2 ? BattleController.BasicWeaponId : BattleController.HealingItemId);
-
-            data.hasClaimedReward = true;
-            return true;
-        }
 
         // ─── Navigasi Posko -> Rumah (Pulang Malam) ──────────────────────
 

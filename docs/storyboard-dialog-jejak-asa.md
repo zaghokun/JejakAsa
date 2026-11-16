@@ -11,29 +11,27 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 ### Catatan rancangan untuk ditinjau
 
 - **Struktur map:** posko adalah map tersendiri dengan lingkungan, rumah langsung berupa map interior, dan setiap level memiliki map sendiri. Saat gameplay, keluar rumah hanya menuju posko; dari posko pemain berangkat ke map level dan kembali ke posko setelah selesai.
-- **Nama boss terakhir:** Mr. Gas Oke, dikonfirmasi pengguna.
+- **Antagonis:** Mr. Deddy dan Mr. Gas Oke menekan distribusi bantuan; persoalan mereka dihadapi melalui pilihan rute, laporan, dan pertemuan bersama warga, bukan pertarungan.
 - **Penerima:** naskah mengusulkan tiga penyerahan per level agar sejalan dengan graybox; jumlah dan susunan final belum disepakati. Nama warga adalah nama tokoh cerita, bukan kewajiban membuat 15 model unik.
-- **Syarat level:** untuk draft ini, antar tiga paket dan, pada level 3/5, menangkan battle boss. Timer misi berhenti saat penyerahan selesai; level boss belum dianggap selesai sebelum boss menang. Perubahan ini belum ada di graybox.
-- **Urutan setelah menang:** lapor kepada Jonathan → bicara dengan Ophelia → terima reward → pulang dan istirahat. Reward setelah kedua percakapan mengikuti ide awal; jenis, angka efek, dan apakah percakapan nanti wajib masih perlu disepakati.
+- **Syarat level:** draft mengusulkan tiga paket diantar dalam batas waktu, lalu Vicky kembali melapor. Adegan Deddy dan Gas Oke adalah bagian cerita, bukan syarat kemenangan pertarungan.
+- **Urutan setelah pengantaran:** lapor kepada Jonathan → bicara dengan Ophelia → pulang dan istirahat. Apakah kedua percakapan nanti wajib masih perlu disepakati.
 - **Akhir level 5:** laporan dan percakapan Ophelia tetap terjadi; penutup berlangsung di rumah pada malam yang sama. Tidak ada level 6 atau hari berikutnya yang wajib dimainkan.
 - **Save:** draft hanya memastikan ada pilihan simpan/istirahat di rumah. Jumlah slot dan apakah ada autosave di luar rumah belum diputuskan; teks di bawah tidak mengklaim autosave ada.
-- **Menghindar:** 50% berhasil mundur untuk mencari jalur lain; 50% berujung battle. Draft mengusulkan timer berhenti selama panel pilihan dan battle, serta dilanjutkan saat eksplorasi. Angka, posisi aman, dan interaksi timer perlu dikonfirmasi tim.
-- **Bantuan warga:** tersedia setelah trust memenuhi syarat level; draft memakai minimal satu penyerahan, mengikuti graybox. Warga melakukan animasi bantuan sebelum jalan dibuka. Warga yang membantu dapat memakai model warga yang sudah ada.
-- **Pertarungan:** dramatis tetapi non-grafis. Senjata dan efeknya belum ditentukan, sehingga naskah tidak menjanjikan item tertentu atau kemampuan yang belum disepakati.
+- **Ancaman dan medan:** rancangan mendatang: saat Vicky memasuki radius preman, preman mengejarnya; kontak mengurangi sisa timer pengantaran. Lumpur dan genangan memperlambat gerak, dengan rintangan yang meningkat pada tiap level. Pengejaran, penalti kontak, dan perlambatan ini **belum diimplementasikan**; rincian penempatannya belum final.
 - Kalimat dalam **[kurung siku]** adalah arahan visual, kondisi, atau aksi sistem; bukan dialog yang dibacakan. Nama sebelum titik dua adalah pembicara. ID adegan dapat dipakai saat handoff ke tim implementasi.
 
 ## 2. Karakter dan arahan dialog
 
 | Tokoh | Peran dan suara | Kebutuhan visual dasar |
 | --- | --- | --- |
-| Vicky | Lulusan baru, peduli, terkadang terburu-buru, belajar mendengarkan | MC; idle, jalan, interaksi, respons battle |
+| Vicky | Lulusan baru, peduli, terkadang terburu-buru, belajar mendengarkan | MC; idle, jalan, interaksi |
 | Pak Jonathan | Penghubung sponsor dan mentor; tenang, teliti, tidak mengambil keputusan sendirian | NPC posko; idle dan bicara |
 | Ophelia | Teman masa kecil dan crush Vicky; hangat, usil seperlunya, punya pendapat sendiri | NPC posko; idle dan bicara |
 | Ibu dan Ayah | Orang tua Vicky; mendukung sekaligus mengingatkan batas kemampuan | Model sederhana boleh digunakan kembali |
 | Warga | Individu dengan kebutuhan dan inisiatif berbeda; bukan sekadar penerima pasif | Model modular dapat digunakan ulang |
-| Preman | Mengintimidasi dan menghalangi jalur; dapat dihindari, dialihkan, atau dilawan | Satu model dasar dengan variasi seperlunya |
-| Mr. Deddy | Mengendalikan akses gang dan menuntut imbalan; boss level 3 | Model boss pertama; pose bicara dan respons battle |
-| Mr. Gas Oke | Ingin memonopoli distribusi bantuan lewat tekanan dan perjanjian sepihak; boss level 5 | Model boss terakhir; pose bicara dan respons battle |
+| Preman | Mengintimidasi pengantar dan dalam rancangan akan mengejar Vicky ketika ia memasuki radius mereka | Satu model dasar dengan variasi seperlunya |
+| Mr. Deddy | Mengendalikan akses gang dan menuntut imbalan; antagonis level 3 | Model tokoh; pose bicara |
+| Mr. Gas Oke | Ingin memonopoli distribusi bantuan lewat tekanan dan perjanjian sepihak; antagonis level 5 | Model tokoh; pose bicara |
 | Sponsor | Organisasi pendukung yang diwakili Jonathan; membantu sumber daya, tidak muncul sebagai tokoh baru | Logo/nama pada dokumen posko opsional |
 
 ## 3. Storyboard ringkas
@@ -44,16 +42,16 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 | SB-02 | Lingkungan posko | Vicky berbicara dengan warga, menyadari mereka sudah saling membantu | P02 | Tujuan program jelas |
 | SB-03 | Posko kosong | Jonathan menyampaikan dukungan sponsor; Vicky dan warga menyiapkan posko | P03 | Posko dan mentor diperkenalkan |
 | SB-04 | Posko | Ophelia bertemu lagi dengan Vicky | P04 | Hubungan diperkenalkan |
-| SB-05 | Gang / ruang pertemuan | Sekilas Deddy dan Gas Oke memantau rencana posko | P05 | Bayangan dua boss, tanpa pertarungan |
+| SB-05 | Gang / ruang pertemuan | Sekilas Deddy dan Gas Oke memantau rencana posko | P05 | Bayangan dua antagonis |
 | SB-06 | Posko → gang | Briefing dan pengantaran pertama | L1-01–L1-06 | Level 1; belajar distribusi |
-| SB-07 | Posko → rumah | Laporan, Ophelia, reward, istirahat | L1-07–L1-10 | Level 2 terbuka setelah istirahat |
-| SB-08 | Posko → gang | Wilayah lebih jauh; rintangan preman dan bantuan warga diperkenalkan | L2-01–L2-08 | Level 2 selesai; Deddy mulai terasa |
-| SB-09 | Posko → rumah | Laporan, percakapan, reward, istirahat | L2-09–L2-12 | Level 3 terbuka |
-| SB-10 | Posko → gang utama | Deddy menutup jalur; warga membantu mengantar dan memberi kesaksian | L3-01–L3-07 | Konfrontasi boss pertama |
-| SB-11 | Arena → posko → rumah | Battle Deddy; laporan dan respons Ophelia | L3-08–L3-13 | Level 4 terbuka |
+| SB-07 | Posko → rumah | Laporan, Ophelia, istirahat | L1-07–L1-10 | Level 2 terbuka setelah istirahat |
+| SB-08 | Posko → gang | Wilayah lebih jauh; tekanan preman dan rute alternatif | L2-01–L2-08 | Level 2 selesai; Deddy mulai terasa |
+| SB-09 | Posko → rumah | Laporan, percakapan, istirahat | L2-09–L2-12 | Level 3 terbuka |
+| SB-10 | Posko → gang utama | Deddy menekan pengantaran; warga memberikan keterangan | L3-01–L3-07 | Persoalan akses gang dilaporkan |
+| SB-11 | Gang → posko → rumah | Warga dan Vicky membahas jalur serta laporan tentang Deddy | L3-08–L3-13 | Level 4 terbuka |
 | SB-12 | Posko → gang | Warga memeriksa data distribusi; ancaman yang lebih besar muncul | L4-01–L4-09 | Level 4 selesai |
 | SB-13 | Posko → rumah | Rencana menghadapi tekanan pada program | L4-10–L4-13 | Level 5 terbuka |
-| SB-14 | Posko → gang / arena | Pengantaran terakhir; Gas Oke mencoba mengambil alih program | L5-01–L5-09 | Konfrontasi boss terakhir |
+| SB-14 | Posko → gang / posko | Pengantaran terakhir; Gas Oke mencoba mengambil alih program | L5-01–L5-09 | Pertemuan tentang distribusi |
 | SB-15 | Posko → rumah | Warga dan sponsor menindaklanjuti, Vicky dan Ophelia berbicara, keluarga menutup cerita | L5-10–L5-14 | Ending; tidak mengklaim kemiskinan selesai |
 
 **Produksi hemat:** adegan dapat menggunakan kamera tetap, ekspresi/pose sederhana, panel dialog, dan perpindahan scene. Storyboard ini tidak mengharuskan semua cutscene menggunakan animasi sinematik penuh.
@@ -142,7 +140,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ## 5. Level 1 — Langkah pertama
 
-**Tujuan cerita:** memperkenalkan pengantaran dan menunjukkan bahwa warga ikut mengatur bantuan. Tidak ada kewajiban encounter preman pada level ini.
+**Tujuan cerita:** memperkenalkan pengantaran dan menunjukkan bahwa warga ikut mengatur bantuan. Rancangan medan memperkenalkan rintangan ringan; ancaman dan rintangan meningkat pada level berikutnya. Pengejaran dan perlambatan belum diimplementasikan.
 
 ### L1-01 — Briefing Jonathan
 
@@ -208,7 +206,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Pak Jonathan:** Sampaikan terima kasih. Program ini memang kerja bersama, bukan pekerjaan satu orang.
 
-### L1-08 — Ophelia dan reward
+### L1-08 — Ophelia
 
 **Ophelia:** Bagaimana hari pertamamu? Masih hafal semua tikungan?
 
@@ -218,9 +216,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Vicky:** Baik, aku catat. Besok aku akan lebih siap.
 
-**Ophelia:** Setelah bertemu Jonathan dan bercerita denganku, ambil perlengkapan yang sudah disiapkan di posko. Lalu pulang dan istirahat.
-
-[Sistem: berikan reward level 1 satu kali. Jenis dan efek reward belum ditetapkan.]
+**Ophelia:** Setelah bercerita denganku, pulang dan istirahat. Besok kita lanjutkan.
 
 ### L1-09 — Di rumah
 
@@ -248,7 +244,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Vicky:** Kalau bertemu mereka, saya harus bagaimana?
 
-**Pak Jonathan:** Kamu bisa mencoba menghindar, tetapi ada kemungkinan mereka memaksamu bertarung. Kalau warga sudah percaya dan bersedia membantu, dengarkan mereka. Jangan menganggap perkelahian satu-satunya jalan.
+**Pak Jonathan:** Jaga jarak dan gunakan jalan lain jika perlu. Dengarkan warga yang mengenal gang ini, lalu laporkan apa yang kamu lihat.
 
 **Vicky:** Saya mengerti. Saya akan mulai dari rumah terdekat.
 
@@ -276,9 +272,9 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Mas Damar:** Terima kasih. Nanti saya bantu memberi tahu warga kapan posko buka.
 
-### L2-05 — Encounter pertama
+### L2-05 — Tekanan di gang
 
-[Preman menghalangi gang.]
+[Preman terlihat di gang. Dalam rancangan mendatang, mendekati radiusnya memicu pengejaran; kontak mengurangi sisa waktu pengantaran. Lihat bagian 10.]
 
 **Preman:** Mau lewat sini? Banyak sekali paket yang kamu bawa.
 
@@ -286,11 +282,9 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Preman:** Jalan ini kami jaga. Kalau mau lewat, urus dulu dengan kami.
 
-[Gunakan pilihan dan cabang bersama di bagian 10.]
+### L2-06 — Petunjuk warga
 
-### L2-06 — Setelah jalan dibuka dengan bantuan warga
-
-**Pak Bima:** Kami kenal jalan ini dan akan bicara dengan mereka. Kamu lanjutkan pengantaran.
+**Pak Bima:** Kami kenal jalan lain. Kamu bisa lanjutkan pengantaran lewat sisi kiri.
 
 **Vicky:** Terima kasih, Pak. Saya akan mengabari posko setelah selesai.
 
@@ -312,7 +306,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Pak Jonathan:** Jangan membuat kesimpulan sebelum kita punya informasi. Yang penting, warga bisa menyampaikan kejadian dengan aman.
 
-### L2-10 — Ophelia dan reward
+### L2-10 — Ophelia
 
 **Ophelia:** Aku dengar perjalananmu lebih ramai hari ini.
 
@@ -323,8 +317,6 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 **Vicky:** Dan kamu yang mencari tangga.
 
 **Ophelia:** Setidaknya sekarang kamu bertanya lebih cepat.
-
-[Sistem: setelah laporan dan percakapan, berikan reward level 2 satu kali.]
 
 ### L2-11 — Di rumah
 
@@ -380,7 +372,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ### L3-05 — Pertemuan Deddy
 
-[Setelah tiga paket diterima, Deddy menunggu di ujung jalur. Timer pengantaran dihentikan; level belum selesai.]
+[Setelah tiga paket diterima, Deddy menunggu di ujung jalur. Adegan ini tidak mensyaratkan pertarungan.]
 
 **Mr. Deddy:** Kamu Vicky, ya? Banyak yang membicarakan poskomu.
 
@@ -394,47 +386,27 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Vicky:** Saya tidak ingin bertengkar, tapi saya juga tidak akan menyerahkan hak warga.
 
-[Mulai battle boss Deddy.]
-
 ### L3-06 — Ulang interaksi warga
 
 **Warga:** Paketnya sudah sampai. Kami akan membantu mencatat apa yang terjadi di gang.
 
-### L3-07 — Peringatan sebelum boss
+### L3-07 — Jalan alternatif
 
-**Sistem:** `Mr. Deddy menghadang jalan. Menangkan battle untuk menyelesaikan level.`
+**Pak Jaya:** Ada jalan kembali di sisi gang. Kami akan mencatat permintaan Deddy dan menyampaikannya kepada posko.
 
-### L3-08 — Battle Deddy
+**Vicky:** Baik, Pak. Saya akan kembali dan melapor.
 
-[Awal battle.]
+### L3-08 — Meninggalkan gang
 
-**Mr. Deddy:** Kita lihat apakah keberanianmu cukup untuk menjaga posko itu.
-
-**Vicky:** Aku akan bertahan. Warga tidak harus menyerahkan bagian mereka.
-
-[Menjelang serangan kuat, jika pola battle menampilkan peringatan.]
-
-**Mr. Deddy:** Jangan kira aku akan menahan diri!
-
-**Sistem:** `Deddy bersiap menyerang kuat. Pertimbangkan Bertahan.`
-
-[Jika Vicky menang.]
-
-**Mr. Deddy:** Cukup! Aku mundur hari ini. Tapi bukan aku satu-satunya yang memperhatikan bantuan itu.
+**Mr. Deddy:** Aku mundur hari ini. Tapi bukan aku satu-satunya yang memperhatikan bantuan itu.
 
 **Vicky:** Gang ini milik semua warga. Aku akan melaporkan kejadian ini kepada posko.
 
-[Jika Vicky kalah.]
+[Vicky meninggalkan gang melalui rute yang ditunjukkan warga; ancaman terhadap distribusi belum selesai.]
 
-**Mr. Deddy:** Pulanglah. Gang ini belum bisa kamu lewati.
+### L3-09 — Keterangan warga
 
-**Vicky:** Aku harus kembali dan mencoba lagi dengan lebih siap.
-
-[Gunakan layar gagal dan retry pada bagian 10. Kekalahan tidak membuka level 4.]
-
-### L3-09 — Setelah menang
-
-[Warga mendekat setelah battle.]
+[Warga dan Vicky membicarakan kejadian itu.]
 
 **Pak Jaya:** Kami melihat apa yang terjadi. Kami akan menyampaikan laporan bersama ke posko.
 
@@ -450,7 +422,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Pak Jonathan:** Kita perlu tetap teliti. Dugaan bukan bukti, tetapi laporan ini tidak akan kita abaikan.
 
-### L3-11 — Ophelia dan reward
+### L3-11 — Ophelia
 
 **Ophelia:** Aku mendengar kamu bertemu Deddy. Kamu baik-baik saja?
 
@@ -463,8 +435,6 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 **Ophelia:** Bagus. Dan Vicky... aku lega kamu kembali dengan selamat.
 
 **Vicky:** Aku juga lega ada kamu di sini.
-
-[Sistem: setelah laporan dan percakapan, berikan reward level 3 satu kali.]
 
 ### L3-12 — Di rumah
 
@@ -520,7 +490,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Tia:** Saya akan membawa salinannya ke pertemuan warga.
 
-### L4-05 — Encounter
+### L4-05 — Tekanan di jalur
 
 **Preman:** Posko kalian sebentar lagi tidak dibutuhkan. Serahkan saja jalur ini ke orang yang lebih berpengalaman.
 
@@ -528,9 +498,9 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Preman:** Kalau begitu, coba lewat dulu.
 
-[Gunakan pilihan dan cabang bersama di bagian 10.]
+[Rancangan pengejaran dan kondisi medan dijelaskan di bagian 10; keduanya belum diimplementasikan.]
 
-### L4-06 — Bantuan warga
+### L4-06 — Suara warga
 
 **Bu Dewi:** Kami ingin berbicara denganmu. Jangan halangi pengantaran ke rumah-rumah kami.
 
@@ -538,7 +508,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Bu Dewi:** Ini kampung kami. Kami berhak menyampaikan kebutuhan kami.
 
-[Warga mengalihkan perhatian; jalan dibuka.]
+[Bu Dewi menyampaikan keberatan warga; Vicky melanjutkan pengantaran melalui jalur yang tersedia.]
 
 ### L4-07 — Misi selesai
 
@@ -566,7 +536,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Pak Jonathan:** Saya akan meneruskan catatan dan keterangan yang warga setujui kepada sponsor. Mr. Gas Oke meminta pertemuan besok; warga perlu ikut menentukan tanggapan kita.
 
-### L4-11 — Ophelia dan reward
+### L4-11 — Ophelia
 
 **Ophelia:** Tadi banyak warga datang. Posko ini semakin ramai.
 
@@ -581,8 +551,6 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 **Vicky:** Untuk teman yang selalu mengingatkanku mendengar orang lain.
 
 **Ophelia:** Kalau begitu, aku akan duduk di sana setelah pekerjaanku selesai.
-
-[Sistem: setelah laporan dan percakapan, berikan reward level 4 satu kali.]
 
 ### L4-12 — Di rumah
 
@@ -638,7 +606,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ### L5-05 — Pertemuan Gas Oke
 
-[Setelah tiga paket diterima, Vicky kembali menuju titik pertemuan. Timer berhenti; level belum selesai. Gas Oke menghadang bersama anak buah.]
+[Setelah tiga paket diterima, Vicky kembali menuju titik pertemuan. Gas Oke menemuinya bersama anak buah.]
 
 **Mr. Gas Oke:** Jadi kamu Vicky. Poskomu cukup terkenal sekarang.
 
@@ -652,47 +620,37 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Vicky:** Aku tidak berdiri sendiri. Aku tidak akan menyerahkan keputusan warga karena intimidasi.
 
-[Mulai battle boss terakhir.]
+[Vicky mengajak Gas Oke menyampaikan tuntutannya dalam pertemuan bersama warga dan Jonathan.]
 
 ### L5-06 — Ulang interaksi warga
 
 **Warga:** Paketnya sudah diterima. Kami akan ikut pertemuan dan menyampaikan pendapat kami.
 
-### L5-07 — Peringatan sebelum boss
+### L5-07 — Undangan pertemuan
 
-**Sistem:** `Mr. Gas Oke menghadang jalan. Menangkan battle untuk menyelesaikan level.`
+**Vicky:** Sampaikan usulanmu di posko. Warga dan sponsor perlu mendengar langsung dan memeriksa catatannya.
 
-### L5-08 — Battle terakhir
+**Mr. Gas Oke:** Baik. Kita lihat apakah mereka tetap menolak setelah mendengar aku.
 
-[Awal battle.]
+### L5-08 — Di posko
 
-**Mr. Gas Oke:** Kalau kamu kalah, berhenti menghalangi rencanaku.
+[Vicky, Gas Oke, Jonathan, Ophelia, dan perwakilan warga berkumpul. Mereka mencocokkan usulan distribusi dengan catatan warga dan posko.]
+
+**Mr. Gas Oke:** Aku bisa mengatur seluruh jalur. Kalian hanya perlu menyerahkan keputusan itu kepadaku.
 
 **Vicky:** Bantuan untuk warga bukan alat untuk menguasai mereka.
 
-[Menjelang serangan kuat, jika pola battle menampilkan peringatan.]
+**Bu Ratna:** Kami ingin tahu siapa yang menerima bantuan dan ikut menentukan kebutuhan kampung kami.
 
-**Mr. Gas Oke:** Aku akan menyelesaikan ini sekarang!
-
-**Sistem:** `Gas Oke bersiap menyerang kuat. Pertimbangkan Bertahan.`
-
-[Jika Vicky menang.]
+**Pak Jonathan:** Sponsor akan meninjau catatan bersama perwakilan warga. Kami tidak menyetujui kendali sepihak.
 
 **Mr. Gas Oke:** Ini belum membuktikan apa pun!
 
 **Vicky:** Yang akan menjawab bukan hanya aku. Warga dan sponsor punya hak memeriksa laporan dan menentukan langkah selanjutnya.
 
-[Jika Vicky kalah.]
+### L5-09 — Langkah bersama
 
-**Mr. Gas Oke:** Sepertinya kamu belum siap mempertahankan poskomu.
-
-**Vicky:** Aku akan kembali. Aku tidak harus menghadapi ini sendirian.
-
-[Gunakan layar gagal dan retry pada bagian 10. Kekalahan tidak membuka ending.]
-
-### L5-09 — Setelah battle
-
-[Jonathan, Ophelia, dan perwakilan warga tiba. Tidak ada penangkapan atau penyelesaian hukum instan.]
+[Pertemuan berlanjut tanpa penyelesaian hukum instan.]
 
 **Pak Jonathan:** Warga sudah membawa catatan mereka. Sponsor bersedia meninjau laporan bersama perwakilan kampung.
 
@@ -714,7 +672,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Pak Jonathan:** Belum. Bantuan ini membantu kebutuhan sekarang, tetapi pekerjaan jangka panjang tetap diperlukan. Yang penting, warga punya suara dalam menentukan langkahnya.
 
-### L5-11 — Ophelia dan reward
+### L5-11 — Ophelia
 
 **Ophelia:** Ingat kursi yang kamu siapkan untuk temanmu itu?
 
@@ -730,7 +688,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Ophelia:** Terima kasih juga sudah pulang, Vicky.
 
-[Sistem: setelah laporan dan percakapan, berikan reward level 5 satu kali; jenis dan kegunaannya belum ditetapkan. Arahkan pemain pulang untuk penutup; tidak membuka level 6.]
+[Vicky pulang untuk penutup; tidak membuka level 6.]
 
 ### L5-12 — Perpisahan di posko
 
@@ -765,79 +723,15 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Pilihan:** `Kembali ke Menu Utama`.
 
-## 10. Dialog cabang dan kondisi gameplay bersama
+## 10. Kondisi gameplay bersama
 
-### G01 — Pilihan intimidasi
+### G01 — Pengejaran preman dan medan
 
-[Gunakan setelah dialog encounter level terkait.]
+[Rancangan mendatang, belum diimplementasikan: preman mulai mengejar ketika Vicky memasuki radius mereka. Kontak dengan preman mengurangi sisa timer pengantaran. Lumpur dan genangan memperlambat gerakan Vicky. Jumlah rintangan meningkat pada tiap level; penempatan dan nilainya belum final.]
 
-**Sistem:** `Pilih cara menghadapi intimidasi.`
+**Vicky:** Aku harus mencari jalan agar bantuan tetap sampai tepat waktu.
 
-- `1. Menghindar — 50% berhasil mundur, 50% berujung battle.`
-- `2. Bertengkar — masuk battle.`
-- `3. Minta bantuan warga — tersedia setelah memenuhi syarat kepercayaan.`
-
-[Jika bantuan terkunci.]
-
-**Sistem:** `Bantu minimal satu warga terlebih dahulu agar bantuan warga tersedia.`
-
-### G02 — Menghindar berhasil
-
-**Vicky:** Aku akan mundur dan mencari jalur lain.
-
-**Preman:** Pergi sana. Jangan coba-coba lewat sini lagi.
-
-[Sistem: pemain kembali ke posisi aman. Penghalang tetap ada; jalur memutar dapat digunakan.]
-
-### G03 — Menghindar gagal
-
-**Vicky:** Aku akan mencoba melewati gang sebelah.
-
-**Preman:** Mau pergi begitu saja? Tidak semudah itu!
-
-**Vicky:** Mereka menghadangku. Aku harus bersiap.
-
-[Sistem: masuk battle preman; probabilitas cabang 50%.]
-
-### G04 — Memilih bertengkar
-
-**Vicky:** Aku tidak akan menyerahkan paket yang sudah disiapkan untuk warga.
-
-**Preman:** Kalau begitu, hadapi kami!
-
-[Sistem: masuk battle preman.]
-
-### G05 — Meminta bantuan warga
-
-[Hanya jika syarat terpenuhi. Warga bergerak mendekat dan menarik perhatian preman.]
-
-**Warga:** Vicky, lanjutkan pengantaran. Kami akan berbicara dengan mereka.
-
-**Preman:** Kenapa kalian semua datang ke sini?
-
-**Warga:** Karena ini jalan kami juga. Kami ingin bantuan untuk tetangga sampai dengan aman.
-
-**Vicky:** Terima kasih. Aku akan segera menyelesaikan pengantaran.
-
-[Sistem: tunggu animasi bantuan selesai, buka penghalang, lalu kembalikan kendali.]
-
-### G06 — Battle preman menang/kalah
-
-[Menang.]
-
-**Preman:** Baik, kami mundur. Lewat saja!
-
-**Vicky:** Aku hanya ingin paket sampai ke warga.
-
-**Sistem:** `Jalan terbuka. Lanjutkan pengantaran.`
-
-[Kalah.]
-
-**Vicky:** Aku belum berhasil. Aku harus kembali dan mencoba lagi.
-
-**Sistem:** `Pengantaran berhenti karena kalah battle.`
-
-[Masuk hasil gagal/parsial. Retry mengulang level aktif, bukan menghapus level sebelumnya.]
+**Preman:** Jangan kira kamu bisa lewat begitu saja!
 
 ### G07 — Waktu habis
 
@@ -849,11 +743,11 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ### G08 — Hasil misi
 
-[Berhasil: syarat penyerahan dan boss bila ada terpenuhi.]
+[Berhasil: syarat penyerahan terpenuhi.]
 
 **Sistem:** `Pengantaran selesai. Kembali ke posko dan lapor kepada Pak Jonathan.`
 
-[Parsial: setidaknya satu paket sampai, tetapi timer habis atau kalah sebelum syarat berhasil.]
+[Parsial: setidaknya satu paket sampai, tetapi timer habis sebelum semua penyerahan selesai.]
 
 **Sistem:** `Sebagian bantuan tersalurkan, tetapi misi belum selesai. Ulangi level untuk mencoba lagi.`
 
@@ -865,19 +759,19 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 [Konfirmasi ke menu memakai teks G12; data yang belum tersimpan tidak boleh dinyatakan aman.]
 
-### G09 — Laporan dan reward berulang
+### G09 — Laporan berulang
 
-[Jika belum semua syarat level terpenuhi.]
+[Jika pengantaran belum selesai.]
 
-**Pak Jonathan:** Selesaikan pengantaran dan hadapi hambatan level ini terlebih dahulu. Setelah itu, kembali untuk melapor.
+**Pak Jonathan:** Selesaikan pengantaran terlebih dahulu. Setelah itu, kembali untuk melapor.
 
 [Jika laporan sudah diberikan tetapi Ophelia belum diajak bicara.]
 
-**Pak Jonathan:** Laporanmu sudah saya catat. Temui Ophelia sebelum mengambil perlengkapan dan pulang.
+**Pak Jonathan:** Laporanmu sudah saya catat. Temui Ophelia sebelum pulang.
 
-[Jika reward sudah diterima.]
+[Jika laporan dan percakapan sudah selesai.]
 
-**Pak Jonathan:** Laporan dan perlengkapan untuk hari ini sudah selesai. Silakan pulang dan istirahat.
+**Pak Jonathan:** Laporan untuk hari ini sudah selesai. Silakan pulang dan istirahat.
 
 ### G10 — Ophelia sebelum dan sesudah percakapan
 
@@ -885,7 +779,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Ophelia:** Hati-hati di jalan, Vicky. Ceritakan harimu setelah pengantaran selesai.
 
-[Setelah percakapan level selesai dan reward diberikan.]
+[Setelah percakapan level selesai.]
 
 **Ophelia:** Pekerjaan hari ini sudah selesai. Sampai bertemu lagi, Vicky.
 
@@ -973,21 +867,15 @@ Teks berikut merupakan naskah usulan untuk desain menu baru; implementasi dan da
 - `Hari {hari} — Level {level} terbuka.` — setelah kondisi hari berikutnya benar-benar terpenuhi.
 - Pada akhir level 5: `Tutup hari ini? Cerita utama akan berakhir.` / `Belum` / `Lanjutkan`.
 
-### Misi dan battle
+### Misi dan pengantaran
 
-- `Paket: {tersisa}` / `Warga terbantu: {terkirim}/{target}` / `Kepercayaan: {trust}` / `Sisa waktu: {waktu}`.
+- `Paket: {tersisa}` / `Warga terbantu: {terkirim}/{target}` / `Sisa waktu: {waktu}`.
 - `[E] Serahkan bantuan kepada {nama}` / `[E] Bicara dengan {nama}`.
 - `Bantuan sudah diterima.` / `Paket habis.` / `Waktu habis.`
-- `Serang` / `Bertahan` / `Item` / `HP {sekarang}/{maksimum}`.
-- `Giliranmu` / `Giliran lawan` / `Aksi sedang berlangsung`.
-- `Belum ada item yang tersedia.` / `Gunakan {nama item}?` / `Batal` / `Gunakan`.
-- `Perlengkapan: {nama}` / `Belum ada weapon yang dipasang.`
-- `Reward diterima: {nama reward}.` — hanya setelah reward benar-benar diberikan.
-- `Reward hari ini sudah diterima.` — jangan memberikan reward ganda.
 
 ## 12. Catatan handoff A/B dan Role C
 
-- **A/B:** tentukan state dan pemicu per ID adegan; dialog warga sebelum dan sesudah penyerahan harus mengikuti state penerima. Pastikan boss dipicu sekali setelah syarat, dan retry tidak mengulang reward yang sudah diberikan.
-- **A/B:** sebelum implementasi, putuskan aturan save/slot/autosave, item dan weapon, jumlah penerima, serta timer/posisi aman saat menghindar. Jangan membuat teks menjanjikan sistem yang belum ada.
+- **A/B:** tentukan state dan pemicu per ID adegan; dialog warga sebelum dan sesudah penyerahan harus mengikuti state penerima. Adegan Deddy dan Gas Oke tetap merupakan cerita, bukan pertarungan.
+- **A/B:** sebelum implementasi, putuskan aturan save/slot/autosave, jumlah penerima, serta penempatan dan nilai radius pengejaran, penalti timer, dan perlambatan medan. Pengejaran dan perlambatan belum diimplementasikan.
 - **Role C:** storyboard memberi acuan suasana, lokasi, tokoh, dan pose minimal; bukan daftar final model, jadwal produksi, atau kewajiban membuat cutscene kompleks.
 - **Review bersama:** periksa keterbacaan dialog, representasi warga Jakarta Utara tanpa karikatur, nada hubungan Vicky–Ophelia, dan konsistensi transisi setelah aturan gameplay disepakati.

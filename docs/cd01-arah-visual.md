@@ -1,6 +1,6 @@
 # C-D01 — Arah Visual dan Layout Jejak Asa
 
-**Versi:** draft v3. **Status:** arah visual disetujui pengguna; pengujian rute revisi dan beberapa keputusan produksi masih terbuka. Dokumen ini mendampingi [daftar aset Role C](daftar-aset-role-c.md) dan [storyboard](storyboard-dialog-jejak-asa.md); progres pekerjaan inti tetap berada di [README](../README.md).
+**Versi:** draft v3. **Status:** arah visual disetujui pengguna; pengujian rute revisi dan beberapa keputusan produksi masih terbuka. Dokumen ini mendampingi [daftar aset Role C](daftar-aset-role-c.md) dan [storyboard](storyboard-dialog-jejak-asa.md); storyboard serta gambar denah lama dapat memuat mekanik yang sudah dihapus. Pengejaran preman berbasis radius dengan penalti timer saat kontak serta lumpur/genangan yang memperlambat gerak di setiap level baru direncanakan, belum diimplementasikan.
 
 ## 1. Identitas visual
 
@@ -17,7 +17,7 @@ Lingkungan adalah kampung **fiktif** di Jakarta Utara. Gunakan petunjuk lokal ya
 - **Karakter:** proporsi manusia yang distilisasi, wajah anime yang ekspresif, rambut dalam beberapa bidang besar dengan helai/aksen terpilih, bukan kumpulan kubus atau detail fotorealistis yang sulit diproduksi.
 - **Permukaan:** tekstur atau warna painted untuk menyiratkan kain, dinding dan material; jaga bentuk tetap mudah dibaca di kamera isometrik. Pencahayaan lembut dan bayangan yang memisahkan karakter dari lantai.
 - **Kamera:** lingkungan harus dibaca dari kamera eksplorasi yang mengikuti pemain dengan orientasi tetap. Pintu, penanda, dan jalur tidak boleh tersamarkan oleh atap atau dekorasi.
-- **Lokasi:** posko hangat dan aktif; rumah personal dan tenang; gang lebih padat tetapi tetap terbaca; arena battle bersih agar karakter/telegraph menjadi fokus. Kondisi bahaya diberi aksen, bukan membuat keseluruhan kampung tampak menyeramkan.
+- **Lokasi:** posko hangat dan aktif; rumah personal dan tenang; gang lebih padat tetapi tetap terbaca. Kondisi bahaya diberi aksen, bukan membuat keseluruhan kampung tampak menyeramkan.
 - **UI:** panel dan teks berkontras tinggi; warna tidak menjadi satu-satunya pembeda state—sertakan label, bentuk, atau ikon. Tata letak final akan dikerjakan di C-D05.
 
 ### Palet usulan
@@ -40,7 +40,7 @@ Pemeriksaan rasio warna teks (perhitungan warna solid sRGB): `#28344B` pada crea
 
 **Model yang sudah ada:** [GLB sumber](../ArtSource/Characters/MC_Meshy/JejakAsa_MC_Original.glb) dan [FBX preview](../Unity/JejakAsa/Assets/_Project/Art/Characters/MC/JejakAsa_MC_Unity_Test.fbx) berasal dari percobaan Meshy sebelumnya. Preview dilaporkan sekitar 1,70 m dan 32.687 triangle; belum ber-rig/animasi final dan belum dinyatakan siap produksi. Pemeriksaan dan integrasinya termasuk C-D02.
 
-**Tokoh lain:** gambar yang diberikan pengguna menjadi acuan visual utama: [Jonathan](visual/asset-guides/refs/Jonathan.jpg), [Ophelia](visual/asset-guides/refs/Ophelia.jpg), [preman](visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](visual/asset-guides/refs/Ibu.jpg), [Ayah](visual/asset-guides/refs/Ayah.jpg), [warga perempuan](visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](visual/asset-guides/refs/Warga-Male.jpg). Pengguna mengonfirmasi nama boss terakhir adalah **Mr. Gas Oke**.
+**Tokoh lain:** gambar yang diberikan pengguna menjadi acuan visual utama: [Jonathan](visual/asset-guides/refs/Jonathan.jpg), [Ophelia](visual/asset-guides/refs/Ophelia.jpg), [preman](visual/asset-guides/refs/Preman.jpg), [Mr. Deddy](visual/asset-guides/refs/Mr.Deddy.jpg), [Mr. Gas Oke](<visual/asset-guides/refs/Mr. Gas Oke.jpg>), [Ibu](visual/asset-guides/refs/Ibu.jpg), [Ayah](visual/asset-guides/refs/Ayah.jpg), [warga perempuan](visual/asset-guides/refs/Warga-Female.jpg), dan [warga laki-laki](visual/asset-guides/refs/Warga-Male.jpg). Mr. Gas Oke tetap tokoh antagonis cerita.
 
 Warga dapat memakai basis dan variasi yang digunakan ulang; 15 nama pada draft cerita tidak mewajibkan 15 mesh unik. Ibu dan Ayah boleh memakai karakter sederhana sebagaimana diminta. Hindari menjadikan bentuk tubuh, warna kulit, atau kondisi rumah sebagai penanda moral tokoh.
 
@@ -69,7 +69,7 @@ Diukur dari `Assets/_Project/Scenes/Kampung.unity` melalui Unity Editor 6000.3.2
 
 - **Prefab Vicky:** bounds statis terukur sekitar **1,01 × 1,70 × 0,50 m** (X × Y × Z). Model dipasang sementara sebagai visual pada player saat uji; scene tidak disimpan.
 - **Bukaan uji sementara:** controller asli melewati bukaan **1,5 m × 2,2 m** lurus dan diagonal terpusat, serta gang **2 m** dengan gerak diagonal terpusat. Kontrol negatif bukaan **0,8 m** menahan controller. Ini uji collider sederhana, bukan jaminan semua arah atau animasi visual bebas clipping.
-- **Rute graybox lama:** `U02KampungRouteTests` dan `U02MovementTests` lulus **5/5** di Play Mode; pengujian meliputi waypoint rute utama/memutar, gerak, tanah dan collision rumah. Rute utama diuji setelah penghalang diselesaikan.
+- **Rute graybox lama (historis):** `U02KampungRouteTests` dan `U02MovementTests` lulus **5/5** di Play Mode; pengujian meliputi waypoint rute utama/memutar, gerak, tanah dan collision rumah. Rute utama diuji setelah penghalang diselesaikan; kondisi penghalang lama bukan kriteria revisi.
 - **Belum diuji:** dimensi paket, animasi/rig Vicky, atau jalur posko, rumah dan lima map revisi, karena scene-nya belum tersedia. Uji sementara sudah dihapus; tidak ada perubahan scene tersimpan. Ulangi pengujian setelah layout/props revisi dibangun.
 
 ### Ukuran usulan untuk perancangan
@@ -90,25 +90,22 @@ flowchart LR
     P -->|Berangkat siang| L[Map level aktif]
     L -->|Pengantaran selesai| P
     P -->|Setelah laporan dan Ophelia| H
-    L -->|Encounter| B[Scene battle]
-    B -->|Menang| L
 ```
 
-Posko memiliki **satu gerbang masuk/keluar**. Saat pemain mendekatinya untuk pergi, muncul pilihan **Pulang ke Rumah**, **Berangkat ke Level**, atau **Batal**; ketersediaan tujuan mengikuti progres game. Pemain yang tiba dari rumah atau level masuk melalui gerbang yang sama. Setelah kembali dari level, Vicky melapor dan berbicara dengan Ophelia sebelum pulang; setelah istirahat di rumah, ia kembali ke posko keesokan hari. Penanganan kekalahan dan posisi kembali dari battle tetap mengikuti kontrak A/B.
+Posko memiliki **satu gerbang masuk/keluar**. Saat pemain mendekatinya untuk pergi, muncul pilihan **Pulang ke Rumah**, **Berangkat ke Level**, atau **Batal**; ketersediaan tujuan mengikuti progres game. Pemain yang tiba dari rumah atau level masuk melalui gerbang yang sama. Setelah kembali dari level, Vicky melapor dan berbicara dengan Ophelia sebelum pulang; setelah istirahat di rumah, ia kembali ke posko keesokan hari.
 
 ### Lembar denah
 
 - [Map posko dan lingkungan sekitarnya](visual/cd01/layout-kampung-draft.png).
-- [Interior rumah Vicky dan arena battle terpisah](visual/cd01/layout-interior-arena-draft.png).
+- [Interior rumah Vicky (denah lama juga memuat arena yang tidak lagi berlaku)](visual/cd01/layout-interior-arena-draft.png).
 - [Lima map level tersendiri](visual/cd01/layout-variasi-level-draft.png).
 
-Ketiga gambar adalah diagram tidak berskala, bukan tampilan final atau bukti rute telah diuji. Level 1 tidak mewajibkan encounter. Tiga penerima per level dan titik intimidasi/boss masih usulan; urutan kunjungan bebas. Kamera belum diberi posisi/arah dan harus ditentukan bersama A/B.
+Ketiga gambar adalah diagram historis tidak berskala, bukan tampilan final atau bukti rute telah diuji; bagian encounter dan boss combat tidak lagi berlaku. Tiga penerima per level masih usulan; urutan kunjungan bebas. Kamera belum diberi posisi/arah dan harus ditentukan bersama A/B.
 
 - **Posko:** satu map yang mencakup bangunan dan lingkungan di sekelilingnya, area Jonathan/Ophelia, serta **satu gerbang bersama** untuk kedatangan dan keberangkatan. Gerbang membuka pilihan rumah atau level; papan jadwal boleh menjadi dekorasi/informasi, bukan pintu level kedua.
 - **Rumah:** satu map interior saja, berisi spawn, Ibu dan Ayah, area makan, dan tempat tidur/titik save. Keluar rumah membawa pemain ke posko, bukan ke map luar rumah atau langsung ke level.
 - **Map level 1–5:** setiap level memiliki map dan susunan jalannya sendiri, terpisah dari posko dan rumah. Aset modular boleh digunakan ulang antar-map, tetapi layout, lingkungan dan penempatan bukan sekadar satu map yang sama diganti nama.
-- **Battle:** area/scene battle terpisah yang diakses dari map level; sediakan ruang animasi dan UI, serta cegah kamera/listener ganda. Setelah menang, kembali ke level terkait sesuai sistem yang akan disepakati.
-- **Urutan tujuan:** level 1 memperkenalkan pengantaran; level 2 menambah intimidasi; level 3 menghadirkan Deddy; level 4 memperkuat tekanan; level 5 menghadirkan boss terakhir. Penempatan detail dan jumlah penerima masih usulan.
+- **Urutan cerita:** level 1 memperkenalkan pengantaran; tokoh Deddy dan Mr. Gas Oke tetap antagonis cerita pada level 3 dan 5 tanpa pertarungan. Penempatan detail masih usulan.
 
 ## 5. Keputusan dan review
 
@@ -119,7 +116,7 @@ Ketiga gambar adalah diagram tidak berskala, bukan tampilan final atau bukti rut
 | Palet dan arah visual | Disetujui pengguna | Uji kontras dan suasana pada aset Unity nyata |
 | Struktur map | Arahan pengguna | Posko dengan lingkungan, rumah langsung interior, dan lima map level terpisah; penempatan detail perlu disepakati |
 | Model reuse warga dan modul bangunan | Usulan efisiensi | Cukup variasi agar tokoh dan rumah tetap terbaca berbeda |
-| Nama boss terakhir | Dikonfirmasi pengguna | Mr. Gas Oke |
+| Nama antagonis terakhir | Dikonfirmasi pengguna | Mr. Gas Oke |
 | Ukuran pintu, gang, dan paket | Sebagian diuji | Pintu dan gang lulus uji collider sederhana; paket dan layout revisi belum diuji |
 | Persetujuan visual | Pengguna menyetujui arah visual | Denah revisi, skala jalur baru dan penerimaan bersama A/B masih perlu dibuktikan |
 

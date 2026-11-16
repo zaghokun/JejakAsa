@@ -226,7 +226,7 @@ public sealed class U03InteractionTests : InputTestFixture
     }
 
     [Test]
-    public void ReportRewardIsClaimedWhenJonathanIsTheLastConversation()
+    public void ReportAndOpheliaConversationCompleteWithoutGrantingRewards()
     {
         GameFlowManager flow = GameFlowManager.Instance;
         GameProgressData previous = flow.Progress.Clone();
@@ -238,7 +238,6 @@ public sealed class U03InteractionTests : InputTestFixture
             var ophelia = opheliaObject.AddComponent<StoryNpcController>();
             ophelia.npcType = StoryNpcType.Ophelia;
             ophelia.OpenDialogue();
-            Assert.That(flow.Progress.hasClaimedReward, Is.False);
             ophelia.CloseDialogue();
 
             var jonathanObject = new GameObject("Jonathan");
@@ -247,8 +246,8 @@ public sealed class U03InteractionTests : InputTestFixture
             jonathan.OpenDialogue();
             Assert.That(flow.Progress.isReportDone, Is.True);
             Assert.That(flow.Progress.isOpheliaTalkDone, Is.True);
-            Assert.That(flow.Progress.hasClaimedReward, Is.True);
-            Assert.That(flow.Progress.inventory.FindAll(x => x == "BekalLogistik_Hari1").Count, Is.EqualTo(1));
+            Assert.That(flow.Progress.hasClaimedReward, Is.False);
+            Assert.That(flow.Progress.inventory, Is.Empty);
         }
         finally
         {

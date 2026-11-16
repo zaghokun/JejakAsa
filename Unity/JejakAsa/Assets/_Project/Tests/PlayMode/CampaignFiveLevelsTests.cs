@@ -58,9 +58,6 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                 yield return SceneManager.LoadSceneAsync($"Assets/_Project/Scenes/{scene}.unity", LoadSceneMode.Single);
                 var delivery = Object.FindFirstObjectByType<PlayerInteraction>();
                 Vector3 spawn = delivery.transform.position;
-                var encounters = Object.FindObjectsByType<EncounterController>(FindObjectsSortMode.None);
-                foreach (var encounter in encounters)
-                    encounter.ResolveFromBattleVictory();
                 var residents = Object.FindObjectsByType<InteractionTarget>(FindObjectsSortMode.None);
                 int count = 0;
                 foreach (var resident in residents)
@@ -119,7 +116,7 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
     }
 
     [UnityTest]
-    public IEnumerator FiveDaysDeliverFightBossesReceiveRewardsAndFinish()
+    public IEnumerator FiveDaysDeliverAndFinish()
     {
         var flow = GameFlowManager.Instance;
         var previous = flow.Progress.Clone();
@@ -154,37 +151,6 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                 Assert.That(delivery.PackagesRemaining, Is.EqualTo(3));
                 yield return null;
 
-                if (day == 3 || day == 5)
-                {
-                    var boss = System.Array.Find(Object.FindObjectsByType<EncounterController>(FindObjectsSortMode.None), e => e.IsBoss);
-                    Assert.That(boss, Is.Not.Null);
-                    boss.OpenEncounter();
-                    Assert.That(boss.TryRequestBattle(), Is.True);
-                    float deadline = Time.realtimeSinceStartup + 15f;
-                    while ((BattleController.Active == null || BattleController.Active.BossLevel != day) && Time.realtimeSinceStartup < deadline)
-                        yield return null;
-                    var battle = BattleController.Active;
-                    Assert.That(battle, Is.Not.Null);
-                    Assert.That(battle.BossLevel, Is.EqualTo(day));
-                    if (flow.Progress.equippedWeapon != BattleController.BasicWeaponId)
-                        Assert.That(battle.EquipBasicWeapon(), Is.True);
-                    int turns = 0;
-                    while (!battle.IsBattleOver && turns++ < 20)
-                    {
-                        if (battle.NextEnemyAction == BattleController.EnemyAction.Kuat)
-                            Assert.That(battle.PlayerDefend(), Is.True);
-                        else
-                            Assert.That(battle.PlayerAttack(), Is.True);
-                    }
-                    Assert.That(battle.PlayerWon, Is.True);
-                    deadline = Time.realtimeSinceStartup + 15f;
-                    while ((!boss.IsResolved || !delivery.IsDialogueOpen) && Time.realtimeSinceStartup < deadline)
-                        yield return null;
-                    Assert.That(boss.IsResolved, Is.True);
-                    Assert.That(delivery.IsDialogueOpen, Is.True);
-                    yield return Press(Key.Escape);
-                }
-
                 var residents = Object.FindObjectsByType<InteractionTarget>(FindObjectsSortMode.None);
                 int count = 0;
                 foreach (var resident in residents)
@@ -216,7 +182,6 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                 yield return null;
                 yield return Press(Key.E);
                 yield return Press(Key.Enter);
-                Assert.That(flow.Progress.hasClaimedReward, Is.True);
                 Object.FindFirstObjectByType<PoskoGateController>().TryGoHome();
                 yield return null;
                 Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Rumah"));
