@@ -44,6 +44,8 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 
 **Rintangan graybox:** setiap level memiliki satu preman dan satu genangan. Preman mendeteksi dalam radius 7 m, mengejar dengan kecepatan 2,8 m/detik, mengurangi timer 10 detik saat kontak, lalu memiliki cooldown 2 detik. Setelah tiga kontak yang terkena penalti, preman menghilang sampai misi diulang. Pemain dapat melewati preman agar tidak terjebak, sementara preman tetap tertahan collider lingkungan. Genangan mengurangi kecepatan jalan dan lari menjadi 50% selama berada di dalamnya. Nilai dan penempatan ini sementara; perlu playtest dan kalibrasi.
 
+**Perbaikan rumah P01:** collider tak terlihat menutup sisi lantai yang terbuka tanpa menghalangi interaksi pintu. Sampling animasi karakter dilakukan setelah gerak pada frame yang sama; klip jalan dan lari memakai loop pose. Pengujian Play Mode rumah lulus 5/5, termasuk jalur keluar dan kontinuitas state animasi pada simulasi 30/144 fps. Build `Builds/Windows-HouseFix/JejakAsa.exe` berhasil dibuat dan dibuka hingga Vicky bergerak di rumah; kelancaran visual tetap perlu ditinjau langsung.
+
 Save lama tetap mempertahankan field inventori/reward untuk kompatibilitas data, tanpa fungsi gameplay. Aset dan visual final belum menjadi bagian penerimaan revisi ini.
 
 ## Pembagian tiga role
@@ -275,7 +277,7 @@ Eksplorasi: [Loop Town — Fupi](https://opengameart.org/content/loop-town), CC0
 
 ### Pengujian otomatis Play Mode
 
-Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Setelah penyederhanaan kode, **49/49 tes Play Mode terarah lulus**, mencakup alur lima level, genangan, preman, timer, retry, menu, save/load dan pembuka P01. Ini belum membuktikan build atau integrasi aset final.
+Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Sebelumnya 49/49 tes terarah lulus; setelah perbaikan rumah, 5/5 tes rumah dan animasi terarah lulus. Hasil ini bukan bukti integrasi aset final atau pengujian komputer kedua.
 
 Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes integrasi memuat Kampung aktual untuk menelusuri rute atau membuka dialog dan mengklik Tutup dengan input mouse. Scene percobaan dibongkar dan input fixture dipulihkan setelah selesai. Jangan menghentikan runner atau mengubah scene di tengah tes.
 

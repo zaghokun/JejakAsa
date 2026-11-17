@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JejakAsa;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -33,6 +34,8 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     {
         Time.timeScale = 1f;
         Scene current = SceneManager.GetActiveScene();
+        if (current.name == "P01SceneTestCleanup")
+            yield break;
         Scene empty = SceneManager.CreateScene("P01SceneTestCleanup");
         SceneManager.SetActiveScene(empty);
         if (current.IsValid() && current.isLoaded)
@@ -66,6 +69,58 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
             flow.LastSpawnPoint = previousSpawn;
         }
     }
+    [UnityTest]
+    public IEnumerator LocomotionKeepsLoopingAcrossChangingFrameRates()
+    {
+        int previousCaptureFramerate = Time.captureFramerate;
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Characters/P01/Vicky.fbx");
+        var character = Object.Instantiate(prefab);
+        try
+        {
+            var animator = character.GetComponent<Animator>();
+            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
+                "Assets/_Project/Art/Characters/P01/P01Character.controller");
+            animator.applyRootMotion = false;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            character.AddComponent<P01CharacterAnimator>();
+            var mover = character.AddComponent<P01AnimationTestMover>();
+
+            foreach (var clip in new[] { "Vicky", "Run" })
+            {
+                var importer = (ModelImporter)AssetImporter.GetAtPath("Assets/_Project/Art/Characters/P01/" + clip + ".fbx");
+                Assert.That(importer.clipAnimations[0].loopTime, Is.True);
+                Assert.That(importer.clipAnimations[0].loopPose, Is.True);
+            }
+
+            foreach (var state in new[] { "Walk", "Run" })
+            {
+                mover.speed = state == "Walk" ? 3.5f : 7f;
+                Time.captureFramerate = 60;
+                for (int i = 0; i < 30; i++)
+                    yield return null;
+                var initial = animator.GetCurrentAnimatorStateInfo(0);
+                Assert.That(initial.IsName(state), Is.True);
+                float previousTime = initial.normalizedTime;
+                for (int i = 0; i < 150; i++)
+                {
+                    Time.captureFramerate = i % 2 == 0 ? 30 : 144;
+                    yield return null;
+                    var current = animator.GetCurrentAnimatorStateInfo(0);
+                    Assert.That(current.IsName(state), Is.True);
+                    Assert.That(animator.IsInTransition(0), Is.False);
+                    Assert.That(current.normalizedTime, Is.GreaterThan(previousTime));
+                    previousTime = current.normalizedTime;
+                }
+                Assert.That(previousTime - initial.normalizedTime, Is.GreaterThan(1f));
+            }
+        }
+        finally
+        {
+            Time.captureFramerate = previousCaptureFramerate;
+            Object.Destroy(character);
+        }
+    }
+
 
     [UnityTest]
     public IEnumerator FurnishedHomeKeepsBedroomAndExitReachable()
@@ -217,6 +272,16 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
         yield return null;
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         yield return null;
+    }
+}
+
+public sealed class P01AnimationTestMover : MonoBehaviour
+{
+    public float speed;
+
+    private void Update()
+    {
+        transform.position += Vector3.forward * (speed * Time.deltaTime);
     }
 }
 #endif

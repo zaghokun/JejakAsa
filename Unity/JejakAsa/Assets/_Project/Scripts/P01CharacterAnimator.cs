@@ -36,7 +36,7 @@ namespace JejakAsa
                 animator.CrossFadeInFixedTime("Idle", 0.12f);
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             Vector3 displacement = transform.position - previousPosition;
             previousPosition = transform.position;
