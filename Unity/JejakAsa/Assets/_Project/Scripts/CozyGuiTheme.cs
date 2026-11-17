@@ -44,7 +44,6 @@ namespace JejakAsa
         public static GUIStyle CoralBtnStyle { get; private set; }
         public static GUIStyle AmberBtnStyle { get; private set; }
         public static GUIStyle LockedBtnStyle { get; private set; }
-        public static GUIStyle LockReasonStyle { get; private set; }
         public static GUIStyle DialogueTextStyle { get; private set; }
 
         public static float Scale => Mathf.Max(1f, Screen.height / 720f);
@@ -196,15 +195,6 @@ namespace JejakAsa
                 new Color(0.84f, 0.81f, 0.77f, 1.0f), new Color(0.68f, 0.64f, 0.60f, 1.0f),
                 new Color(0.45f, 0.41f, 0.38f, 1.0f));
 
-            LockReasonStyle = new GUIStyle(GUI.skin.label)
-            {
-                normal = { background = BannerFailTex, textColor = new Color(0.68f, 0.14f, 0.14f) },
-                border = new RectOffset(8, 8, 8, 8),
-                fontSize = 11,
-                fontStyle = FontStyle.Bold,
-                wordWrap = true,
-                alignment = TextAnchor.MiddleCenter
-            };
 
             DialogueTextStyle = new GUIStyle(GUI.skin.label)
             {

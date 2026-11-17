@@ -51,6 +51,7 @@ namespace JejakAsa
         private float timeRemaining = 180f;
 
         public bool IsMissionActive => isMissionActive;
+        public event System.Action MissionReset;
 
         // U07 & U08: State Hasil Misi & Layar Hasil
         private MissionOutcome outcome = MissionOutcome.InProgress;
@@ -167,19 +168,7 @@ namespace JejakAsa
                 }
                 else if (timeRemaining > 0f)
                 {
-                    timeRemaining = Mathf.Max(0f, timeRemaining - Time.deltaTime);
-                    if (timeRemaining <= 0f)
-                    {
-                        // U07 & U08: Waktu habis saat misi berlangsung
-                        if (deliveredCount > 0)
-                        {
-                            SetOutcome(MissionOutcome.PartialSuccess, "Waktu pengantaran telah habis.");
-                        }
-                        else
-                        {
-                            SetOutcome(MissionOutcome.Failed, "Waktu pengantaran telah habis sebelum bantuan sempat disalurkan.");
-                        }
-                    }
+                    SetTimeRemaining(timeRemaining - Time.deltaTime);
                 }
             }
 
@@ -282,13 +271,7 @@ namespace JejakAsa
                 return;
             }
 
-            // U07 Guard: Jika sudah berhasil sah (Success), event waktu habis tidak boleh menimpa
-            if (outcome == MissionOutcome.Success)
-            {
-                return;
-            }
-
-            // Jika sudah ada status akhir (Partial/Failed), jangan timpa lagi
+            // Hasil akhir yang sudah ditetapkan tidak boleh ditimpa.
             if (outcome != MissionOutcome.InProgress)
             {
                 return;
@@ -408,6 +391,7 @@ namespace JejakAsa
             CloseDialogue();
             if (movement != null)
                 movement.enabled = true;
+            MissionReset?.Invoke();
 
             Debug.Log("[U05/U06/U08/U17] Sesi misi telah direset bersih.");
         }
@@ -417,7 +401,11 @@ namespace JejakAsa
             timeRemaining = Mathf.Max(0f, seconds);
             if (timeRemaining <= 0f && outcome == MissionOutcome.InProgress)
             {
-                if (deliveredCount > 0)
+                if (IsMissionCompleted)
+                {
+                    SetOutcome(MissionOutcome.Success, "Semua 3 paket bantuan berhasil disalurkan tepat waktu!");
+                }
+                else if (deliveredCount > 0)
                 {
                     SetOutcome(MissionOutcome.PartialSuccess, "Waktu pengantaran telah habis.");
                 }

@@ -33,6 +33,7 @@ namespace JejakAsa
         private string notice = "";
         private const string VolumeKey = "JejakAsa_MasterVolume";
         private const string FullscreenKey = "JejakAsa_Fullscreen";
+        private static readonly string[] MainMenuOptions = { "Permainan Baru", "Lanjutkan", "Muat", "Pengaturan", "Keluar" };
 
         public string MenuNotice => notice;
 
@@ -93,10 +94,6 @@ namespace JejakAsa
             else if (keyboard.digit3Key.wasPressedThisFrame && count > 2) Activate(2);
             else if (keyboard.digit4Key.wasPressedThisFrame && count > 3) Activate(3);
             else if (keyboard.digit5Key.wasPressedThisFrame && count > 4) Activate(4);
-            else if (keyboard.digit6Key.wasPressedThisFrame && count > 5) Activate(5);
-            else if (keyboard.digit7Key.wasPressedThisFrame && count > 6) Activate(6);
-            else if (keyboard.digit8Key.wasPressedThisFrame && count > 7) Activate(7);
-            else if (keyboard.digit9Key.wasPressedThisFrame && count > 8) Activate(8);
             else if (keyboard.enterKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame) Activate(selected);
             else if (isMainMenu && keyboard.escapeKey.wasPressedThisFrame && page != MenuPage.Main) ShowPage(MenuPage.Main);
         }
@@ -200,11 +197,15 @@ namespace JejakAsa
         private int OptionCount()
         {
             if (isMainMenu)
-                return page == MenuPage.Main ? 5 : page == MenuPage.Load || page == MenuPage.Settings ? 4 : 2;
+            {
+                if (page == MenuPage.Main) return MainMenuOptions.Length;
+                if (page == MenuPage.Load || page == MenuPage.Settings) return 4;
+                return 2;
+            }
             if (confirming || page == MenuPage.ConfirmQuit || page == MenuPage.ConfirmLoad)
                 return 2;
-            if (page == MenuPage.Main) return 4;
-            if (page == MenuPage.Settings || page == MenuPage.Load) return 4;
+            if (page == MenuPage.Main || page == MenuPage.Settings || page == MenuPage.Load)
+                return 4;
             return 3;
         }
 
@@ -483,7 +484,7 @@ namespace JejakAsa
             for (int i = 0; i < count; i++)
             {
                 string label;
-                if (page == MenuPage.Main) label = new[] { "Permainan Baru", "Lanjutkan", "Muat", "Pengaturan", "Keluar" }[i];
+                if (page == MenuPage.Main) label = MainMenuOptions[i];
                 else if (page == MenuPage.ConfirmNew) label = i == 0 ? "Batal" : "Ya, mulai baru";
                 else if (page == MenuPage.Load) label = i == 3 ? "Kembali" : "Slot " + (i + 1) + (GameFlowManager.HasSave(i + 1) ? " — " + PlayerPrefs.GetString("JejakAsa_SaveSlot_" + (i + 1) + "_Time", "-") : " — Kosong");
                 else label = i == 0 ? "Volume - (" + Mathf.RoundToInt(AudioListener.volume * 100) + "%)" : i == 1 ? "Volume +" : i == 2 ? "Layar penuh: " + (Screen.fullScreen ? "Ya" : "Tidak") : "Kembali";

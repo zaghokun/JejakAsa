@@ -68,6 +68,8 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
                 Assert.That(housePositions.Add(house.transform.position), Is.True, "Each level must have its own layout.");
                 var residents = Object.FindObjectsByType<InteractionTarget>(FindObjectsSortMode.None);
                 Assert.That(System.Array.FindAll(residents, r => r.IsRecipient).Length, Is.EqualTo(3));
+                Assert.That(Object.FindFirstObjectByType<PuddleZone>(), Is.Not.Null, "Each level needs a slowing hazard.");
+                Assert.That(Object.FindFirstObjectByType<PremanController>(), Is.Not.Null, "Each level needs a pursuer.");
             }
         }
         finally

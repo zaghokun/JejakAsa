@@ -22,11 +22,11 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Kamera | Isometrik dengan orientasi tetap |
 | Kontrol | Input System resmi; CharacterController untuk gerak, tahan Shift kiri/kanan untuk lari |
 | Antarmuka | Unity UI / uGUI dan TextMeshPro; prompt/dialog U03 sudah tersedia |
-| Cakupan graybox saat ini | Posko, rumah, lima map level, tiga penerima per level, timer, dialog, hasil dan retry |
-| Rencana berikutnya | Preman mengejar dalam radius tertentu dan mengurangi timer saat menyentuh pemain; lumpur/genangan memperlambat gerak. Keduanya belum diimplementasikan |
+| Cakupan graybox saat ini | Posko, rumah, lima map level, tiga penerima per level, timer, dialog, hasil, retry, preman dan genangan |
+| Integrasi berikutnya | Cerita, visual karakter dan lingkungan, penempatan serta kalibrasi rintangan final |
 | Waktu | Rencana awal 21 hari dan cadangan hingga 28 hari; estimasi untuk cakupan revisi perlu disusun ulang |
 
-Urutan development **gameplay-first**: loop pengantaran dan progres harian tersedia sebagai graybox; integrasi cerita, aset final, rintangan baru, dan pengujian akhir menyusul.
+Urutan development **gameplay-first**: loop pengantaran, progres harian, preman dan genangan tersedia sebagai graybox; integrasi cerita, aset final dan pengujian akhir menyusul.
 
 Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertempuran; juga multiplayer, akun/backend, database server, crafting, serta chapter di luar lima level.
 
@@ -42,7 +42,7 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 | R13–R14 | Save/load tiga slot, menu utama dan menu ingame | Core tersedia; verifikasi ulang setelah revisi |
 | R15 | Regresi dan build | Uji ulang dan build revisi diperlukan |
 
-**Belum diimplementasikan:** preman mengejar ketika pemain masuk radius dan mengurangi waktu saat kontak; lumpur/genangan memperlambat pemain. Posisi, nilai radius, penalti dan perlambatan akan ditentukan saat implementasi.
+**Rintangan graybox:** setiap level memiliki satu preman dan satu genangan. Preman mendeteksi dalam radius 7 m, mengejar dengan kecepatan 2,8 m/detik, mengurangi timer 10 detik saat kontak, lalu memiliki cooldown 2 detik. Setelah tiga kontak yang terkena penalti, preman menghilang sampai misi diulang. Pemain dapat melewati preman agar tidak terjebak, sementara preman tetap tertahan collider lingkungan. Genangan mengurangi kecepatan jalan dan lari menjadi 50% selama berada di dalamnya. Nilai dan penempatan ini sementara; perlu playtest dan kalibrasi.
 
 Save lama tetap mempertahankan field inventori/reward untuk kompatibilitas data, tanpa fungsi gameplay. Aset dan visual final belum menjadi bagian penerimaan revisi ini.
 
@@ -53,7 +53,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
 | A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, integrasi scene dan build | Loop misi dan menu graybox tersedia; revisi perlu diuji. |
-| B — Verifikasi dan rintangan | Regresi alur, timer, retry dan save/load; implementasi rintangan pada tahap berikutnya | Pengejaran dan perlambatan belum dikerjakan. |
+| B — Verifikasi dan rintangan | Regresi alur, timer, retry dan save/load; rintangan graybox | Pengejaran dan genangan tersedia; kalibrasi dan integrasi visual final menyusul. |
 | C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Integrasi final dan pengujian bersama A/B masih diperlukan. |
 
 ## Tracking penerimaan dan revisi core
@@ -62,8 +62,8 @@ Hasil uji graybox lama tidak otomatis membuktikan revisi ini. Kriteria battle, b
 
 - [ ] **R01, R03–R06 — Siklus dan misi:** uji rumah → posko → level → laporan → rumah untuk lima hari, tiga penerima per map, timer, hasil dan retry.
 - [ ] **R02, R07 — Cerita:** hubungkan prolog dan dialog sesuai [storyboard](docs/storyboard-dialog-jejak-asa.md); jaga urutan dialog setelah retry dan load.
-- [ ] **Preman pengejar — rencana:** uji pemicu radius, pengejaran dan pengurangan waktu saat kontak setelah mekanik diimplementasikan.
-- [ ] **Lumpur/genangan — rencana:** uji perlambatan dan pemulihan kecepatan setelah mekanik diimplementasikan.
+- [ ] **Preman pengejar — graybox:** uji radius, pengejaran, pengurangan waktu, pause dan retry; kalibrasi kesulitan setelah integrasi.
+- [ ] **Genangan — graybox:** uji perlambatan dan pemulihan kecepatan; kalibrasi penempatan setelah integrasi.
 - [ ] **R13–R14 — Save/load dan menu:** uji tiga slot, konfirmasi overwrite/load/keluar, serta menu ingame Lanjutkan, Pengaturan, Muat dan Keluar.
 - [ ] **R15, U19–U21 — Integrasi dan build:** uji seluruh alur, kamera, audio, UI, build Windows dan komputer kedua setelah integrasi akhir.
 
@@ -106,13 +106,13 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 - [ ] **A/B:** uji briefing → level → laporan Jonathan → dialog Ophelia → pulang dan penutup level 5; pastikan tahap dialog tetap benar setelah retry/load.
 - [ ] **A/B + C:** tentukan pemicu, pose/animasi dan handoff dialog.
 
-### AB-D05 — Preman pengejar · rencana
+### AB-D05 — Preman pengejar
 
-- [ ] Tentukan radius, penalti waktu, perilaku setelah kontak dan penempatan; implementasikan dan uji pada tahap berikutnya.
+- [ ] Uji pengejaran, kontak dan reset pada lima level; sesuaikan rute dan nilai setelah playtest bersama.
 
-### AB-D06 — Rintangan permukaan · rencana
+### AB-D06 — Rintangan permukaan
 
-- [ ] Tentukan penempatan lumpur/genangan dan tingkat perlambatan; implementasikan dan uji masuk/keluar area pada tahap berikutnya.
+- [ ] Uji perlambatan jalan/lari dan keluar dari genangan; sesuaikan penempatan dan visual final bersama Role C.
 
 ### AB-D07 — Save/load dan main menu · R13–R14
 
@@ -275,7 +275,7 @@ Eksplorasi: [Loop Town — Fupi](https://opengameart.org/content/loop-town), CC0
 
 ### Pengujian otomatis Play Mode
 
-Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Regresi terarah setelah penghapusan sistem lama: **42/42 lulus** di Editor, mencakup alur lima level, rute, penyerahan, timer, retry, menu dan save/load. Ini belum membuktikan build atau integrasi aset final.
+Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Setelah penyederhanaan kode, **49/49 tes Play Mode terarah lulus**, mencakup alur lima level, genangan, preman, timer, retry, menu, save/load dan pembuka P01. Ini belum membuktikan build atau integrasi aset final.
 
 Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes integrasi memuat Kampung aktual untuk menelusuri rute atau membuka dialog dan mengklik Tutup dengan input mouse. Scene percobaan dibongkar dan input fixture dipulihkan setelah selesai. Jangan menghentikan runner atau mengubah scene di tengah tes.
 

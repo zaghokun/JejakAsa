@@ -17,7 +17,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 - **Urutan setelah pengantaran:** lapor kepada Jonathan → bicara dengan Ophelia → pulang dan istirahat. Apakah kedua percakapan nanti wajib masih perlu disepakati.
 - **Akhir level 5:** laporan dan percakapan Ophelia tetap terjadi; penutup berlangsung di rumah pada malam yang sama. Tidak ada level 6 atau hari berikutnya yang wajib dimainkan.
 - **Save:** draft hanya memastikan ada pilihan simpan/istirahat di rumah. Jumlah slot dan apakah ada autosave di luar rumah belum diputuskan; teks di bawah tidak mengklaim autosave ada.
-- **Ancaman dan medan:** rancangan mendatang: saat Vicky memasuki radius preman, preman mengejarnya; kontak mengurangi sisa timer pengantaran. Lumpur dan genangan memperlambat gerak, dengan rintangan yang meningkat pada tiap level. Pengejaran, penalti kontak, dan perlambatan ini **belum diimplementasikan**; rincian penempatannya belum final.
+- **Ancaman dan medan:** core graybox memakai preman yang mengejar dalam radius dan mengurangi timer saat kontak, serta genangan yang memperlambat gerak. Penempatan dan tingkat kesulitan final masih perlu penyesuaian saat integrasi cerita dan aset.
 - Kalimat dalam **[kurung siku]** adalah arahan visual, kondisi, atau aksi sistem; bukan dialog yang dibacakan. Nama sebelum titik dua adalah pembicara. ID adegan dapat dipakai saat handoff ke tim implementasi.
 
 ## 2. Karakter dan arahan dialog
@@ -140,7 +140,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ## 5. Level 1 — Langkah pertama
 
-**Tujuan cerita:** memperkenalkan pengantaran dan menunjukkan bahwa warga ikut mengatur bantuan. Rancangan medan memperkenalkan rintangan ringan; ancaman dan rintangan meningkat pada level berikutnya. Pengejaran dan perlambatan belum diimplementasikan.
+**Tujuan cerita:** memperkenalkan pengantaran dan menunjukkan bahwa warga ikut mengatur bantuan. Rintangan dan tingkat kesulitan final ditentukan saat integrasi level.
 
 ### L1-01 — Briefing Jonathan
 
@@ -274,7 +274,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ### L2-05 — Tekanan di gang
 
-[Preman terlihat di gang. Dalam rancangan mendatang, mendekati radiusnya memicu pengejaran; kontak mengurangi sisa waktu pengantaran. Lihat bagian 10.]
+[Preman terlihat di gang. Mendekati radiusnya memicu pengejaran; kontak mengurangi sisa waktu pengantaran. Lihat bagian 10.]
 
 **Preman:** Mau lewat sini? Banyak sekali paket yang kamu bawa.
 
@@ -498,7 +498,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 **Preman:** Kalau begitu, coba lewat dulu.
 
-[Rancangan pengejaran dan kondisi medan dijelaskan di bagian 10; keduanya belum diimplementasikan.]
+[Aturan pengejaran dan kondisi medan dijelaskan di bagian 10.]
 
 ### L4-06 — Suara warga
 
@@ -727,7 +727,7 @@ Cerita mendukung SDG 1, 11, dan 16. Bantuan tidak digambarkan sebagai penyelesai
 
 ### G01 — Pengejaran preman dan medan
 
-[Rancangan mendatang, belum diimplementasikan: preman mulai mengejar ketika Vicky memasuki radius mereka. Kontak dengan preman mengurangi sisa timer pengantaran. Lumpur dan genangan memperlambat gerakan Vicky. Jumlah rintangan meningkat pada tiap level; penempatan dan nilainya belum final.]
+[Pada graybox, preman mulai mengejar ketika Vicky memasuki radiusnya. Kontak mengurangi sisa timer pengantaran. Genangan memperlambat gerakan Vicky. Penempatan, jumlah rintangan dan nilai final masih perlu dikalibrasi.]
 
 **Vicky:** Aku harus mencari jalan agar bantuan tetap sampai tepat waktu.
 
@@ -876,6 +876,6 @@ Teks berikut merupakan naskah usulan untuk desain menu baru; implementasi dan da
 ## 12. Catatan handoff A/B dan Role C
 
 - **A/B:** tentukan state dan pemicu per ID adegan; dialog warga sebelum dan sesudah penyerahan harus mengikuti state penerima. Adegan Deddy dan Gas Oke tetap merupakan cerita, bukan pertarungan.
-- **A/B:** sebelum implementasi, putuskan aturan save/slot/autosave, jumlah penerima, serta penempatan dan nilai radius pengejaran, penalti timer, dan perlambatan medan. Pengejaran dan perlambatan belum diimplementasikan.
+- **A/B:** sesuaikan penempatan dan tingkat kesulitan rintangan pada integrasi level; pastikan jumlah penerima, aturan save, dan urutan dialog konsisten dengan implementasi.
 - **Role C:** storyboard memberi acuan suasana, lokasi, tokoh, dan pose minimal; bukan daftar final model, jadwal produksi, atau kewajiban membuat cutscene kompleks.
 - **Review bersama:** periksa keterbacaan dialog, representasi warga Jakarta Utara tanpa karikatur, nada hubungan Vicky–Ophelia, dan konsistensi transisi setelah aturan gameplay disepakati.

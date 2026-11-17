@@ -76,7 +76,8 @@ public sealed class U02KampungRouteTests : InputTestFixture
             float deadline = Time.time + Vector2.Distance(position, waypoint) / 3.5f + 3f;
             while (Vector2.Distance(position, waypoint) > 0.25f)
             {
-                Assert.That(Time.time, Is.LessThan(deadline), "Player stuck before waypoint " + waypoint);
+                if (Time.time >= deadline)
+                    Assert.Fail("Player stuck before waypoint " + waypoint + " at " + player.position);
                 Vector2 remaining = waypoint - position;
                 Key[] keys;
                 if (Mathf.Abs(remaining.x) > 0.2f)
