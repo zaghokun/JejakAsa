@@ -83,8 +83,14 @@ namespace JejakAsa
                 "Aku ingin cari tahu apa yang benar-benar mereka perlukan. Aku tidak mau datang lalu asal membagikan sesuatu.",
                 "Bagus. Mulai dengan mendengarkan mereka, ya."
             }, System.Array.ConvertAll(lines, line => line.text));
+            var portrait = typeof(StoryNpcController).Assembly.GetType("JejakAsa.DialoguePresentation")
+                .GetMethod("Portrait", BindingFlags.Static | BindingFlags.NonPublic);
             for (int i = 0; i < 6; i++)
             {
+                string speaker = i % 2 == 0 ? "Vicky" : "Ibu";
+                Assert.AreSame(Resources.Load<Texture2D>("JejakAsaUI/Generated/Portraits/" + speaker),
+                    portrait.Invoke(null, new object[] { lines[i].speaker }));
+                Assert.IsNotNull(portrait.Invoke(null, new object[] { lines[i].speaker }));
                 Assert.IsFalse(flow.GoToPoskoFromHome());
                 ibu.CloseDialogue();
                 yield return null;

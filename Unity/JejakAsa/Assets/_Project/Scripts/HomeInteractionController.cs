@@ -20,9 +20,15 @@ namespace JejakAsa
         [Header("Scene Target")]
         public string poskoScenePath = "Assets/_Project/Scenes/Posko.unity";
 
+        private static HomeInteractionController activeMenu;
+        internal static bool AnyMenuOpen => activeMenu != null && activeMenu.isBedMenuOpen;
+        private void OnEnable() => activeMenu = this;
+        private void OnDisable() { if (activeMenu == this) activeMenu = null; }
+
         private bool nearDoor;
         private bool nearBed;
         private bool isBedMenuOpen;
+        private float bedOpenedAt;
         private int pendingSaveSlot;
         private string feedbackNotice = string.Empty;
         private float feedbackTimer;
@@ -66,6 +72,7 @@ namespace JejakAsa
             if (nearBed && !isBedMenuOpen && kb.eKey.wasPressedThisFrame)
             {
                 isBedMenuOpen = true;
+                bedOpenedAt = Time.unscaledTime;
             }
             else if (isBedMenuOpen)
             {
@@ -165,108 +172,54 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked)
-                return;
-
+            if (SessionMenu.InputBlocked || StoryNpcController.AnyDialogueOpen) return;
             CozyGuiTheme.EnsureInitialized();
-
-            // Pemberitahuan feedback
-            if (!string.IsNullOrEmpty(feedbackNotice))
+            if (!isBedMenuOpen)
             {
-                float nW = 440f;
-                float nH = 40f;
-                float nX = (Screen.width - nW) * 0.5f;
-                float nY = 30f;
-
-                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerInfoTex;
-                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.12f, 0.28f, 0.44f);
-                GUI.Label(new Rect(nX, nY, nW, nH), feedbackNotice, CozyGuiTheme.BannerStyle);
+                if (nearDoor) CozyGuiTheme.Prompt("Keluar menuju posko");
+                else if (nearBed) CozyGuiTheme.Prompt("Istirahat & simpan perjalanan");
             }
-
-            // Prompt Pintu
-            if (nearDoor && !isBedMenuOpen)
-            {
-                float pW = 280f;
-                float pH = 44f;
-                float pX = (Screen.width - pW) * 0.5f;
-                float pY = Screen.height - 110f;
-
-                GUI.DrawTexture(new Rect(pX + 2, pY + 2, pW, pH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(pX, pY, pW, pH), GUIContent.none, CozyGuiTheme.CardStyle);
-                GUI.Label(new Rect(pX, pY + 10, pW, 24), "Tekan [E] Keluar Menuju Posko", CozyGuiTheme.HintStyle);
-            }
-            // Prompt Tempat Tidur
-            else if (nearBed && !isBedMenuOpen)
-            {
-                float pW = 320f;
-                float pH = 44f;
-                float pX = (Screen.width - pW) * 0.5f;
-                float pY = Screen.height - 110f;
-
-                GUI.DrawTexture(new Rect(pX + 2, pY + 2, pW, pH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(pX, pY, pW, pH), GUIContent.none, CozyGuiTheme.CardStyle);
-                GUI.Label(new Rect(pX, pY + 10, pW, 24), "Tekan [E] Tempat Tidur (Istirahat & Save)", CozyGuiTheme.HintStyle);
-            }
-
-            // Menu Tempat Tidur
+            Matrix4x4 old = GUI.matrix; float scale = CozyGuiTheme.Scale;
+            GUI.matrix = old * Matrix4x4.Scale(new Vector3(scale, scale, 1));
+            float sw = Screen.width / scale, sh = Screen.height / scale;
             if (isBedMenuOpen)
             {
-                GUI.depth = -100;
-                float scale = CozyGuiTheme.Scale;
-                Matrix4x4 prevMatrix = GUI.matrix;
-                GUI.matrix = prevMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-
-                float sw = Screen.width / scale;
-                float sh = Screen.height / scale;
-
-                GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
-
-                float cardW = 460f;
-                float cardH = 390f;
-                float cardX = (sw - cardW) * 0.5f;
-                float cardY = (sh - cardH) * 0.5f;
-
-                GUI.DrawTexture(new Rect(cardX + 4, cardY + 6, cardW, cardH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
-
-                GUI.Label(new Rect(cardX + 16, cardY + 16, 160, 24), "KAMAR VICKY", CozyGuiTheme.RibbonStyle);
-                string desc = $"Hari {GameFlowManager.Instance.CurrentDay} • Fase: {GameFlowManager.Instance.CurrentPhase}";
-                GUI.Label(new Rect(cardX + 16, cardY + 48, cardW - 32, 22), desc, CozyGuiTheme.OutcomeDescStyle);
-
-                if (pendingSaveSlot != 0)
+                GUI.depth = -100; GUI.DrawTexture(new Rect(0,0,sw,sh),CozyGuiTheme.DimTex);
+                Rect r = new Rect((sw-660)/2,(sh-644)/2,660,644);
+                bool overwrite = pendingSaveSlot != 0;
+                CozyGuiTheme.Header(r,"RUMAH VICKY / HARI " + GameFlowManager.Instance.CurrentDay,overwrite ? "Simpan jejak yang baru?" : "Pulang untuk melangkah.",overwrite ? "Catatan lama pada slot ini akan diganti dengan progres saat ini." : "Istirahat setelah laporan selesai, atau catat perjalananmu hari ini.");
+                if (overwrite)
                 {
-                    GUI.Label(new Rect(cardX + 20, cardY + 90, cardW - 40, 48), $"Timpa save Slot {pendingSaveSlot}? Data lama akan hilang.", CozyGuiTheme.OutcomeDescStyle);
-                    if (GUI.Button(new Rect(cardX + 20, cardY + 150, cardW - 40, 42), "1. Batal", CozyGuiTheme.TealBtnStyle))
-                        pendingSaveSlot = 0;
-                    if (GUI.Button(new Rect(cardX + 20, cardY + 200, cardW - 40, 42), "2. Ya, timpa save", CozyGuiTheme.CoralBtnStyle))
-                        ConfirmSave();
+                    CozyGuiTheme.Card(new Rect(r.x+28,r.y+198,604,100),true);
+                    GUI.Label(new Rect(r.x+48,r.y+218,564,58),"Slot 0"+pendingSaveSlot+" akan ditimpa. Pilihan ini tidak dapat dibatalkan setelah disimpan.",CozyGuiTheme.Body);
+                    if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+338,604,54),"1. Kembali",CozyGuiTheme.AmberBtnStyle)) pendingSaveSlot=0;
+                    if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+406,604,54),"2. Ya, simpan di slot ini",CozyGuiTheme.CoralBtnStyle)) ConfirmSave();
                 }
                 else
                 {
-                    float rowY = cardY + 80f;
-                    bool canRest = GameFlowManager.Instance.CanRestAndAdvanceDay(out string restReason);
-                    if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 42), "1. Istirahat Tidur (Lanjut Hari Berikutnya)", canRest ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.LockedBtnStyle))
-                        TryRestAndAdvanceDay();
-                    if (!canRest && !string.IsNullOrEmpty(restReason))
-                        GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), restReason, CozyGuiTheme.SubLabelStyle);
-
-                    rowY += 66f;
-                    for (int slot = 1; slot <= GameFlowManager.MaxSaveSlots; slot++)
+                    bool canRest=GameFlowManager.Instance.CanRestAndAdvanceDay(out string reason);
+                    if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+214,604,54),"1. Istirahat & sambut hari berikutnya",canRest?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryRestAndAdvanceDay();
+                    GUI.Label(new Rect(r.x+32,r.y+276,596,36),canRest?"Semua urusan hari ini selesai. Kamu berhak beristirahat.":reason,CozyGuiTheme.Small);
+                    for(int slot=1;slot<=3;slot++)
                     {
-                        string time = GameFlowManager.HasSave(slot) ? PlayerPrefs.GetString("JejakAsa_SaveSlot_" + slot + "_Time", "-") : "Kosong";
-                        if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 38), $"{slot + 1}. Simpan Slot {slot} ({time})", CozyGuiTheme.AmberBtnStyle))
-                            DoSave(slot);
-                        rowY += 44f;
+                        var meta=GameFlowManager.GetSlotMeta(slot);
+                        Rect row=new Rect(r.x+28,r.y+322+(slot-1)*70,604,58);
+                        if(CozyGuiTheme.Button(row,GUIContent.none,CozyGuiTheme.AmberBtnStyle)) DoSave(slot);
+                        GUI.Label(new Rect(row.x+18,row.y+5,520,25),(slot+1)+". Simpan / Slot 0"+slot,CozyGuiTheme.ButtonLabel);
+                        GUI.Label(new Rect(row.x+18,row.y+31,560,20),meta.exists?"Hari "+meta.day+"  ·  "+meta.timestamp:"Belum tersimpan",CozyGuiTheme.Small);
                     }
-                    if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 36), "5. Batal / Bangkit", CozyGuiTheme.CoralBtnStyle))
-                        isBedMenuOpen = false;
+                    if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+542,604,44),"5. Kembali ke rumah",CozyGuiTheme.AmberBtnStyle)) isBedMenuOpen=false;
                 }
-
-                GUI.Label(new Rect(cardX + 20, cardY + cardH - 24, cardW - 40, 18), "[1-5] Pilih Opsi  |  [Esc] Batal", CozyGuiTheme.HintStyle);
-
-                GUI.matrix = prevMatrix;
+                CozyGuiTheme.Rule(r.x+28,r.y+597,604);
+                GUI.Label(new Rect(r.x+28,r.y+609,604,20),overwrite?"1  Kembali     2  Simpan     Esc  Batal":"1–5  Pilih     Esc  Kembali",CozyGuiTheme.HintStyle);
             }
+            if(!string.IsNullOrEmpty(feedbackNotice))
+            {
+                GUI.depth=-120;
+                Rect toast=new Rect((sw-560)/2,28,560,64); CozyGuiTheme.Card(toast);
+                GUI.Label(new Rect(toast.x+20,toast.y+8,520,48),feedbackNotice,CozyGuiTheme.Body);
+            }
+            GUI.matrix=old;
         }
     }
 }
-

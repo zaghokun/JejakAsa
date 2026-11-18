@@ -41,6 +41,30 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     }
 
     [UnityTest]
+    public IEnumerator MenuExitRequiresConfirmationAndPauseSelectionAnimatesInRealTime()
+    {
+        yield return SceneManager.LoadSceneAsync(MenuPath, LoadSceneMode.Single);
+        SessionMenu menu = Object.FindFirstObjectByType<SessionMenu>();
+        var page = typeof(SessionMenu).GetField("page", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        yield return Press(Key.Digit5);
+        Assert.That(page.GetValue(menu).ToString(), Is.EqualTo("ConfirmQuit"));
+        yield return Press(Key.Escape);
+        Assert.That(page.GetValue(menu).ToString(), Is.EqualTo("Main"));
+
+        menu.StartNewGame();
+        yield return null;
+        menu = Object.FindFirstObjectByType<SessionMenu>();
+        yield return Press(Key.Escape);
+        Assert.That(Time.timeScale, Is.Zero);
+        yield return Press(Key.DownArrow);
+        yield return new WaitForSecondsRealtime(0.2f);
+        var highlight = typeof(SessionMenu).GetField("highlightRow", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        Assert.That((float)highlight.GetValue(menu), Is.GreaterThan(0.9f));
+        yield return Press(Key.Escape);
+        Assert.That(Time.timeScale, Is.EqualTo(1f));
+    }
+
+    [UnityTest]
     public IEnumerator MenuStartsSessionAndReturningRequiresConfirmation()
     {
         yield return SceneManager.LoadSceneAsync(MenuPath, LoadSceneMode.Single);

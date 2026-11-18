@@ -160,37 +160,18 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked)
-                return;
-
-            if (feedbackTimer > 0f && !string.IsNullOrEmpty(feedbackText))
+            if (SessionMenu.InputBlocked || StoryNpcController.AnyDialogueOpen || PoskoGateController.AnyMenuOpen) return;
+            CozyGuiTheme.EnsureInitialized();
+            if (feedbackTimer > 0 && !string.IsNullOrEmpty(feedbackText))
             {
-                float nbW = 480f;
-                float nbH = 46f;
-                float nbX = (Screen.width - nbW) * 0.5f;
-                float nbY = 150f;
-                GUI.Box(new Rect(nbX, nbY, nbW, nbH), feedbackText);
+                Matrix4x4 old=GUI.matrix; float scale=CozyGuiTheme.Scale;
+                GUI.matrix=old*Matrix4x4.Scale(new Vector3(scale,scale,1));
+                Rect r=new Rect((Screen.width/scale-580)/2,28,580,64); CozyGuiTheme.Card(r);
+                GUI.Label(new Rect(r.x+20,r.y+8,540,48),feedbackText,CozyGuiTheme.Body); GUI.matrix=old;
             }
-
-            if (!isPlayerNear)
-                return;
-
-            float w = 280f;
-            float h = 42f;
-            float x = (Screen.width - w) * 0.5f;
-            float y = Screen.height - 110f;
-
-            bool alreadyPickedUp = (GameFlowManager.Instance != null && GameFlowManager.Instance.Progress.hasPickedUpBansos)
-                || (playerInteraction != null && playerInteraction.IsMissionActive);
-
-            if (!alreadyPickedUp)
-            {
-                GUI.Box(new Rect(x, y, w, h), "Tekan [E] Ambil Paket Bansos");
-            }
-            else if (playerInteraction != null && playerInteraction.IsMissionCompleted)
-            {
-                GUI.Box(new Rect(x, y, w, h), "Bicara dengan Pak Jonathan (Laporan)");
-            }
+            if (!isPlayerNear || !IsNearestInteraction(this, playerTransform)) return;
+            bool picked=GameFlowManager.Instance.Progress.hasPickedUpBansos || (playerInteraction!=null && playerInteraction.IsMissionActive);
+            if (!picked) CozyGuiTheme.Prompt("Ambil paket bantuan");
         }
 
         private void OnDrawGizmosSelected()

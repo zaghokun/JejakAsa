@@ -36,6 +36,9 @@ namespace JejakAsa
         private static StoryNpcController activeDialogue;
         private DialogueLine[] activeLines;
         private System.Action sequenceCompleted;
+        private float dialogueOpenedAt;
+        private float dialogueLineAt;
+        private Texture2D illustratedDialogue;
         public static event System.Action<string> SpeakerChanged;
         private static int escapeConsumedFrame = -1;
         internal static bool EscapeConsumedThisFrame => escapeConsumedFrame == Time.frameCount;
@@ -108,6 +111,7 @@ namespace JejakAsa
             DayPhase phase = GameFlowManager.Instance.CurrentPhase;
             dialoguePhase = phase;
             dialogueLineIndex = 0;
+            dialogueOpenedAt = dialogueLineAt = Time.unscaledTime;
             dialogueAdvanceFrame = -1;
 
             switch (npcType)
@@ -176,6 +180,7 @@ namespace JejakAsa
             if (activeLines != null && dialogueLineIndex + 1 < activeLines.Length)
             {
                 dialogueLineIndex++;
+                dialogueLineAt = Time.unscaledTime;
                 SpeakerChanged?.Invoke(activeLines[dialogueLineIndex].speaker);
                 return;
             }
@@ -219,58 +224,37 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked)
-                return;
-
+            if (SessionMenu.InputBlocked) return;
             CozyGuiTheme.EnsureInitialized();
+            if (isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
+                CozyGuiTheme.Prompt("Bicara dengan " + characterName);
+            if (!isDialogueOpen) return;
+            GUI.depth = -100;
+            Matrix4x4 old = GUI.matrix; float scale = CozyGuiTheme.Scale;
+            GUI.matrix = old * Matrix4x4.Scale(new Vector3(scale, scale, 1));
+            float sw = Screen.width / scale, sh = Screen.height / scale;
+            bool configured = activeLines != null && activeLines.Length > 0;
+            string speaker = configured && !string.IsNullOrEmpty(activeLines[dialogueLineIndex].speaker) ? activeLines[dialogueLineIndex].speaker : characterName;
+            string text = configured ? activeLines[dialogueLineIndex].text : currentDialogueText;
+            Rect r = new Rect((sw - 1120) / 2, sh - 268, 1120, 236);
+            r.y += 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - dialogueOpenedAt) / .2f)));
+            CozyGuiTheme.Card(r);
+            if (illustratedDialogue == null) illustratedDialogue = Resources.Load<Texture2D>("JejakAsaUI/Generated/VolunteerDialogPanel");
+            if (illustratedDialogue != null) GUI.DrawTexture(r, illustratedDialogue, ScaleMode.StretchToFill, true);
 
-            // Prompt interaksi
-            if (isPlayerInRange && !isDialogueOpen)
-            {
-                float pW = 280f;
-                float pH = 44f;
-                float pX = (Screen.width - pW) * 0.5f;
-                float pY = Screen.height - 110f;
-
-                GUI.DrawTexture(new Rect(pX + 2, pY + 2, pW, pH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(pX, pY, pW, pH), GUIContent.none, CozyGuiTheme.CardStyle);
-                GUI.Label(new Rect(pX, pY + 10, pW, 24), $"Tekan [E] Bicara dengan {characterName}", CozyGuiTheme.HintStyle);
-                return;
-            }
-
-            // Tampilan Dialog Box
-            if (isDialogueOpen)
-            {
-                GUI.depth = -100;
-                float scale = CozyGuiTheme.Scale;
-                Matrix4x4 prevMatrix = GUI.matrix;
-                GUI.matrix = prevMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-
-                float sw = Screen.width / scale;
-                float sh = Screen.height / scale;
-
-                float cardW = Mathf.Min(560f, sw - 40f);
-                float cardH = 160f;
-                float cardX = (sw - cardW) * 0.5f;
-                float cardY = sh - cardH - 30f;
-
-                GUI.DrawTexture(new Rect(cardX + 4, cardY + 6, cardW, cardH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
-
-                bool configured = activeLines != null && activeLines.Length > 0;
-                string speaker = configured && !string.IsNullOrEmpty(activeLines[dialogueLineIndex].speaker)
-                    ? activeLines[dialogueLineIndex].speaker : characterName;
-                string text = configured ? activeLines[dialogueLineIndex].text : currentDialogueText;
-                GUI.Label(new Rect(cardX + 18, cardY + 14, 160, 24), sequenceCompleted != null ? speaker : speaker.ToUpper(), CozyGuiTheme.RibbonStyle);
-                GUI.Label(new Rect(cardX + 18, cardY + 44, cardW - 36, 75), text, CozyGuiTheme.DialogueTextStyle);
-                bool hasNext = configured && dialogueLineIndex + 1 < activeLines.Length;
-                GUI.Label(new Rect(cardX + 18, cardY + cardH - 24, cardW - 150, 18), "Enter / Spasi / Esc", CozyGuiTheme.HintStyle);
-                if (GUI.Button(new Rect(cardX + cardW - 125, cardY + cardH - 30, 105, 24), hasNext ? "Lanjut" : "Tutup"))
-                    CloseDialogue();
-
-                GUI.matrix = prevMatrix;
-            }
+            var portrait = DialoguePresentation.Portrait(speaker);
+            if (portrait != null) GUI.DrawTexture(new Rect(r.x + 16, r.y - 22, 168, 242), portrait, ScaleMode.ScaleToFit, true);
+            CozyGuiTheme.Fill(new Rect(r.x + 206, r.y + 46, 20, 3), CozyGuiTheme.Clay);
+            GUI.Label(new Rect(r.x + 240, r.y + 35, 620, 32), speaker, CozyGuiTheme.LabelStyle);
+            Color color = GUI.color; GUI.color = new Color(1, 1, 1, Mathf.Lerp(.7f, 1, Mathf.Clamp01((Time.unscaledTime - dialogueLineAt) / .16f)));
+            GUI.Label(new Rect(r.x + 206, r.y + 82, 850, 82), text, CozyGuiTheme.DialogueTextStyle);
+            GUI.color = color;
+            CozyGuiTheme.Rule(r.x + 206, r.y + 175, 886);
+            bool next = configured && dialogueLineIndex + 1 < activeLines.Length;
+            string counter = configured ? (dialogueLineIndex + 1) + " / " + activeLines.Length + "     ·     " : "";
+            GUI.Label(new Rect(r.x + 206, r.y + 190, 680, 24), counter + "Enter / Spasi / Esc  Lanjut", CozyGuiTheme.Small);
+            if (CozyGuiTheme.Button(new Rect(r.xMax - 174, r.y + 187, 146, 34), next ? "Lanjut  >" : "Selesai", CozyGuiTheme.TealBtnStyle)) CloseDialogue();
+            GUI.matrix = old;
         }
     }
 }
-

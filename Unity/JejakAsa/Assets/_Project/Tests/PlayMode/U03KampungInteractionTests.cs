@@ -55,6 +55,9 @@ public sealed class U03KampungInteractionTests : InputTestFixture
         yield return null;
         Assert.That(interaction.DialogueTarget, Is.SameAs(resident));
         Assert.That(player.GetComponent<PlayerController>().enabled, Is.False);
+        RawImage portrait = close.transform.parent.Find("SpeakerPortrait").GetComponent<RawImage>();
+        Assert.That(portrait.enabled, Is.True, "Warga graybox perlu menampilkan potret sementara.");
+        Assert.That(portrait.texture, Is.SameAs(Resources.Load<Texture2D>("JejakAsaUI/Generated/Portraits/WargaLaki")));
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
 
         Vector2 position = RectTransformUtility.WorldToScreenPoint(null, close.GetComponent<RectTransform>().position);
@@ -94,7 +97,7 @@ public sealed class U03KampungInteractionTests : InputTestFixture
         for (int i = 0; i < 3; i++)
         {
             var line = lines.GetArrayElementAtIndex(i);
-            line.FindPropertyRelative("speaker").stringValue = "Speaker " + i;
+            line.FindPropertyRelative("speaker").stringValue = i == 0 ? "Vicky" : "Speaker " + i;
             line.FindPropertyRelative("text").stringValue = "Line " + i;
         }
         fields.ApplyModifiedPropertiesWithoutUndo();
@@ -108,10 +111,14 @@ public sealed class U03KampungInteractionTests : InputTestFixture
         Assert.That(player.IsDialogueOpen, Is.True);
         TMP_Text[] labels = button.transform.parent.GetComponentsInChildren<TMP_Text>(true);
         Assert.That(System.Array.Exists(labels, x => x.text == "Line 0"), Is.True);
+        RawImage portrait = button.transform.parent.Find("SpeakerPortrait").GetComponent<RawImage>();
+        Assert.That(portrait.enabled, Is.True);
+        Assert.That(portrait.texture, Is.SameAs(Resources.Load<Texture2D>("JejakAsaUI/Generated/Portraits/Vicky")));
         float time = player.TimeRemaining;
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.Enter));
         yield return null;
         Assert.That(System.Array.Exists(labels, x => x.text == "Line 1"), Is.True);
+        Assert.That(portrait.enabled, Is.False, "Unknown speakers must not get an invented portrait.");
         Assert.That(player.IsDialogueOpen, Is.True);
         Assert.That(player.GetComponent<PlayerController>().enabled, Is.False);
         Assert.That(player.TimeRemaining, Is.EqualTo(time));

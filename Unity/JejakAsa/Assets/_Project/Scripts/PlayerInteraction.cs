@@ -61,9 +61,11 @@ namespace JejakAsa
         private DialogueLine[] dialogueLines;
         private int dialogueLineIndex;
         private int dialogueAdvanceFrame = -1;
+        private DialoguePresentation dialoguePresentation;
         private int outcomeOpenedFrame = -1;
         private float outcomeOpenedTime = -10f;
         private bool returningToPosko;
+        private Texture2D missionReportArt;
 
         private bool ReturnsToPosko => outcome == MissionOutcome.Success && GameFlowManager.Instance.CurrentPhase == DayPhase.DiLevel;
 
@@ -96,6 +98,7 @@ namespace JejakAsa
         private void Awake()
         {
             movement = GetComponent<PlayerController>();
+            missionReportArt = Resources.Load<Texture2D>("JejakAsaUI/Generated/MissionReport");
             if (promptPanel == null || promptText == null || dialoguePanel == null
                 || dialogueTitle == null || dialogueBody == null || closeButton == null)
             {
@@ -127,6 +130,7 @@ namespace JejakAsa
             outcomeReason = "";
             isOutcomeOpen = false;
 
+            DialoguePresentation.StylePrompt(promptPanel, promptText);
             promptPanel.SetActive(false);
             dialoguePanel.SetActive(false);
             closeButton.onClick.AddListener(AdvanceDialogue);
@@ -193,11 +197,11 @@ namespace JejakAsa
                     // Menyesuaikan teks prompt interaksi
                     if (nearest.IsRecipient && !nearest.IsDelivered && packagesRemaining > 0 && outcome == MissionOutcome.InProgress && timeRemaining > 0f)
                     {
-                        promptText.text = "[E] Serahkan Bansos ke " + nearest.DisplayName;
+                        promptText.text = "Serahkan bantuan ke " + nearest.DisplayName;
                     }
                     else
                     {
-                        promptText.text = "[E] Bicara dengan " + nearest.DisplayName;
+                        promptText.text = "Bicara dengan " + nearest.DisplayName;
                     }
                 }
             }
@@ -250,6 +254,7 @@ namespace JejakAsa
             else
                 dialogueBody.text = DialogueTarget.Dialogue;
             dialoguePanel.SetActive(true);
+            PresentDialogue();
 
             if (dialogueLines != null && dialogueLines.Length > 1 && UnityEngine.EventSystems.EventSystem.current != null)
                 UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
@@ -485,6 +490,7 @@ namespace JejakAsa
             dialogueTitle.text = title;
             dialogueBody.text = body;
             dialoguePanel.SetActive(true);
+            PresentDialogue();
             closeButton.Select();
         }
 
@@ -496,6 +502,20 @@ namespace JejakAsa
             TMP_Text label = closeButton.GetComponentInChildren<TMP_Text>(true);
             if (label != null && dialogueLines.Length > 1)
                 label.text = dialogueLineIndex + 1 < dialogueLines.Length ? "Lanjut" : "Tutup";
+            if (dialoguePresentation != null)
+                dialoguePresentation.Line(dialogueTitle.text);
+        }
+
+        private void PresentDialogue()
+        {
+            if (dialoguePresentation == null)
+            {
+                dialoguePresentation = dialoguePanel.GetComponent<DialoguePresentation>();
+                if (dialoguePresentation == null)
+                    dialoguePresentation = dialoguePanel.AddComponent<DialoguePresentation>();
+                dialoguePresentation.Setup(dialogueTitle, dialogueBody, closeButton);
+            }
+            dialoguePresentation.Open(dialogueTitle.text);
         }
 
         private void AdvanceDialogue()
@@ -556,166 +576,34 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked)
-                return;
-
+            if (SessionMenu.InputBlocked || !isOutcomeOpen) return;
             CozyGuiTheme.EnsureInitialized();
-            float scale = CozyGuiTheme.Scale;
-            Matrix4x4 previousMatrix = GUI.matrix;
-            GUI.matrix = previousMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-            float screenWidth = Screen.width / scale;
-            float screenHeight = Screen.height / scale;
-
-            float cardX = 20f;
-            float cardY = 26f;
-            float cardW = 276f;
-            float cardH = 114f;
-
-            // 1. Bayangan kartun lembut di belakang kartu
-            GUI.DrawTexture(new Rect(cardX + 3, cardY + 4, cardW, cardH), CozyGuiTheme.ShadowTex);
-
-            // 2. Kartu Stiker Utama (Cream Hangat dengan Outline Toska)
-            GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
-
-            // 3. Pita Judul Mungil di Atas Kiri
-            GUI.Label(new Rect(cardX + 12, cardY - 12, 114, 24), "MISI BANSOS", CozyGuiTheme.RibbonStyle);
-
-            if (!isMissionActive)
+            Matrix4x4 old = GUI.matrix; float scale = CozyGuiTheme.Scale;
+            GUI.matrix = old * Matrix4x4.Scale(new Vector3(scale, scale, 1));
+            float sw = Screen.width / scale, sh = Screen.height / scale;
+            GUI.depth = -100;
+            GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
+            bool success = outcome == MissionOutcome.Success;
+            Rect r = new Rect((sw - 620) / 2, (sh - 602) / 2, 620, 602);
+            CozyGuiTheme.Header(r, "LAPORAN PENGANTARAN / HARI " + GameFlowManager.Instance.CurrentDay,
+                success ? "Harapan telah sampai." : "Masih ada kesempatan.", outcomeReason, missionReportArt);
+            GUI.Label(new Rect(r.x + 28, r.y + 210, 564, 27), success ? "MISI SELESAI" : outcome == MissionOutcome.PartialSuccess ? "SEBAGIAN BANTUAN TERANTAR" : "WAKTU PENGANTARAN BERAKHIR", CozyGuiTheme.Eyebrow);
+            Rect stats = new Rect(r.x + 28, r.y + 250, 564, 172);
+            CozyGuiTheme.Card(stats, true);
+            string[] names = { "Bantuan tersalurkan", "Warga terbantu", "Kepercayaan warga", "Sisa waktu" };
+            string[] values = { deliveredCount + " / " + initialPackages + " paket", deliveredCount + " / 3 warga", trust + " / 3", FormattedTimeRemaining };
+            for (int i = 0; i < 4; i++)
             {
-                GUI.Label(new Rect(cardX + 16, cardY + 22, cardW - 32, 24), "Persiapan Misi", CozyGuiTheme.LabelStyle);
-                GUI.Label(new Rect(cardX + 16, cardY + 48, cardW - 32, 20), "Bicara dengan petugas & ambil paket di Posko.", CozyGuiTheme.SubLabelStyle);
-                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerInfoTex;
-                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.55f, 0.35f, 0.05f);
-                GUI.Label(new Rect(cardX + 16, cardY + 76, cardW - 32, 24), "Pergi ke Posko Bantuan di barat gang", CozyGuiTheme.BannerStyle);
-                GUI.matrix = previousMatrix;
-                return;
+                GUI.Label(new Rect(stats.x + 20, stats.y + 14 + 36 * i, 330, 30), names[i], CozyGuiTheme.StatLeftStyle);
+                GUI.Label(new Rect(stats.x + 350, stats.y + 14 + 36 * i, 194, 30), values[i], CozyGuiTheme.StatRightStyle);
             }
-
-            // 4. Pil Timer Bulat di Atas Kanan
-            if (timeRemaining <= 15f)
-                CozyGuiTheme.TimerStyle.normal.background = CozyGuiTheme.TimerDangerTex;
-            else if (timeRemaining <= 45f)
-                CozyGuiTheme.TimerStyle.normal.background = CozyGuiTheme.TimerWarnTex;
-            else
-                CozyGuiTheme.TimerStyle.normal.background = CozyGuiTheme.TimerNormalTex;
-
-            GUI.Label(new Rect(cardX + cardW - 84, cardY - 12, 72, 24), FormattedTimeRemaining, CozyGuiTheme.TimerStyle);
-
-            // 5. Baris Utama: Warga Terbantu + 3 Stempel Lingkaran
-            GUI.Label(new Rect(cardX + 16, cardY + 22, 140, 24), "Warga Terbantu", CozyGuiTheme.LabelStyle);
-
-            for (int i = 0; i < 3; i++)
-            {
-                Rect stampRect = new Rect(cardX + 184 + (i * 26), cardY + 23, 22, 22);
-                bool done = i < deliveredCount;
-                GUI.DrawTexture(stampRect, done ? CozyGuiTheme.StampDoneTex : CozyGuiTheme.StampEmptyTex);
-            }
-
-            // 6. Info Paket & Kepercayaan
-            GUI.Label(new Rect(cardX + 16, cardY + 50, 125, 20), $"Paket: <b><color=#0F766E>{packagesRemaining}</color></b> tersisa", CozyGuiTheme.SubLabelStyle);
-            GUI.Label(new Rect(cardX + 148, cardY + 50, 120, 20), $"Kepercayaan: <b><color=#B45309>{trust}/3</color></b>", CozyGuiTheme.SubLabelStyle);
-
-            // 7. Gelembung Pesan Penyemangat di Bagian Bawah
-            string cheerText;
-            if (IsMissionCompleted)
-            {
-                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerSuccessTex;
-                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.05f, 0.45f, 0.30f);
-                cheerText = "Horeee! Semua warga terbantu!";
-            }
-            else if (timeRemaining <= 0f)
-            {
-                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerFailTex;
-                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.65f, 0.12f, 0.12f);
-                cheerText = "Waktu habis! Yuk coba lagi!";
-            }
-            else
-            {
-                CozyGuiTheme.BannerStyle.normal.background = CozyGuiTheme.BannerInfoTex;
-                CozyGuiTheme.BannerStyle.normal.textColor = new Color(0.55f, 0.35f, 0.05f);
-                cheerText = deliveredCount switch
-                {
-                    0 => "Yuk antar bansos ke 3 warga!",
-                    1 => "Bagus! Tinggal 2 warga lagi!",
-                    _ => "Semangat! 1 warga terakhir!"
-                };
-            }
-
-            GUI.Label(new Rect(cardX + 14, cardY + 76, cardW - 28, 25), cheerText, CozyGuiTheme.BannerStyle);
-
-            // =========================================================================
-            // U08: LAYAR HASIL MISI (OUTCOME OVERLAY POPUP)
-            // =========================================================================
-            if (isOutcomeOpen)
-            {
-                GUI.depth = -100;
-
-                GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), CozyGuiTheme.DimTex);
-
-                float popW = 360f;
-                float popH = 286f;
-                float popX = (screenWidth - popW) * 0.5f;
-                float popY = Mathf.Max(20f, (screenHeight - popH) * 0.5f);
-
-                GUI.DrawTexture(new Rect(popX + 4, popY + 6, popW, popH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(popX, popY, popW, popH), GUIContent.none, CozyGuiTheme.CardStyle);
-
-                string outcomeBadgeText;
-                Texture2D outcomeBadgeBg;
-                switch (outcome)
-                {
-                    case MissionOutcome.Success:
-                        outcomeBadgeText = "MISI BERHASIL!";
-                        outcomeBadgeBg = CozyGuiTheme.OutcomeSuccessTex;
-                        break;
-                    case MissionOutcome.PartialSuccess:
-                        outcomeBadgeText = "BERHASIL SEBAGIAN";
-                        outcomeBadgeBg = CozyGuiTheme.OutcomePartialTex;
-                        break;
-                    default:
-                        outcomeBadgeText = "MISI BELUM BERHASIL";
-                        outcomeBadgeBg = CozyGuiTheme.OutcomeFailTex;
-                        break;
-                }
-                CozyGuiTheme.OutcomeHeaderStyle.normal.background = outcomeBadgeBg;
-                GUI.Label(new Rect(popX + (popW - 210) * 0.5f, popY - 13, 210, 26), outcomeBadgeText, CozyGuiTheme.OutcomeHeaderStyle);
-
-                GUI.Label(new Rect(popX + 20, popY + 18, popW - 40, 30), outcomeReason, CozyGuiTheme.OutcomeDescStyle);
-
-                Rect innerRect = new Rect(popX + 20, popY + 52, popW - 40, 152);
-                GUI.Box(innerRect, GUIContent.none, CozyGuiTheme.InnerBoxStyle);
-
-                float lineY = innerRect.y + 10;
-                float lineH = 22f;
-                float labelW = 145f;
-                float valW = innerRect.width - labelW - 24;
-
-                GUI.Label(new Rect(innerRect.x + 14, lineY, labelW, lineH), "Paket Tersalurkan", CozyGuiTheme.StatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY, valW, lineH), $"<b>{deliveredCount} / {initialPackages}</b> Paket", CozyGuiTheme.StatRightStyle);
-
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH, labelW, lineH), "Warga Terbantu", CozyGuiTheme.StatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH, valW, lineH), $"<b><color=#0F766E>{deliveredCount} / 3</color></b> Orang", CozyGuiTheme.StatRightStyle);
-
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 2, labelW, lineH), "Kepercayaan Warga", CozyGuiTheme.StatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH * 2, valW, lineH), $"<b><color=#B45309>{trust} / 3</color></b>", CozyGuiTheme.StatRightStyle);
-
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 3, labelW, lineH), "Sisa Waktu Akhir", CozyGuiTheme.StatLeftStyle);
-                GUI.Label(new Rect(innerRect.x + 14 + labelW, lineY + lineH * 3, valW, lineH), $"<b>{FormattedTimeRemaining}</b>", CozyGuiTheme.StatRightStyle);
-
-                var names = GetDeliveredRecipientNames();
-                string namesStr = names.Count > 0 ? string.Join(", ", names) : "(Belum ada)";
-                GUI.Label(new Rect(innerRect.x + 14, lineY + lineH * 4 + 2, innerRect.width - 28, 36), $"Penerima Selesai: <b><color=#0F766E>{namesStr}</color></b>", CozyGuiTheme.SubLabelStyle);
-
-                Rect btnRect = new Rect(popX + (popW - 170) * 0.5f, popY + popH - 64, 170, 34);
-                string actionText = ReturnsToPosko ? "Kembali ke Posko" : "Ulang Misi";
-                if (GUI.Button(btnRect, actionText, CozyGuiTheme.TealBtnStyle))
-                {
-                    AcknowledgeOutcome();
-                }
-
-                GUI.Label(new Rect(popX + 20, popY + popH - 25, popW - 40, 18), "Tekan Enter atau Space untuk " + actionText, CozyGuiTheme.HintStyle);
-            }
-            GUI.matrix = previousMatrix;
+            string recipients = deliveredCount > 0 ? "Terima kasih sudah hadir untuk warga hari ini." : "Susun kembali rute, lalu coba sekali lagi.";
+            GUI.Label(new Rect(r.x + 28, r.y + 432, 564, 42), recipients, CozyGuiTheme.Small);
+            bool returnToPosko = success && GameFlowManager.Instance.CurrentPhase == DayPhase.DiLevel;
+            string action = returnToPosko ? "Kembali ke posko" : "Coba pengantaran lagi";
+            if (CozyGuiTheme.Button(new Rect(r.x + 28, r.y + 492, 564, 54), action + "    >", CozyGuiTheme.TealBtnStyle)) AcknowledgeOutcome();
+            GUI.Label(new Rect(r.x + 28, r.y + 561, 564, 20), "Enter / Spasi  " + action, CozyGuiTheme.HintStyle);
+            GUI.matrix = old;
         }
     }
 }
