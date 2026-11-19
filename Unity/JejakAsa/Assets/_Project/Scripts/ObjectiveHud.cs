@@ -26,6 +26,7 @@ namespace JejakAsa
 
         internal static string GetObjective(GameProgressData progress)
         {
+            if (P02Listening.IsPending(progress)) return "Dengarkan kebutuhan warga bersama Bu Rina";
             switch (progress.currentPhase)
             {
                 case DayPhase.Prolog: return "Bicara dengan Ibu";

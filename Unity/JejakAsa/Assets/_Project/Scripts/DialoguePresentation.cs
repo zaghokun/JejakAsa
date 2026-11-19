@@ -21,6 +21,7 @@ namespace JejakAsa
             {
                 "vicky" => "Vicky",
                 "ibu" => "Ibu",
+                "bu rina" => "WargaPerempuan",
                 "ayah" => "Ayah",
                 "jonathan" => "Jonathan",
                 "pak jonathan" => "Jonathan",

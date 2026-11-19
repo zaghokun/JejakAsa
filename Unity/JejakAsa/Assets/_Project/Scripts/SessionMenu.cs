@@ -30,6 +30,8 @@ namespace JejakAsa
         private Texture2D titleLogo;
         private float pageOpenedAt;
         private float highlightRow;
+        private Vector2 lastPointerPosition;
+        private bool hasPointerPosition;
         private string notice = "";
         private const string VolumeKey = "JejakAsa_MasterVolume";
         private const string FullscreenKey = "JejakAsa_Fullscreen";
@@ -72,6 +74,7 @@ namespace JejakAsa
 
         private void Update()
         {
+            UpdatePointerSelection();
             highlightRow = Mathf.MoveTowards(highlightRow, selected, Time.unscaledDeltaTime * 10f);
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
@@ -112,6 +115,41 @@ namespace JejakAsa
             else if (keyboard.digit5Key.wasPressedThisFrame && count > 4) Activate(4);
             else if (keyboard.enterKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame) Activate(selected);
             else if (isMainMenu && keyboard.escapeKey.wasPressedThisFrame && page != MenuPage.Main) ShowPage(MenuPage.Main);
+        }
+
+        private void UpdatePointerSelection()
+        {
+            if ((!isMainMenu && !IsPaused) || (isMainMenu && pakaiMenuBaru) || Mouse.current == null)
+                return;
+            Vector2 position = Mouse.current.position.ReadValue();
+            bool moved = !hasPointerPosition || (position - lastPointerPosition).sqrMagnitude > .01f;
+            lastPointerPosition = position;
+            hasPointerPosition = true;
+            // A resting mouse must not take selection back from keyboard navigation.
+            if (!moved && !Mouse.current.leftButton.wasPressedThisFrame) return;
+            float scale = CozyGuiTheme.Scale;
+            Vector2 point = new Vector2(position.x, Screen.height - position.y) / scale;
+            Rect area = RowsArea();
+            float height = page == MenuPage.Load ? 76 : 62;
+            for (int i = 0; i < OptionCount(); i++)
+                if (new Rect(area.x, area.y + i * height, area.width, height - 8).Contains(point))
+                {
+                    selected = i;
+                    return;
+                }
+        }
+
+        private Rect RowsArea()
+        {
+            float scale = CozyGuiTheme.Scale;
+            float sw = Screen.width / scale, sh = Screen.height / scale;
+            if (isMainMenu && page == MenuPage.Main)
+            {
+                float entry = 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - pageOpenedAt) / .2f)));
+                return new Rect(64, (sh - 656) / 2 + entry + 334, 366, 285);
+            }
+            float cardHeight = Mathf.Min(656, 280 + OptionCount() * 64);
+            return new Rect((sw - 720) / 2 + 60, (sh - cardHeight) / 2 + 214, 600, 320);
         }
 
         public void Pause()
@@ -398,10 +436,9 @@ namespace JejakAsa
             for (int i = 0; i < count; i++)
             {
                 Rect row = new Rect(area.x, area.y + i * rowHeight, area.width, rowHeight - 8);
-                if (Event.current.type == EventType.MouseMove && row.Contains(Event.current.mousePosition)) selected = i;
                 bool chosen = i == selected;
                 GUIStyle style = chosen ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.AmberBtnStyle;
-                if (CozyGuiTheme.Button(row, GUIContent.none, style)) { selected = i; Activate(i); break; }
+                if (CozyGuiTheme.Button(row, GUIContent.none, style, false)) { selected = i; Activate(i); break; }
                 GUIStyle label = chosen ? CozyGuiTheme.White : CozyGuiTheme.ButtonLabel;
                 GUI.Label(new Rect(row.x + 16, row.y, 28, row.height), (i + 1).ToString("00"), chosen ? CozyGuiTheme.White : CozyGuiTheme.Small);
                 GUI.Label(new Rect(row.x + 54, row.y, row.width - 80, row.height), RowLabel(i), label);
@@ -477,7 +514,7 @@ namespace JejakAsa
                 else GUI.Label(new Rect(64, y + 100, 360, 100), "JEJAK ASA", CozyGuiTheme.Title);
                 GUI.Label(new Rect(68, y + 244, 354, 48), "Bantuan sampai,\nharapan tumbuh.", CozyGuiTheme.White);
                 CozyGuiTheme.Rule(68, y + 312, 354);
-                DrawRows(new Rect(64, y + 334, 366, 285));
+                DrawRows(RowsArea());
 
                 Rect caption = new Rect(sw - 464, sh - 159, 420, 113);
                 CozyGuiTheme.Card(caption);
@@ -499,9 +536,9 @@ namespace JejakAsa
                 float top = (sh - cardHeight) / 2;
                 Rect sheet = new Rect(x,top,720,cardHeight);
                 CozyGuiTheme.Header(sheet,isMainMenu ? "JEJAK ASA" : "PERJALANAN DIJEDA",PageTitle(),PageDescription());
-                DrawRows(new Rect(x+60,top+214,600,320));
+                DrawRows(RowsArea());
                 if (!string.IsNullOrEmpty(notice)) GUI.Label(new Rect(x+60,top+cardHeight-100,600,44),notice,CozyGuiTheme.Body);
-                GUI.Label(new Rect(x+60,top+cardHeight-48,600,22),"Atas / Bawah  Pilih     Enter  Lanjut     Esc  Kembali",CozyGuiTheme.HintStyle);
+                GUI.Label(new Rect(x+60,top+cardHeight-48,600,22),"Mouse / Atas-Bawah  Pilih     Klik / Enter  Lanjut     Esc  Kembali",CozyGuiTheme.HintStyle);
             }
             GUI.matrix = old;
         }

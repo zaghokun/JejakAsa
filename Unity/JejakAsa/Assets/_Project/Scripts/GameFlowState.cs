@@ -28,6 +28,10 @@ namespace JejakAsa
         public int currentLevel = 1;
         public DayPhase currentPhase = DayPhase.RumahPagi;
 
+        // Prologue milestones are campaign-wide and survive daily resets/save/load.
+        public bool requiresP02Listening;
+        public bool isP02ListeningDone;
+
         // Flag aktivitas harian
         public bool isBriefingDone;
         public bool hasPickedUpBansos;

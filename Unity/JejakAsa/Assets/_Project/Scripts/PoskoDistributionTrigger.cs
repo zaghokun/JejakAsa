@@ -111,6 +111,12 @@ namespace JejakAsa
 
         private void TryTakeBansos()
         {
+            if (P02Listening.IsPending(GameFlowManager.Instance.Progress))
+            {
+                feedbackText = "Dengarkan kebutuhan warga bersama Bu Rina terlebih dahulu.";
+                feedbackTimer = 3.5f;
+                return;
+            }
             bool alreadyPickedUp = (GameFlowManager.Instance != null && GameFlowManager.Instance.Progress.hasPickedUpBansos)
                 || (playerInteraction != null && playerInteraction.IsMissionActive);
 

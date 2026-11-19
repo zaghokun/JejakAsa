@@ -241,7 +241,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
             Assert.That(speakers, Is.EqualTo(new[] { "Vicky", "Ibu", "Vicky", "Ibu", "Vicky", "Ibu", null }));
             Assert.That(flow.CurrentPhase, Is.EqualTo(DayPhase.RumahPagi));
             Assert.That(player.enabled, Is.True);
-            Assert.That(Camera.main.orthographicSize, Is.EqualTo(7.5f).Within(0.01f));
+            Assert.That(Camera.main.orthographicSize, Is.EqualTo(5.6f).Within(0.01f), "Opening must restore the closer Rumah gameplay framing.");
             Assert.That(Camera.main.GetComponent<FixedIsometricCamera>().enabled, Is.True);
             Assert.That(flow.CanGoToPoskoFromHome(out _), Is.True);
             Assert.That(flow.SaveGame(3), Is.True);

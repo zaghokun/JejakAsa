@@ -7,7 +7,8 @@ namespace JejakAsa
     {
         Jonathan,
         Ophelia,
-        Ibu
+        Ibu,
+        BuRina
     }
 
     /// <summary>
@@ -80,6 +81,13 @@ namespace JejakAsa
 
         public void OpenDialogue()
         {
+            if (npcType == StoryNpcType.BuRina)
+            {
+                var opening = GetComponent<P02Listening>();
+                if (opening != null) opening.BeginConversation();
+                return;
+            }
+            if (P02Listening.IsPending(GameFlowManager.Instance.Progress)) return;
             OpenDialogue(null, null);
         }
 

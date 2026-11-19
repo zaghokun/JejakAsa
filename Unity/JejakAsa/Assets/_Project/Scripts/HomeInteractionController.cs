@@ -205,7 +205,7 @@ namespace JejakAsa
                         var meta=GameFlowManager.GetSlotMeta(slot);
                         Rect row=new Rect(r.x+28,r.y+322+(slot-1)*70,604,58);
                         if(CozyGuiTheme.Button(row,GUIContent.none,CozyGuiTheme.AmberBtnStyle)) DoSave(slot);
-                        GUI.Label(new Rect(row.x+18,row.y+5,520,25),(slot+1)+". Simpan / Slot 0"+slot,CozyGuiTheme.ButtonLabel);
+                        GUI.Label(new Rect(row.x+18,row.y+5,520,25),(slot+1)+". Simpan / Slot 0"+slot,row.Contains(Event.current.mousePosition)?CozyGuiTheme.White:CozyGuiTheme.ButtonLabel);
                         GUI.Label(new Rect(row.x+18,row.y+31,560,20),meta.exists?"Hari "+meta.day+"  ·  "+meta.timestamp:"Belum tersimpan",CozyGuiTheme.Small);
                     }
                     if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+542,604,44),"5. Kembali ke rumah",CozyGuiTheme.AmberBtnStyle)) isBedMenuOpen=false;

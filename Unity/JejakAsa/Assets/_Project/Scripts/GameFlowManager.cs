@@ -70,6 +70,7 @@ namespace JejakAsa
             {
                 currentDay = 1,
                 currentLevel = 1,
+                requiresP02Listening = startAtProlog,
                 currentPhase = startAtProlog ? DayPhase.Prolog : DayPhase.RumahPagi
             };
             OnPhaseChanged?.Invoke(data.currentPhase);
@@ -134,6 +135,7 @@ namespace JejakAsa
 
         public bool CompleteBriefing()
         {
+            if (P02Listening.IsPending(data)) return false;
             if (data.currentPhase != DayPhase.PoskoBriefing)
                 return false;
 
@@ -145,6 +147,11 @@ namespace JejakAsa
 
         public bool CanDepartToLevel(out string reason)
         {
+            if (P02Listening.IsPending(data))
+            {
+                reason = "Dengarkan daftar kebutuhan Bu Rina terlebih dahulu.";
+                return false;
+            }
             if (data.currentPhase != DayPhase.PoskoBriefing)
             {
                 reason = "Bukan waktu keberangkatan misi level.";

@@ -97,16 +97,18 @@ namespace JejakAsa
         }
         // UV framing removes the empty margins from the illustration at draw time.
         public static bool Button(Rect r, string text, GUIStyle style) => Button(r, new GUIContent(text), style);
-        public static bool Button(Rect r, GUIContent text, GUIStyle style)
+        public static bool Button(Rect r, GUIContent text, GUIStyle style, bool highlightOnHover = true)
         {
-            bool primary = style == TealBtnStyle || style == CoralBtnStyle;
             bool hover = r.Contains(Event.current.mousePosition);
+            bool highlighted = highlightOnHover && GUI.enabled && hover && style == AmberBtnStyle;
+            bool primary = style == TealBtnStyle || style == CoralBtnStyle || highlighted;
             bool ditekan = hover && GUIUtility.hotControl != 0;
             // pilih gambar tombol sesuai jenisnya
             Texture2D art = tombolKrem;
             if (style == TealBtnStyle) art = ditekan ? tombolTekan : tombolTeal;
             else if (style == CoralBtnStyle) art = tombolBata;
             else if (style == LockedBtnStyle) art = tombolAbu;
+            if (highlighted) art = ditekan ? tombolTekan : tombolTeal;
             Color old = GUI.color;
             if (hover && style != LockedBtnStyle) GUI.color = new Color(1f,.97f,.9f,1f);
             if (art != null)

@@ -1,0 +1,253 @@
+{
+  "items": [
+    {
+      "name": "Rumah_Landscape_Packed_Earth",
+      "center": [
+        0.0,
+        -0.07500000298023224,
+        0.0
+      ],
+      "material": "Landscape_Packed_Earth"
+    },
+    {
+      "name": "Rumah_Landscape_Foundation",
+      "center": [
+        0.0,
+        -0.3199999928474426,
+        0.0
+      ],
+      "material": "Landscape_Foundation"
+    },
+    {
+      "name": "Rumah_Landscape_Grass_1",
+      "center": [
+        -29.5,
+        -0.04199999865889549,
+        0.0
+      ],
+      "material": "Landscape_Grass_1"
+    },
+    {
+      "name": "Rumah_Landscape_Grass_2",
+      "center": [
+        18.151535034179688,
+        -0.021499999180436137,
+        0.0
+      ],
+      "material": "Landscape_Grass_2"
+    },
+    {
+      "name": "Rumah_Landscape_Grass_0",
+      "center": [
+        0.0,
+        -0.016999999061226845,
+        23.469395637512207
+      ],
+      "material": "Landscape_Grass_0"
+    },
+    {
+      "name": "Rumah_Landscape_Leaf_2",
+      "center": [
+        0.159393310546875,
+        2.7977499067783356,
+        0.5419096946716309
+      ],
+      "material": "Landscape_Leaf_2"
+    },
+    {
+      "name": "Rumah_Landscape_Leaf_3",
+      "center": [
+        -0.4722871780395508,
+        3.206125169992447,
+        0.7144227027893066
+      ],
+      "material": "Landscape_Leaf_3"
+    },
+    {
+      "name": "Rumah_Landscape_River_Stone",
+      "center": [
+        -0.003692626953125,
+        0.06399999558925629,
+        -3.39837646484375
+      ],
+      "material": "Landscape_River_Stone"
+    },
+    {
+      "name": "Rumah_Landscape_Leaf_1",
+      "center": [
+        0.34169769287109375,
+        3.206125169992447,
+        0.6859912872314453
+      ],
+      "material": "Landscape_Leaf_1"
+    },
+    {
+      "name": "Rumah_Landscape_Leaf_0",
+      "center": [
+        0.0728750228881836,
+        2.6042501032352448,
+        -0.14456558227539062
+      ],
+      "material": "Landscape_Leaf_0"
+    },
+    {
+      "name": "Rumah_Landscape_Bougainvillea",
+      "center": [
+        0.008799552917480469,
+        0.5764999389648438,
+        -2.8428537845611572
+      ],
+      "material": "Landscape_Bougainvillea"
+    },
+    {
+      "name": "Rumah_Landscape_Bark",
+      "center": [
+        0.03448295593261719,
+        2.5659130811691284,
+        8.812806606292725
+      ],
+      "material": "Landscape_Bark"
+    },
+    {
+      "name": "Rumah_Landscape_Grass_3",
+      "center": [
+        0.32683467864990234,
+        -0.0009999997019767837,
+        -3.932925224304199
+      ],
+      "material": "Landscape_Grass_3"
+    }
+  ],
+  "materials": [
+    {
+      "name": "Landscape_Bougainvillea",
+      "color": [
+        0.7300000190734863,
+        0.3100000023841858,
+        0.3799999952316284,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_River_Stone",
+      "color": [
+        0.5600000023841858,
+        0.550000011920929,
+        0.4300000071525574,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Leaf_1",
+      "color": [
+        0.23000000417232513,
+        0.4000000059604645,
+        0.20999999344348907,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Foundation",
+      "color": [
+        0.4399999976158142,
+        0.41999998688697815,
+        0.3400000035762787,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Grass_0",
+      "color": [
+        0.3400000035762787,
+        0.4300000071525574,
+        0.20000000298023224,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Leaf_0",
+      "color": [
+        0.1599999964237213,
+        0.3199999928474426,
+        0.18000000715255737,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Bark",
+      "color": [
+        0.3100000023841858,
+        0.20999999344348907,
+        0.11999999731779099,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Grass_2",
+      "color": [
+        0.46000000834465027,
+        0.5099999904632568,
+        0.2800000011920929,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Grass_1",
+      "color": [
+        0.4000000059604645,
+        0.47999998927116394,
+        0.23999999463558197,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Leaf_3",
+      "color": [
+        0.41999998688697815,
+        0.5199999809265137,
+        0.27000001072883606,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Leaf_2",
+      "color": [
+        0.3400000035762787,
+        0.4699999988079071,
+        0.23000000417232513,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Landscape_Packed_Earth",
+      "color": [
+        0.8399999737739563,
+        0.7599999904632568,
+        0.6100000143051147,
+        1.0
+      ],
+      "texture": "brown_mud_dry_diff_2k.jpg"
+    },
+    {
+      "name": "Landscape_Grass_3",
+      "color": [
+        0.3700000047683716,
+        0.46000000834465027,
+        0.2199999988079071,
+        1.0
+      ],
+      "texture": ""
+    }
+  ]
+}
