@@ -38,7 +38,6 @@ namespace JejakAsa
         private System.Action sequenceCompleted;
         private float dialogueOpenedAt;
         private float dialogueLineAt;
-        private Texture2D illustratedDialogue;
         public static event System.Action<string> SpeakerChanged;
         private static int escapeConsumedFrame = -1;
         internal static bool EscapeConsumedThisFrame => escapeConsumedFrame == Time.frameCount;
@@ -239,8 +238,6 @@ namespace JejakAsa
             Rect r = new Rect((sw - 1120) / 2, sh - 268, 1120, 236);
             r.y += 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - dialogueOpenedAt) / .2f)));
             CozyGuiTheme.Card(r);
-            if (illustratedDialogue == null) illustratedDialogue = Resources.Load<Texture2D>("JejakAsaUI/Generated/VolunteerDialogPanel");
-            if (illustratedDialogue != null) GUI.DrawTexture(r, illustratedDialogue, ScaleMode.StretchToFill, true);
 
             var portrait = DialoguePresentation.Portrait(speaker);
             if (portrait != null) GUI.DrawTexture(new Rect(r.x + 16, r.y - 22, 168, 242), portrait, ScaleMode.ScaleToFit, true);

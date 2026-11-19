@@ -37,6 +37,17 @@ namespace JejakAsa
 
         public string MenuNotice => notice;
 
+        // Dipakai Canvas "MenuUtama" (tampilan uGUI pixel). Kalau true, menu utama versi OnGUI ga digambar,
+        // tapi logika (halaman, pilihan, keyboard) tetap jalan di sini.
+        public bool pakaiMenuBaru;
+        public string HalamanSekarang => page.ToString();
+        public int PilihanSekarang => selected;
+        public int JumlahPilihan => OptionCount();
+        public string KeteranganHalaman => PageDescription();
+        public string LabelPilihan(int i) => RowLabel(i);
+        public void SorotPilihan(int i) { if (i >= 0 && i < OptionCount()) selected = i; }
+        public void PilihDariTombol(int i) { if (i < 0 || i >= OptionCount()) return; selected = i; Activate(i); }
+
 
         private void Awake()
         {
@@ -445,6 +456,7 @@ namespace JejakAsa
         private void OnGUI()
         {
             if (!isMainMenu && !IsPaused) return;
+            if (isMainMenu && pakaiMenuBaru) return;
             CozyGuiTheme.EnsureInitialized();
             GUI.depth = -1000;
             Matrix4x4 old = GUI.matrix;

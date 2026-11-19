@@ -61,7 +61,7 @@ namespace JejakAsa
         {
             CanvasScaler scaler = panel.GetComponentInParent<CanvasScaler>();
             if (scaler != null) { scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1280,720); scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand; }
-            var promptBackground = panel.GetComponent<Image>(); if (promptBackground != null) promptBackground.color = Color.clear;
+            var promptBackground = panel.GetComponent<Image>(); if (promptBackground != null) { promptBackground.color = Color.white; promptBackground.sprite = CozyGuiTheme.HybridSprite("pita_gelap", new Vector4(8,10,8,6)); promptBackground.type = Image.Type.Sliced; }
             RectTransform r = panel.GetComponent<RectTransform>();
             r.anchorMin = r.anchorMax = new Vector2(.5f,0); r.pivot = new Vector2(.5f,0);
             r.anchoredPosition = new Vector2(0,48); r.sizeDelta = new Vector2(600,56);
@@ -69,7 +69,7 @@ namespace JejakAsa
             label.fontSize = 18; label.enableAutoSizing = true; label.fontSizeMin = 16; label.fontSizeMax = 18;
             label.color = CozyGuiTheme.Paper; label.alignment = TextAlignmentOptions.Center;
             label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
-            var keyTexture = Resources.Load<Texture2D>("JejakAsaUI/Generated/InteractionKeyE");
+            var keyTexture = Resources.Load<Texture2D>("JejakAsaUI/Hybrid/tombol_e");
             if (keyTexture != null)
             {
                 var key = new GameObject("InteractionKey", typeof(RectTransform), typeof(RawImage));
@@ -99,13 +99,11 @@ namespace JejakAsa
             root.anchorMin = root.anchorMax = new Vector2(.5f,0); root.pivot = new Vector2(.5f,0);
             root.anchoredPosition = new Vector2(0,32); root.sizeDelta = new Vector2(1120,236);
             var background = GetComponent<Image>(); if (background != null) background.color = Color.clear;
-            var artwork = Resources.Load<Texture2D>("JejakAsaUI/Generated/VolunteerDialogPanel");
-            if (artwork != null)
-            {
-                var art = new GameObject("IllustratedPanel", typeof(RectTransform), typeof(RawImage)); art.transform.SetParent(transform, false);
-                var image = art.GetComponent<RawImage>(); image.texture = artwork; image.raycastTarget = false;
-                var rect = image.rectTransform; rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero; art.transform.SetAsFirstSibling();
-            }
+            // panel dialog gaya hybrid (kartu krem), gantiin gambar panel yang lama
+            var kartu = new GameObject("KartuDialog", typeof(RectTransform), typeof(Image)); kartu.transform.SetParent(transform, false);
+            var kartuImg = kartu.GetComponent<Image>(); kartuImg.raycastTarget = false;
+            kartuImg.sprite = CozyGuiTheme.HybridSprite("kartu", new Vector4(12,14,12,12)); kartuImg.type = Image.Type.Sliced;
+            var rect = kartuImg.rectTransform; rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero; kartu.transform.SetAsFirstSibling();
 
             var portraitObject = new GameObject("SpeakerPortrait",typeof(RectTransform),typeof(RawImage)); portraitObject.transform.SetParent(transform,false);
             portrait = portraitObject.GetComponent<RawImage>(); portrait.raycastTarget = false; Place(portrait.rectTransform,16,-22,168,242);
@@ -114,7 +112,7 @@ namespace JejakAsa
             Panel("Divider",CozyGuiTheme.Line,206,174,850,1);
             TMP_Text hint = transform.Find("DialogueHint")?.GetComponent<TMP_Text>();
             if(hint != null) { if (CozyGuiTheme.DialogueFont != null) hint.font = CozyGuiTheme.DialogueFont; Place(hint.rectTransform,206,190,670,24); hint.color=CozyGuiTheme.Muted; hint.fontSize=14; hint.text="Enter / Spasi / Esc  Lanjut"; hint.alignment=TextAlignmentOptions.Left; }
-            Place(button.GetComponent<RectTransform>(),946,187,146,34); Skin(button.GetComponent<Image>(),CozyGuiTheme.Green);
+            Place(button.GetComponent<RectTransform>(),946,183,146,40); var tombolImg = button.GetComponent<Image>(); tombolImg.sprite = CozyGuiTheme.HybridSprite("tombol_teal", new Vector4(8,12,8,6)); tombolImg.type = Image.Type.Sliced; tombolImg.color = Color.white;
             var colors=button.colors; colors.normalColor=Color.white; colors.highlightedColor=new Color(.85f,.95f,.87f); colors.pressedColor=new Color(.7f,.8f,.72f); button.colors=colors;
             TMP_Text buttonLabel=button.GetComponentInChildren<TMP_Text>(true); if(buttonLabel!=null) { if (CozyGuiTheme.DialogueFont != null) buttonLabel.font = CozyGuiTheme.DialogueFont; buttonLabel.color=CozyGuiTheme.Paper; buttonLabel.fontSize=17; }
             title.transform.SetAsLastSibling(); body.transform.SetAsLastSibling(); button.transform.SetAsLastSibling();

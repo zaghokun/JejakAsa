@@ -63,7 +63,8 @@ namespace JejakAsa
             if (inLevel)
             {
                 CozyGuiTheme.Rule(r.x + 24, r.y + 116, 306);
-                GUI.Label(new Rect(r.x + 24, r.y + 133, 306, 22), "Terantar " + interaction.DeliveredCount + " / 3     ·     Bekal " + interaction.PackagesRemaining + " paket", CozyGuiTheme.Small);
+                CozyGuiTheme.Ikon(new Rect(r.x + 24, r.y + 134, 18, 18), "paket", CozyGuiTheme.Clay); // ikon paket
+                GUI.Label(new Rect(r.x + 48, r.y + 133, 282, 22), "Terantar " + interaction.DeliveredCount + " / 3     ·     Bekal " + interaction.PackagesRemaining + " paket", CozyGuiTheme.Small);
                 for (int i = 0; i < 3; i++) CozyGuiTheme.Fill(new Rect(r.x + 24 + i * 104, r.y + 165, 96, 5), i < interaction.DeliveredCount ? CozyGuiTheme.Green : CozyGuiTheme.Linen);
             }
             Rect day = new Rect(sw - 250, 28, 222, 84);
@@ -75,7 +76,8 @@ namespace JejakAsa
                 Rect timer = new Rect(sw - 250, 124, 222, 104);
                 CozyGuiTheme.Card(timer);
                 bool urgent = interaction.TimeRemaining <= 30;
-                GUI.Label(new Rect(timer.x + 20, timer.y + 14, 182, 20), urgent ? "SEGERA SELESAIKAN" : "SISA WAKTU", CozyGuiTheme.Eyebrow);
+                CozyGuiTheme.Ikon(new Rect(timer.x + 20, timer.y + 15, 18, 18), "timer", urgent ? CozyGuiTheme.Clay : CozyGuiTheme.Green); // ikon timer
+                GUI.Label(new Rect(timer.x + 44, timer.y + 14, 160, 20), urgent ? "SEGERA SELESAIKAN" : "SISA WAKTU", CozyGuiTheme.Eyebrow);
                 GUIStyle timerStyle = urgent ? dangerTime : CozyGuiTheme.TimerStyle;
                 if (timerStyle == null) timerStyle = dangerTime = CozyGuiTheme.Text(30, CozyGuiTheme.Clay, true, TextAnchor.MiddleCenter);
                 GUI.Label(new Rect(timer.x + 20, timer.y + 40, 182, 48), interaction.FormattedTimeRemaining, timerStyle);
