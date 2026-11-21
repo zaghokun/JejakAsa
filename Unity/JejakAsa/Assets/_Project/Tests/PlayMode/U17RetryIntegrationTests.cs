@@ -23,7 +23,7 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
     {
         base.Setup();
         previousTimeScale = Time.timeScale;
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         previousProgress = flow.Progress.Clone();
         previousSpawn = flow.LastSpawnPoint;
         flow.SetStateForTesting(new GameProgressData
@@ -58,8 +58,8 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
             if (suspended[i] != null)
                 suspended[i].enabled = true;
         suspended.Clear();
-        GameFlowManager.Instance.SetStateForTesting(previousProgress);
-        GameFlowManager.Instance.LastSpawnPoint = previousSpawn;
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(previousProgress);
+        StoryFlow_PengaturAlur.Instance.LastSpawnPoint = previousSpawn;
     }
 
     [UnityTest]
@@ -86,7 +86,7 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
         Assert.That(recipient, Is.Not.Null);
         Vector3 spawn = player.transform.position;
         Quaternion spawnRotation = player.transform.rotation;
-        string progress = JsonUtility.ToJson(GameFlowManager.Instance.Progress);
+        string progress = JsonUtility.ToJson(StoryFlow_PengaturAlur.Instance.Progress);
         yield return null;
         for (int session = 0; session <= 3; session++)
         {
@@ -99,7 +99,7 @@ public sealed class U17RetryIntegrationTests : InputTestFixture
             foreach (InteractionTarget target in targets)
                 if (target.IsRecipient) Assert.That(target.IsDelivered, Is.False);
             Assert.That(player.GetComponent<PlayerController>().enabled, Is.True);
-            Assert.That(JsonUtility.ToJson(GameFlowManager.Instance.Progress), Is.EqualTo(progress));
+            Assert.That(JsonUtility.ToJson(StoryFlow_PengaturAlur.Instance.Progress), Is.EqualTo(progress));
             AssertSingleCameraAndListener();
             if (session == 3)
                 break;

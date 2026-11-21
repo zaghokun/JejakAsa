@@ -15,11 +15,11 @@ public sealed class MenuPointerTests : InputTestFixture
     public override void Setup()
     {
         base.Setup();pointer=InputSystem.AddDevice<Mouse>();keyboard=InputSystem.AddDevice<Keyboard>();
-        before=GameFlowManager.Instance.Progress.Clone();spawn=GameFlowManager.Instance.LastSpawnPoint;timeScale=Time.timeScale;
+        before=StoryFlow_PengaturAlur.Instance.Progress.Clone();spawn=StoryFlow_PengaturAlur.Instance.LastSpawnPoint;timeScale=Time.timeScale;
     }
     public override void TearDown()
     {
-        Time.timeScale=timeScale;GameFlowManager.Instance.SetStateForTesting(before);GameFlowManager.Instance.LastSpawnPoint=spawn;base.TearDown();
+        Time.timeScale=timeScale;StoryFlow_PengaturAlur.Instance.SetStateForTesting(before);StoryFlow_PengaturAlur.Instance.LastSpawnPoint=spawn;base.TearDown();
     }
     [UnityTearDown] public IEnumerator Cleanup()
     {
@@ -28,7 +28,7 @@ public sealed class MenuPointerTests : InputTestFixture
     }
     [UnityTest] public IEnumerator PauseHoverFollowsMouseAndStationaryPointerAllowsKeyboard()
     {
-        GameFlowManager.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing});
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing});
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity");
         var menu=Object.FindFirstObjectByType<SessionMenu>();menu.Pause();
         Set(pointer.position,new Vector2(2,2));yield return new WaitForSecondsRealtime(.25f);

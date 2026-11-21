@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace JejakAsa
 {
-    internal sealed class DialoguePresentation : MonoBehaviour
+    internal sealed class StoryDialog_Tampilan : MonoBehaviour
     {
         private static readonly Dictionary<string, Texture2D> Portraits = new Dictionary<string, Texture2D>();
         private RawImage portrait;

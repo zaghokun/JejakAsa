@@ -89,6 +89,7 @@ internal static class GateSafetyIntegration
             }
             so.ApplyModifiedPropertiesWithoutUndo();
         }
+        P03P05_PoskoStoryIntegration.RefreshRoofTitle(scene);
     }
     static void RemoveElement(SerializedProperty array,int index)
     {

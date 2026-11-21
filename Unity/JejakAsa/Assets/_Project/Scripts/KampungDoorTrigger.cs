@@ -65,8 +65,8 @@ namespace JejakAsa
 
         private void TryRepositionPlayer()
         {
-            if (GameFlowManager.Instance == null || string.IsNullOrEmpty(spawnPointKey) ||
-                GameFlowManager.Instance.LastSpawnPoint != spawnPointKey || playerTransform == null)
+            if (StoryFlow_PengaturAlur.Instance == null || string.IsNullOrEmpty(spawnPointKey) ||
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint != spawnPointKey || playerTransform == null)
                 return;
 
             var cc = playerTransform.GetComponent<CharacterController>();
@@ -79,7 +79,7 @@ namespace JejakAsa
             if (cc != null) cc.enabled = true;
             Physics.SyncTransforms();
 
-            GameFlowManager.Instance.LastSpawnPoint = null;
+            StoryFlow_PengaturAlur.Instance.LastSpawnPoint = null;
             Debug.Log($"[KampungDoorTrigger] Pemain berhasil di-spawn di depan {spawnPointKey} pada posisi {targetPos}");
         }
 
@@ -117,9 +117,9 @@ namespace JejakAsa
                 return;
             }
 
-            if (GameFlowManager.Instance != null && !string.IsNullOrEmpty(spawnPointKey))
+            if (StoryFlow_PengaturAlur.Instance != null && !string.IsNullOrEmpty(spawnPointKey))
             {
-                GameFlowManager.Instance.LastSpawnPoint = spawnPointKey;
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint = spawnPointKey;
             }
 
             Debug.Log($"[KampungDoorTrigger] Memuat scene {targetScenePath}...");

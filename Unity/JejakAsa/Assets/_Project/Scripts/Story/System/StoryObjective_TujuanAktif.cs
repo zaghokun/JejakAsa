@@ -3,7 +3,7 @@ using UnityEngine;
 namespace JejakAsa
 {
     [DisallowMultipleComponent]
-    public sealed class ObjectiveHud : MonoBehaviour
+    public sealed class StoryObjective_TujuanAktif : MonoBehaviour
     {
         private PlayerInteraction interaction;
         private string objective;
@@ -16,7 +16,7 @@ namespace JejakAsa
 
         private void Update()
         {
-            string next = GetObjective(GameFlowManager.Instance.Progress);
+            string next = GetObjective(StoryFlow_PengaturAlur.Instance.Progress);
             if (next != objective)
             {
                 objective = next;
@@ -26,7 +26,7 @@ namespace JejakAsa
 
         internal static string GetObjective(GameProgressData progress)
         {
-            if (P02Listening.IsPending(progress)) return "Dengarkan kebutuhan warga bersama Bu Rina";
+            if (P03_SponsorDanPosko.GetStage(progress) != PoskoIntroStage.None) return P03_SponsorDanPosko.Objective(progress);
             switch (progress.currentPhase)
             {
                 case DayPhase.Prolog: return "Bicara dengan Ibu";
@@ -45,14 +45,14 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked || HomeInteractionController.AnyMenuOpen || PoskoGateController.AnyMenuOpen || StoryNpcController.AnyDialogueOpen ||
+            if (SessionMenu.InputBlocked || HomeInteractionController.AnyMenuOpen || PoskoGateController.AnyMenuOpen || StoryDialog_InteraksiNPC.AnyDialogueOpen ||
                 (interaction != null && (interaction.IsDialogueOpen || interaction.IsOutcomeOpen))) return;
             CozyGuiTheme.EnsureInitialized();
             Matrix4x4 old = GUI.matrix;
             float scale = CozyGuiTheme.Scale;
             GUI.matrix = old * Matrix4x4.Scale(new Vector3(scale, scale, 1));
             float sw = Screen.width / scale, sh = Screen.height / scale;
-            var progress = GameFlowManager.Instance.Progress;
+            var progress = StoryFlow_PengaturAlur.Instance.Progress;
             bool inLevel = progress.currentPhase == DayPhase.DiLevel && interaction != null;
             GUI.depth = -50;
             float entrance = 10 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - changedAt) / .22f)));

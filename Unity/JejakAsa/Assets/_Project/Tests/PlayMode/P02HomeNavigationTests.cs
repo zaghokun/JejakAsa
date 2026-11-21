@@ -12,7 +12,7 @@ public sealed class P02HomeNavigationTests
     [UnityTest]
     public IEnumerator DressingKeepsRoutesToMotherBedAndExitOpen()
     {
-        var flow=GameFlowManager.Instance;var before=flow.Progress.Clone();var spawn=flow.LastSpawnPoint;
+        var flow=StoryFlow_PengaturAlur.Instance;var before=flow.Progress.Clone();var spawn=flow.LastSpawnPoint;
         try
         {
             flow.SetStateForTesting(new GameProgressData { currentPhase=DayPhase.RumahPagi });

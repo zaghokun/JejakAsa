@@ -14,7 +14,7 @@ namespace JejakAsa
 
         private static SessionMenu active;
         private static int blockedFrame = -1;
-        internal static bool InputBlocked => (active != null && active.IsPaused) || blockedFrame == Time.frameCount;
+        internal static bool InputBlocked => (active != null && active.IsPaused) || blockedFrame == Time.frameCount || P03_SponsorDanPosko.PresentationActive;
 
         private PlayerInteraction interaction;
         private PlayerController movement;
@@ -74,6 +74,7 @@ namespace JejakAsa
 
         private void Update()
         {
+            if (P03_SponsorDanPosko.PresentationActive) return;
             UpdatePointerSelection();
             highlightRow = Mathf.MoveTowards(highlightRow, selected, Time.unscaledDeltaTime * 10f);
             Keyboard keyboard = Keyboard.current;
@@ -92,7 +93,7 @@ namespace JejakAsa
                     else Resume();
                 }
                 else if ((interaction == null || !interaction.IsDialogueOpen) &&
-                    !StoryNpcController.AnyDialogueOpen && !StoryNpcController.EscapeConsumedThisFrame)
+                    !StoryDialog_InteraksiNPC.AnyDialogueOpen && !StoryDialog_InteraksiNPC.EscapeConsumedThisFrame)
                 {
                     Pause();
                 }
@@ -154,7 +155,7 @@ namespace JejakAsa
 
         public void Pause()
         {
-            if (isMainMenu || IsPaused)
+            if (isMainMenu || IsPaused || P03_SponsorDanPosko.PresentationActive)
                 return;
             active = this;
             IsPaused = true;
@@ -231,8 +232,8 @@ namespace JejakAsa
             if (!isMainMenu)
                 return;
             Time.timeScale = 1f;
-            if (GameFlowManager.Instance != null)
-                GameFlowManager.Instance.StartNewCampaign();
+            if (StoryFlow_PengaturAlur.Instance != null)
+                StoryFlow_PengaturAlur.Instance.StartNewCampaign();
 
             SceneManager.LoadScene("Assets/_Project/Scenes/Kampung.unity", LoadSceneMode.Single);
         }
@@ -240,9 +241,9 @@ namespace JejakAsa
         public void StartCampaignFromHome()
         {
             Time.timeScale = 1f;
-            if (GameFlowManager.Instance != null)
-                GameFlowManager.Instance.StartNewCampaign(true);
-            GameFlowManager.Instance.LastSpawnPoint = null;
+            if (StoryFlow_PengaturAlur.Instance != null)
+                StoryFlow_PengaturAlur.Instance.StartNewCampaign(true);
+            StoryFlow_PengaturAlur.Instance.LastSpawnPoint = null;
 
             SceneManager.LoadScene("Assets/_Project/Scenes/Rumah.unity", LoadSceneMode.Single);
         }
@@ -275,9 +276,9 @@ namespace JejakAsa
         {
             int latest = 0;
             string latestTime = "";
-            for (int slot = 1; slot <= GameFlowManager.MaxSaveSlots; slot++)
+            for (int slot = 1; slot <= StoryFlow_PengaturAlur.MaxSaveSlots; slot++)
             {
-                if (!GameFlowManager.HasSave(slot)) continue;
+                if (!StoryFlow_PengaturAlur.HasSave(slot)) continue;
                 string time = PlayerPrefs.GetString("JejakAsa_SaveSlot_" + slot + "_Time", "");
                 if (latest == 0 || string.CompareOrdinal(time, latestTime) > 0)
                 {
@@ -291,12 +292,12 @@ namespace JejakAsa
 
         private void LoadSlot(int slot)
         {
-            if (!GameFlowManager.HasSave(slot))
+            if (!StoryFlow_PengaturAlur.HasSave(slot))
             {
                 notice = "Slot " + slot + " kosong.";
                 return;
             }
-            if (!GameFlowManager.TryReadSave(slot, out GameProgressData data) ||
+            if (!StoryFlow_PengaturAlur.TryReadSave(slot, out GameProgressData data) ||
                 (data.currentPhase != DayPhase.RumahPagi && data.currentPhase != DayPhase.RumahMalam &&
                  data.currentPhase != DayPhase.Prolog && data.currentPhase != DayPhase.Tamat))
             {
@@ -314,13 +315,13 @@ namespace JejakAsa
                 notice = "Scene rumah tidak tersedia; save tidak dimuat.";
                 return;
             }
-            if (!GameFlowManager.Instance.LoadGame(slot))
+            if (!StoryFlow_PengaturAlur.Instance.LoadGame(slot))
             {
                 notice = "Gagal memuat slot " + slot + ".";
                 return;
             }
             if (IsPaused) Resume();
-            GameFlowManager.Instance.LastSpawnPoint = null;
+            StoryFlow_PengaturAlur.Instance.LastSpawnPoint = null;
             Time.timeScale = 1f;
             SceneManager.LoadScene("Assets/_Project/Scenes/Rumah.unity", LoadSceneMode.Single);
         }
@@ -417,7 +418,7 @@ namespace JejakAsa
             if (page == MenuPage.Load)
             {
                 if (i == 3) return "Kembali";
-                var meta = GameFlowManager.GetSlotMeta(i + 1);
+                var meta = StoryFlow_PengaturAlur.GetSlotMeta(i + 1);
                 return "Slot 0" + (i + 1) + (meta.exists ? "     Hari " + meta.day + " / 5" : "     Belum tersimpan");
             }
             if (page == MenuPage.Settings)
@@ -445,7 +446,7 @@ namespace JejakAsa
                 GUI.Label(new Rect(row.xMax - 28, row.y, 20, row.height), chosen ? ">" : "", label);
                 if (page == MenuPage.Load && i < 3)
                 {
-                    var meta = GameFlowManager.GetSlotMeta(i + 1);
+                    var meta = StoryFlow_PengaturAlur.GetSlotMeta(i + 1);
                     GUI.Label(new Rect(row.x + 16, row.yMax + 1, row.width - 20, 18), meta.exists ? meta.timestamp : "Simpan progres melalui tempat tidur di rumah.", CozyGuiTheme.Small);
                 }
             }
@@ -481,9 +482,9 @@ namespace JejakAsa
         private void DrawJournal(Rect r)
         {
             CozyGuiTheme.Header(r, "CATATAN RELAWAN", "Setiap langkah berarti.", "Bantuan sampai, harapan tumbuh.");
-            var flow = GameFlowManager.Instance;
+            var flow = StoryFlow_PengaturAlur.Instance;
             GUI.Label(new Rect(r.x + 28, r.y + 194, r.width - 56, 20), "TUJUAN SAAT INI", CozyGuiTheme.Eyebrow);
-            GUI.Label(new Rect(r.x + 28, r.y + 224, r.width - 56, 68), ObjectiveHud.GetObjective(flow.Progress), CozyGuiTheme.LabelStyle);
+            GUI.Label(new Rect(r.x + 28, r.y + 224, r.width - 56, 68), StoryObjective_TujuanAktif.GetObjective(flow.Progress), CozyGuiTheme.LabelStyle);
             CozyGuiTheme.Rule(r.x + 28, r.y + 312, r.width - 56);
             GUI.Label(new Rect(r.x + 28, r.y + 334, r.width - 56, 24), "Hari " + flow.CurrentDay + " / 5  ·  " + CozyGuiTheme.PhaseName(flow.CurrentPhase), CozyGuiTheme.Body);
             CozyGuiTheme.Journey(new Rect(r.x + 28, r.y + 396, r.width - 70, 100), flow.CurrentDay, flow.CurrentPhase == DayPhase.Tamat ? 5 : flow.CurrentDay - 1);

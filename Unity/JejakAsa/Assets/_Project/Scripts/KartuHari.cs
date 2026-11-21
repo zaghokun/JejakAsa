@@ -29,7 +29,7 @@ public class KartuHari : MonoBehaviour
         if (cekLagi > 0) return;
         cekLagi = 0.5f;
 
-        GameFlowManager gm = FindFirstObjectByType<GameFlowManager>();
+        StoryFlow_PengaturAlur gm = FindFirstObjectByType<StoryFlow_PengaturAlur>();
         if (gm == null) return;
 
         int hari = gm.CurrentDay;

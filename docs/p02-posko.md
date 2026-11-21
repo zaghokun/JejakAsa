@@ -1,19 +1,19 @@
 # P02 — Mendengarkan warga dan lingkungan posko
 
-Tanggal: 19 November 2026. Cakupan: P02 / SB-02 dari storyboard, lingkungan scene Posko, dan visual karakter. P03–P05 tetap pekerjaan cerita berikutnya.
+Tanggal: 19 November 2026. Cakupan: P02 / SB-02 dari storyboard, lingkungan scene Posko, dan visual karakter. Kelanjutan P03–P05 sudah terintegrasi pada 21 November 2026; lihat [catatan P03–P05](p03-p05-posko.md).
 
 ## Cara mencoba
 
 1. Mulai permainan baru dari menu, selesaikan P01 di rumah, lalu keluar ke Posko.
 2. Ikuti tujuan “Dengarkan kebutuhan warga bersama Bu Rina”. Bu Rina berdiri dekat jalur masuk.
 3. Dekati Bu Rina dan tekan E. Selesaikan lima baris dialog menggunakan Enter/Spasi atau tombol lanjut.
-4. Setelah selesai, tujuan kembali ke Jonathan/core briefing yang sudah tersedia. Ini handoff sementara menuju P03, bukan implementasi final P03.
+4. Setelah selesai, temui Jonathan untuk P03, lanjutkan pertemuan Ophelia P04, lalu saksikan P05 sebelum briefing harian.
 
 Game baru lewat `StartCampaignFromHome` mengaktifkan persyaratan P02. Save lama dan entry graybox/tes tanpa flag baru mempertahankan perilaku sebelumnya; tidak dipaksa mengulang prolog. Flag `isP02ListeningDone` adalah flag campaign, tidak dihapus oleh reset harian. Belum ada autosave posko; aturan simpan manual di rumah tetap berlaku.
 
 ## Story dan interaksi
 
-Naskah lima baris mengikuti P02 di `storyboard-dialog-jejak-asa.md`. `P02Listening` memakai `StoryNpcController.OpenSequence`; progres baru ditandai setelah seluruh dialog selesai. Perpindahan scene sebelum selesai menjaga adegan tetap pending. Gerak dikunci selama dialog dan dipulihkan setelah penutupan. Jonathan dan Ophelia belum dapat memicu briefing/laporan ketika P02 masih pending; persediaan visual ditahan selama tahap tersebut. Portrét Bu Rina memakai aset warga perempuan yang sudah tersedia.
+Naskah lima baris mengikuti P02 di `storyboard-dialog-jejak-asa.md`. `P02_MendengarkanWarga` memakai `StoryDialog_InteraksiNPC.OpenSequence`; progres baru ditandai setelah seluruh dialog selesai. Perpindahan scene sebelum selesai menjaga adegan tetap pending. Gerak dikunci selama dialog dan dipulihkan setelah penutupan. Jonathan dan Ophelia belum dapat memicu briefing/laporan ketika P02 masih pending; persediaan visual ditahan selama tahap tersebut. Portrét Bu Rina memakai aset warga perempuan yang sudah tersedia.
 
 ## Lingkungan dan karakter
 

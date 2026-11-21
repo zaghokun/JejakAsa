@@ -9,16 +9,16 @@ using UnityEngine.TestTools;
 public sealed class ExitSafetyTests
 {
     GameProgressData before;string spawn;
-    [SetUp] public void Setup(){before=GameFlowManager.Instance.Progress.Clone();spawn=GameFlowManager.Instance.LastSpawnPoint;}
+    [SetUp] public void Setup(){before=StoryFlow_PengaturAlur.Instance.Progress.Clone();spawn=StoryFlow_PengaturAlur.Instance.LastSpawnPoint;}
     [UnityTearDown] public IEnumerator Cleanup()
     {
-        GameFlowManager.Instance.SetStateForTesting(before);GameFlowManager.Instance.LastSpawnPoint=spawn;
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(before);StoryFlow_PengaturAlur.Instance.LastSpawnPoint=spawn;
         var scene=SceneManager.GetActiveScene();SceneManager.SetActiveScene(SceneManager.CreateScene("ExitSafetyCleanup"));
         if(scene.IsValid()&&scene.isLoaded)yield return SceneManager.UnloadSceneAsync(scene);
     }
     [UnityTest] public IEnumerator RunningThroughPoskoGateStopsOnSolidGroundAndInteractionStillWorks()
     {
-        GameFlowManager.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing});
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing});
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity");
         var player=GameObject.FindGameObjectWithTag("Player");player.GetComponent<PlayerController>().enabled=false;
         var controller=player.GetComponent<CharacterController>();
@@ -33,7 +33,7 @@ public sealed class ExitSafetyTests
     }
     [UnityTest] public IEnumerator RunningAtHomeDoorJambsCannotLeaveFloorAndGardenHasCollision()
     {
-        GameFlowManager.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.RumahPagi});
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.RumahPagi});
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Rumah.unity");
         var player=GameObject.FindGameObjectWithTag("Player");player.GetComponent<PlayerController>().enabled=false;
         var controller=player.GetComponent<CharacterController>();

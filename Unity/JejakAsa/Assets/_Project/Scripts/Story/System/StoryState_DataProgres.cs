@@ -31,6 +31,10 @@ namespace JejakAsa
         // Prologue milestones are campaign-wide and survive daily resets/save/load.
         public bool requiresP02Listening;
         public bool isP02ListeningDone;
+        public int poskoPrologueVersion;
+        public bool isPoskoEstablished;
+        public bool isOpheliaReunionDone;
+        public bool isThreatForeshadowDone;
 
         // Flag aktivitas harian
         public bool isBriefingDone;

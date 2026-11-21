@@ -100,10 +100,10 @@ namespace JejakAsa
 
         public void TryExitToPosko()
         {
-            if (GameFlowManager.Instance.CanGoToPoskoFromHome(out string reason))
+            if (StoryFlow_PengaturAlur.Instance.CanGoToPoskoFromHome(out string reason))
             {
-                GameFlowManager.Instance.GoToPoskoFromHome();
-                GameFlowManager.Instance.LastSpawnPoint = "RumahVicky";
+                StoryFlow_PengaturAlur.Instance.GoToPoskoFromHome();
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint = "RumahVicky";
                 SceneManager.LoadScene(poskoScenePath, LoadSceneMode.Single);
             }
             else
@@ -114,13 +114,13 @@ namespace JejakAsa
 
         public void TryRestAndAdvanceDay()
         {
-            if (GameFlowManager.Instance.CanRestAndAdvanceDay(out string reason))
+            if (StoryFlow_PengaturAlur.Instance.CanRestAndAdvanceDay(out string reason))
             {
-                GameFlowManager.Instance.RestAndAdvanceDay();
+                StoryFlow_PengaturAlur.Instance.RestAndAdvanceDay();
                 isBedMenuOpen = false;
-                ShowNotice(GameFlowManager.Instance.CurrentPhase == DayPhase.Tamat
+                ShowNotice(StoryFlow_PengaturAlur.Instance.CurrentPhase == DayPhase.Tamat
                     ? "Kelima level selesai! Tekan Esc untuk kembali ke menu utama."
-                    : $"Selamat pagi! Memasuki Hari ke-{GameFlowManager.Instance.CurrentDay}.");
+                    : $"Selamat pagi! Memasuki Hari ke-{StoryFlow_PengaturAlur.Instance.CurrentDay}.");
             }
             else
             {
@@ -130,12 +130,12 @@ namespace JejakAsa
 
         public void DoSave(int slot)
         {
-            if (slot < 1 || slot > GameFlowManager.MaxSaveSlots)
+            if (slot < 1 || slot > StoryFlow_PengaturAlur.MaxSaveSlots)
             {
                 ShowNotice($"Gagal menyimpan ke Slot {slot}.");
                 return;
             }
-            if (GameFlowManager.HasSave(slot))
+            if (StoryFlow_PengaturAlur.HasSave(slot))
             {
                 pendingSaveSlot = slot;
                 return;
@@ -154,7 +154,7 @@ namespace JejakAsa
 
         private void SaveSlot(int slot)
         {
-            if (GameFlowManager.Instance.SaveGame(slot))
+            if (StoryFlow_PengaturAlur.Instance.SaveGame(slot))
             {
                 ShowNotice($"Progres berhasil disimpan ke Slot {slot}!");
             }
@@ -172,7 +172,7 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked || StoryNpcController.AnyDialogueOpen) return;
+            if (SessionMenu.InputBlocked || StoryDialog_InteraksiNPC.AnyDialogueOpen) return;
             CozyGuiTheme.EnsureInitialized();
             if (!isBedMenuOpen)
             {
@@ -187,7 +187,7 @@ namespace JejakAsa
                 GUI.depth = -100; GUI.DrawTexture(new Rect(0,0,sw,sh),CozyGuiTheme.DimTex);
                 Rect r = new Rect((sw-660)/2,(sh-644)/2,660,644);
                 bool overwrite = pendingSaveSlot != 0;
-                CozyGuiTheme.Header(r,"RUMAH VICKY / HARI " + GameFlowManager.Instance.CurrentDay,overwrite ? "Simpan jejak yang baru?" : "Pulang untuk melangkah.",overwrite ? "Catatan lama pada slot ini akan diganti dengan progres saat ini." : "Istirahat setelah laporan selesai, atau catat perjalananmu hari ini.");
+                CozyGuiTheme.Header(r,"RUMAH VICKY / HARI " + StoryFlow_PengaturAlur.Instance.CurrentDay,overwrite ? "Simpan jejak yang baru?" : "Pulang untuk melangkah.",overwrite ? "Catatan lama pada slot ini akan diganti dengan progres saat ini." : "Istirahat setelah laporan selesai, atau catat perjalananmu hari ini.");
                 if (overwrite)
                 {
                     CozyGuiTheme.Card(new Rect(r.x+28,r.y+198,604,100),true);
@@ -197,12 +197,12 @@ namespace JejakAsa
                 }
                 else
                 {
-                    bool canRest=GameFlowManager.Instance.CanRestAndAdvanceDay(out string reason);
+                    bool canRest=StoryFlow_PengaturAlur.Instance.CanRestAndAdvanceDay(out string reason);
                     if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+214,604,54),"1. Istirahat & sambut hari berikutnya",canRest?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryRestAndAdvanceDay();
                     GUI.Label(new Rect(r.x+32,r.y+276,596,36),canRest?"Semua urusan hari ini selesai. Kamu berhak beristirahat.":reason,CozyGuiTheme.Small);
                     for(int slot=1;slot<=3;slot++)
                     {
-                        var meta=GameFlowManager.GetSlotMeta(slot);
+                        var meta=StoryFlow_PengaturAlur.GetSlotMeta(slot);
                         Rect row=new Rect(r.x+28,r.y+322+(slot-1)*70,604,58);
                         if(CozyGuiTheme.Button(row,GUIContent.none,CozyGuiTheme.AmberBtnStyle)) DoSave(slot);
                         GUI.Label(new Rect(row.x+18,row.y+5,520,25),(slot+1)+". Simpan / Slot 0"+slot,row.Contains(Event.current.mousePosition)?CozyGuiTheme.White:CozyGuiTheme.ButtonLabel);

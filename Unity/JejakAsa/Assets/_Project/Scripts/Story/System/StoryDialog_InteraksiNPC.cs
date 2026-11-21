@@ -8,14 +8,15 @@ namespace JejakAsa
         Jonathan,
         Ophelia,
         Ibu,
-        BuRina
+        BuRina,
+        Villain
     }
 
     /// <summary>
     /// Pengendali dialog dan pemicu progres naratif untuk Jonathan, Ophelia, dan Ibu (R02, R07, R08).
     /// </summary>
     [DisallowMultipleComponent]
-    public class StoryNpcController : MonoBehaviour
+    public class StoryDialog_InteraksiNPC : MonoBehaviour
     {
         [Header("Identitas NPC")]
         public StoryNpcType npcType = StoryNpcType.Jonathan;
@@ -34,7 +35,7 @@ namespace JejakAsa
         private DayPhase dialoguePhase;
         private PlayerController movement;
         private bool movementWasEnabled;
-        private static StoryNpcController activeDialogue;
+        private static StoryDialog_InteraksiNPC activeDialogue;
         private DialogueLine[] activeLines;
         private System.Action sequenceCompleted;
         private float dialogueOpenedAt;
@@ -44,6 +45,10 @@ namespace JejakAsa
         internal static bool EscapeConsumedThisFrame => escapeConsumedFrame == Time.frameCount;
         internal static bool AnyDialogueOpen => activeDialogue != null;
         internal bool IsDialogueOpen => isDialogueOpen;
+        internal bool HidePresentation { get; set; }
+        internal float EarliestAdvanceTime { get; set; }
+        internal string ActiveSpeaker => activeLines != null && activeLines.Length > 0 ? activeLines[dialogueLineIndex].speaker : characterName;
+        internal string ActiveText => activeLines != null && activeLines.Length > 0 ? activeLines[dialogueLineIndex].text : currentDialogueText;
 
         private void Start()
         {
@@ -57,7 +62,7 @@ namespace JejakAsa
 
         private void Update()
         {
-            if (playerTransform == null || SessionMenu.InputBlocked)
+            if (playerTransform == null || (SessionMenu.InputBlocked && !isDialogueOpen))
                 return;
 
             float dist = Vector3.Distance(transform.position, playerTransform.position);
@@ -67,7 +72,7 @@ namespace JejakAsa
             if (kb == null)
                 return;
 
-            if (GameFlowManager.Instance.CurrentPhase != DayPhase.Prolog && isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
+            if (StoryFlow_PengaturAlur.Instance.CurrentPhase != DayPhase.Prolog && isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
             {
                 OpenDialogue();
             }
@@ -81,13 +86,14 @@ namespace JejakAsa
 
         public void OpenDialogue()
         {
+            if (P03_SponsorDanPosko.TryOpenInteraction(this)) return;
             if (npcType == StoryNpcType.BuRina)
             {
-                var opening = GetComponent<P02Listening>();
+                var opening = GetComponent<P02_MendengarkanWarga>();
                 if (opening != null) opening.BeginConversation();
                 return;
             }
-            if (P02Listening.IsPending(GameFlowManager.Instance.Progress)) return;
+            if (P02_MendengarkanWarga.IsPending(StoryFlow_PengaturAlur.Instance.Progress)) return;
             OpenDialogue(null, null);
         }
 
@@ -114,8 +120,8 @@ namespace JejakAsa
                 movementWasEnabled = movement.enabled;
                 movement.enabled = false;
             }
-            int day = GameFlowManager.Instance.CurrentDay;
-            DayPhase phase = GameFlowManager.Instance.CurrentPhase;
+            int day = StoryFlow_PengaturAlur.Instance.CurrentDay;
+            DayPhase phase = StoryFlow_PengaturAlur.Instance.CurrentPhase;
             dialoguePhase = phase;
             dialogueLineIndex = 0;
             dialogueOpenedAt = dialogueLineAt = Time.unscaledTime;
@@ -127,14 +133,14 @@ namespace JejakAsa
                     if (phase == DayPhase.PoskoBriefing)
                     {
                         currentDialogueText = $"\"Selamat pagi Vicky. Untuk Hari ke-{day}, kita punya sembako yang harus sampai ke 3 keluarga di kampung. Pastikan catatannya rapi dan waspada bila ada preman yang menghalangi.\"";
-                        if (dialogueLines == null || dialogueLines.Length <= 1)
-                            GameFlowManager.Instance.CompleteBriefing();
+                        if (lines == null && (dialogueLines == null || dialogueLines.Length <= 1))
+                            StoryFlow_PengaturAlur.Instance.CompleteBriefing();
                     }
                     else if (phase == DayPhase.PoskoLaporan)
                     {
                         currentDialogueText = $"\"Kerja bagus Vicky! Semua laporan penyaluran bansos Hari ke-{day} sudah kuterima dengan baik. Jangan lupa sapa Ophelia sebelum kamu pulang istirahat.\"";
-                        if (dialogueLines == null || dialogueLines.Length <= 1)
-                            GameFlowManager.Instance.CompleteReport();
+                        if (lines == null && (dialogueLines == null || dialogueLines.Length <= 1))
+                            StoryFlow_PengaturAlur.Instance.CompleteReport();
                     }
                     else
                     {
@@ -150,8 +156,8 @@ namespace JejakAsa
                     else if (phase == DayPhase.PoskoLaporan)
                     {
                         currentDialogueText = "\"Vicky, kamu hebat bisa selesaikan rute hari ini! Istirahatlah dengan baik ya nanti di rumah.\"";
-                        if (dialogueLines == null || dialogueLines.Length <= 1)
-                            GameFlowManager.Instance.CompleteOpheliaTalk();
+                        if (lines == null && (dialogueLines == null || dialogueLines.Length <= 1))
+                            StoryFlow_PengaturAlur.Instance.CompleteOpheliaTalk();
                     }
                     else
                     {
@@ -181,7 +187,7 @@ namespace JejakAsa
 
         public void CloseDialogue()
         {
-            if (!isDialogueOpen || dialogueAdvanceFrame == Time.frameCount)
+            if (!isDialogueOpen || dialogueAdvanceFrame == Time.frameCount || Time.unscaledTime < EarliestAdvanceTime)
                 return;
             dialogueAdvanceFrame = Time.frameCount;
             if (activeLines != null && dialogueLineIndex + 1 < activeLines.Length)
@@ -194,11 +200,11 @@ namespace JejakAsa
             if (sequenceCompleted == null && activeLines != null && activeLines.Length > 1)
             {
                 if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoBriefing)
-                    GameFlowManager.Instance.CompleteBriefing();
+                    StoryFlow_PengaturAlur.Instance.CompleteBriefing();
                 else if (npcType == StoryNpcType.Jonathan && dialoguePhase == DayPhase.PoskoLaporan)
-                    GameFlowManager.Instance.CompleteReport();
+                    StoryFlow_PengaturAlur.Instance.CompleteReport();
                 else if (npcType == StoryNpcType.Ophelia && dialoguePhase == DayPhase.PoskoLaporan)
-                    GameFlowManager.Instance.CompleteOpheliaTalk();
+                    StoryFlow_PengaturAlur.Instance.CompleteOpheliaTalk();
             }
             var completed = sequenceCompleted;
             EndDialogue();
@@ -219,6 +225,8 @@ namespace JejakAsa
             activeDialogue = null;
             activeLines = null;
             sequenceCompleted = null;
+            HidePresentation = false;
+            EarliestAdvanceTime = 0;
             SpeakerChanged?.Invoke(null);
             if (movement != null)
                 movement.enabled = movementWasEnabled;
@@ -231,7 +239,7 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked) return;
+            if (HidePresentation || SessionMenu.InputBlocked) return;
             CozyGuiTheme.EnsureInitialized();
             if (isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
                 CozyGuiTheme.Prompt("Bicara dengan " + characterName);
@@ -247,7 +255,7 @@ namespace JejakAsa
             r.y += 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - dialogueOpenedAt) / .2f)));
             CozyGuiTheme.Card(r);
 
-            var portrait = DialoguePresentation.Portrait(speaker);
+            var portrait = StoryDialog_Tampilan.Portrait(speaker);
             if (portrait != null) GUI.DrawTexture(new Rect(r.x + 16, r.y - 22, 168, 242), portrait, ScaleMode.ScaleToFit, true);
             CozyGuiTheme.Fill(new Rect(r.x + 206, r.y + 46, 20, 3), CozyGuiTheme.Clay);
             GUI.Label(new Rect(r.x + 240, r.y + 35, 620, 32), speaker, CozyGuiTheme.LabelStyle);

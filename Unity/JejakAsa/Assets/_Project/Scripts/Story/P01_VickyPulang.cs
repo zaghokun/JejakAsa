@@ -4,7 +4,7 @@ using UnityEngine;
 namespace JejakAsa
 {
     [DisallowMultipleComponent]
-    public sealed class P01Opening : MonoBehaviour
+    public sealed class P01_VickyPulang : MonoBehaviour
     {
         private static readonly DialogueLine[] Lines =
         {
@@ -17,12 +17,12 @@ namespace JejakAsa
         };
 
         [SerializeField] private PlayerController playerReference;
-        [SerializeField] private StoryNpcController ibuReference;
+        [SerializeField] private StoryDialog_InteraksiNPC ibuReference;
         [SerializeField] private SceneStartFade fadeReference;
         [SerializeField] private Camera cameraReference;
 
         private PlayerController player;
-        private StoryNpcController ibu;
+        private StoryDialog_InteraksiNPC ibu;
         private bool movementWasEnabled;
         private bool started;
         private bool sequenceStarted;
@@ -48,13 +48,13 @@ namespace JejakAsa
 
         private IEnumerator PlayOpening()
         {
-            if (GameFlowManager.Instance.CurrentPhase != DayPhase.Prolog)
+            if (StoryFlow_PengaturAlur.Instance.CurrentPhase != DayPhase.Prolog)
                 yield break;
 
             player = playerReference != null ? playerReference : FindFirstObjectByType<PlayerController>();
             ibu = ibuReference;
             if (ibu == null)
-                foreach (var npc in FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None))
+                foreach (var npc in FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None))
                     if (npc.npcType == StoryNpcType.Ibu)
                     {
                         ibu = npc;
@@ -62,7 +62,7 @@ namespace JejakAsa
                     }
             if (player == null || ibu == null)
             {
-                Debug.LogError("P01 requires a PlayerController and an Ibu StoryNpcController.", this);
+                Debug.LogError("P01 requires a PlayerController and an Ibu StoryDialog_InteraksiNPC.", this);
                 yield break;
             }
 
@@ -87,10 +87,10 @@ namespace JejakAsa
                 cameraReference.orthographicSize = 3.5f;
             }
             var fade = fadeReference;
-            while (fade != null && !fade.IsFinished && GameFlowManager.Instance.CurrentPhase == DayPhase.Prolog)
+            while (fade != null && !fade.IsFinished && StoryFlow_PengaturAlur.Instance.CurrentPhase == DayPhase.Prolog)
                 yield return null;
 
-            while (GameFlowManager.Instance.CurrentPhase == DayPhase.Prolog)
+            while (StoryFlow_PengaturAlur.Instance.CurrentPhase == DayPhase.Prolog)
             {
                 if (!sequenceStarted && !finishing && ibu.isActiveAndEnabled)
                     sequenceStarted = ibu.OpenSequence(Lines, CompleteOpening);
@@ -128,7 +128,7 @@ namespace JejakAsa
                     yield return null;
                 }
             }
-            GameFlowManager.Instance.CompleteProlog();
+            StoryFlow_PengaturAlur.Instance.CompleteProlog();
             finishing = false;
             RestoreCamera();
             RestoreMovement();

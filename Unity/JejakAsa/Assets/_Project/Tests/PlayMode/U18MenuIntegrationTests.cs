@@ -98,7 +98,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator OutcomeAcknowledgementRetriesExceptForCampaignSuccess()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -149,7 +149,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             values[i] = PlayerPrefs.GetString(keys[i]);
             PlayerPrefs.DeleteKey(keys[i]);
         }
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string spawn = flow.LastSpawnPoint;
         try
@@ -166,7 +166,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             Assert.That(menu.MenuNotice, Does.Contain("tidak valid"));
             Assert.That(PlayerPrefs.GetString(keys[4]), Is.EqualTo("not json"));
             Assert.That(flow.LoadGame(3), Is.False);
-            Assert.That(GameFlowManager.GetSlotMeta(3).exists, Is.True);
+            Assert.That(StoryFlow_PengaturAlur.GetSlotMeta(3).exists, Is.True);
             Assert.That(flow.CurrentDay, Is.EqualTo(previous.currentDay));
             PlayerPrefs.SetString(keys[4], "{\"currentDay\":3,\"currentLevel\":3,\"currentPhase\":5}");
             Assert.That(flow.LoadGame(3), Is.False);
@@ -178,7 +178,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             string saved = PlayerPrefs.GetString(keys[2]);
             PlayerPrefs.SetString(keys[4], saved.Substring(0, saved.Length - 1));
             Assert.That(flow.LoadGame(3), Is.False);
-            Assert.That(GameFlowManager.GetSlotMeta(3).day, Is.Zero);
+            Assert.That(StoryFlow_PengaturAlur.GetSlotMeta(3).day, Is.Zero);
             Assert.That(flow.CurrentDay, Is.EqualTo(3));
             PlayerPrefs.SetString(keys[4], "not json");
             yield return Press(Key.Digit2);
@@ -216,7 +216,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator NewCampaignRequiresConfirmationAndStartsAtHome()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string spawn = flow.LastSpawnPoint;
         try
@@ -270,7 +270,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator EscapeClosesStoryDialogueBeforePausing()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         try
         {
@@ -279,7 +279,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
             SessionMenu menu = Object.FindFirstObjectByType<SessionMenu>();
             PlayerInteraction player = Object.FindFirstObjectByType<PlayerInteraction>();
             GameObject npcObject = new GameObject("Dialogue test");
-            StoryNpcController npc = npcObject.AddComponent<StoryNpcController>();
+            StoryDialog_InteraksiNPC npc = npcObject.AddComponent<StoryDialog_InteraksiNPC>();
             npc.playerTransform = player.transform;
             npc.OpenDialogue();
             yield return Press(Key.Escape);
@@ -298,7 +298,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator PauseMenuManagesSettingsLoadAndExitWithoutLosingState()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         const string volumeKey = "JejakAsa_MasterVolume";
@@ -355,7 +355,7 @@ public sealed class U18MenuIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator PauseLoadRequiresConfirmationAndRestoresHomeWithoutOverwritingSave()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         const string slotKey = "JejakAsa_SaveSlot_1";

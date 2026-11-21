@@ -10,20 +10,20 @@ namespace JejakAsa
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-900)]
-    public class GameFlowManager : MonoBehaviour
+    public class StoryFlow_PengaturAlur : MonoBehaviour
     {
         private const string SaveKeyPrefix = "JejakAsa_SaveSlot_";
         public const int MaxSaveSlots = 3;
 
-        private static GameFlowManager instance;
-        public static GameFlowManager Instance
+        private static StoryFlow_PengaturAlur instance;
+        public static StoryFlow_PengaturAlur Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    GameObject go = new GameObject("GameFlowManager");
-                    instance = go.AddComponent<GameFlowManager>();
+                    GameObject go = new GameObject("StoryFlow_PengaturAlur");
+                    instance = go.AddComponent<StoryFlow_PengaturAlur>();
                     if (Application.isPlaying)
                         DontDestroyOnLoad(go);
                 }
@@ -71,6 +71,7 @@ namespace JejakAsa
                 currentDay = 1,
                 currentLevel = 1,
                 requiresP02Listening = startAtProlog,
+                poskoPrologueVersion = startAtProlog ? 1 : 0,
                 currentPhase = startAtProlog ? DayPhase.Prolog : DayPhase.RumahPagi
             };
             OnPhaseChanged?.Invoke(data.currentPhase);
@@ -135,7 +136,7 @@ namespace JejakAsa
 
         public bool CompleteBriefing()
         {
-            if (P02Listening.IsPending(data)) return false;
+            if (P03_SponsorDanPosko.GetStage(data) != PoskoIntroStage.None) return false;
             if (data.currentPhase != DayPhase.PoskoBriefing)
                 return false;
 
@@ -147,7 +148,12 @@ namespace JejakAsa
 
         public bool CanDepartToLevel(out string reason)
         {
-            if (P02Listening.IsPending(data))
+            if (P03_SponsorDanPosko.GetStage(data) != PoskoIntroStage.None)
+            {
+                reason = P03_SponsorDanPosko.Objective(data);
+                return false;
+            }
+            if (P02_MendengarkanWarga.IsPending(data))
             {
                 reason = "Dengarkan daftar kebutuhan Bu Rina terlebih dahulu.";
                 return false;

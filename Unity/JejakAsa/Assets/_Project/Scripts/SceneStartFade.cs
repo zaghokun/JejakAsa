@@ -12,7 +12,7 @@ namespace JejakAsa
 
         private void Awake()
         {
-            if (GameFlowManager.Instance.CurrentPhase != DayPhase.Prolog)
+            if (StoryFlow_PengaturAlur.Instance.CurrentPhase != DayPhase.Prolog)
             {
                 IsFinished = true;
                 enabled = false;

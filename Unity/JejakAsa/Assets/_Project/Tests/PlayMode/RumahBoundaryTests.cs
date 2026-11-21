@@ -11,7 +11,7 @@ public sealed class RumahBoundaryTests
     [UnityTest]
     public IEnumerator SouthPerimeterStopsPlayerAndKeepsFloorUnderfoot()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try

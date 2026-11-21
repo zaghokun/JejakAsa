@@ -1767,7 +1767,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a982cd9818060c14eb8ced9172720ce3, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.ObjectiveHud
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.StoryObjective_TujuanAktif
 --- !u!1 &101247796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1832,7 +1832,7 @@ GameObject:
   - component: {fileID: 169975658}
   - component: {fileID: 169975657}
   m_Layer: 0
-  m_Name: P01_Opening
+  m_Name: P01_VickyPulang
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1849,7 +1849,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c7a3a77f56bd544fad12c254bf0b333, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01Opening
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01_VickyPulang
   playerReference: {fileID: 10000086}
   ibuReference: {fileID: 10000076}
   fadeReference: {fileID: 10000007}

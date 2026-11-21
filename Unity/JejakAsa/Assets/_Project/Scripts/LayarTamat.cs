@@ -33,14 +33,14 @@ public class LayarTamat : MonoBehaviour
             lagiBuka = false;
         }
 
-        GameFlowManager gm = FindFirstObjectByType<GameFlowManager>();
+        StoryFlow_PengaturAlur gm = FindFirstObjectByType<StoryFlow_PengaturAlur>();
         if (gm == null) return;
         if (scene.Contains("MainMenu")) return;
 
         if (!lagiBuka && !udahDitutup && gm.CurrentPhase == DayPhase.Tamat)
         {
             // tunggu menu lain ketutup dulu
-            if (!HomeInteractionController.AnyMenuOpen && !StoryNpcController.AnyDialogueOpen && !SessionMenu.InputBlocked)
+            if (!HomeInteractionController.AnyMenuOpen && !StoryDialog_InteraksiNPC.AnyDialogueOpen && !SessionMenu.InputBlocked)
             {
                 lagiBuka = true;
                 waktuBuka = Time.unscaledTime;

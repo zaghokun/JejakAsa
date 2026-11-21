@@ -82,7 +82,7 @@ namespace JejakAsa
                     return false;
                 Consider(gate, gate.interactionRadius);
             }
-            foreach (var npc in FindObjectsOfType<StoryNpcController>())
+            foreach (var npc in FindObjectsOfType<StoryDialog_InteraksiNPC>())
             {
                 if (npc.gameObject.scene != candidate.gameObject.scene || !npc.isActiveAndEnabled)
                     continue;
@@ -111,18 +111,24 @@ namespace JejakAsa
 
         private void TryTakeBansos()
         {
-            if (P02Listening.IsPending(GameFlowManager.Instance.Progress))
+            if (P03_SponsorDanPosko.GetStage(StoryFlow_PengaturAlur.Instance.Progress) != PoskoIntroStage.None)
+            {
+                feedbackText = P03_SponsorDanPosko.Objective(StoryFlow_PengaturAlur.Instance.Progress);
+                feedbackTimer = 3.5f;
+                return;
+            }
+            if (P02_MendengarkanWarga.IsPending(StoryFlow_PengaturAlur.Instance.Progress))
             {
                 feedbackText = "Dengarkan kebutuhan warga bersama Bu Rina terlebih dahulu.";
                 feedbackTimer = 3.5f;
                 return;
             }
-            bool alreadyPickedUp = (GameFlowManager.Instance != null && GameFlowManager.Instance.Progress.hasPickedUpBansos)
+            bool alreadyPickedUp = (StoryFlow_PengaturAlur.Instance != null && StoryFlow_PengaturAlur.Instance.Progress.hasPickedUpBansos)
                 || (playerInteraction != null && playerInteraction.IsMissionActive);
 
             if (!alreadyPickedUp)
             {
-                var flow = GameFlowManager.Instance;
+                var flow = StoryFlow_PengaturAlur.Instance;
                 if (flow.CurrentPhase != DayPhase.PoskoBriefing && flow.CurrentPhase != DayPhase.DiLevel)
                 {
                     feedbackText = "Bukan waktu pengambilan paket bansos.";
@@ -136,9 +142,9 @@ namespace JejakAsa
                     return;
                 }
 
-                if (GameFlowManager.Instance != null)
+                if (StoryFlow_PengaturAlur.Instance != null)
                 {
-                    GameFlowManager.Instance.Progress.hasPickedUpBansos = true;
+                    StoryFlow_PengaturAlur.Instance.Progress.hasPickedUpBansos = true;
                 }
 
                 if (playerInteraction != null)
@@ -166,7 +172,7 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked || StoryNpcController.AnyDialogueOpen || PoskoGateController.AnyMenuOpen) return;
+            if (SessionMenu.InputBlocked || StoryDialog_InteraksiNPC.AnyDialogueOpen || PoskoGateController.AnyMenuOpen) return;
             CozyGuiTheme.EnsureInitialized();
             if (feedbackTimer > 0 && !string.IsNullOrEmpty(feedbackText))
             {
@@ -176,7 +182,7 @@ namespace JejakAsa
                 GUI.Label(new Rect(r.x+20,r.y+8,540,48),feedbackText,CozyGuiTheme.Body); GUI.matrix=old;
             }
             if (!isPlayerNear || !IsNearestInteraction(this, playerTransform)) return;
-            bool picked=GameFlowManager.Instance.Progress.hasPickedUpBansos || (playerInteraction!=null && playerInteraction.IsMissionActive);
+            bool picked=StoryFlow_PengaturAlur.Instance.Progress.hasPickedUpBansos || (playerInteraction!=null && playerInteraction.IsMissionActive);
             if (!picked) CozyGuiTheme.Prompt("Ambil paket bantuan");
         }
 

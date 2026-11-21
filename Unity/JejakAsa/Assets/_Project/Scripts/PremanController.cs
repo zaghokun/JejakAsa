@@ -73,7 +73,7 @@ namespace JejakAsa
         {
             IgnorePlayerCollision();
             if (!controller.enabled || player == null || !player.isActiveAndEnabled || !player.IsMissionActive || player.IsMissionEnded
-                || player.IsDialogueOpen || StoryNpcController.AnyDialogueOpen || SessionMenu.InputBlocked || Time.timeScale <= 0f)
+                || player.IsDialogueOpen || StoryDialog_InteraksiNPC.AnyDialogueOpen || SessionMenu.InputBlocked || Time.timeScale <= 0f)
                 return;
 
             cooldownRemaining = Mathf.Max(0f, cooldownRemaining - Time.deltaTime);

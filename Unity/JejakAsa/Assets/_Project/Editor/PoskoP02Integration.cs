@@ -83,13 +83,13 @@ internal static class PoskoP02Integration
         var ophelia=find("Ophelia_NPC");AddCharacter(ophelia,"Ophelia",Characters+"Ophelia.fbx",Characters+"Ophelia_BaseColor.jpg",1.65f);
         var rina=new GameObject("BuRina_NPC");rina.transform.SetParent(root.transform,false);rina.transform.position=new Vector3(-1.6f,1,-3.5f);
         var capsule=rina.AddComponent<CapsuleCollider>();capsule.radius=.32f;capsule.height=1.7f;capsule.center=new Vector3(0,-.15f,0);
-        var npc=rina.AddComponent<StoryNpcController>();npc.npcType=StoryNpcType.BuRina;npc.characterName="Bu Rina";npc.playerTransform=player.transform;npc.interactionRadius=2.2f;
+        var npc=rina.AddComponent<StoryDialog_InteraksiNPC>();npc.npcType=StoryNpcType.BuRina;npc.characterName="Bu Rina";npc.playerTransform=player.transform;npc.interactionRadius=2.2f;
         AddCharacter(rina,"Bu Rina",Characters+"BuRina.fbx",Characters+"BuRina_BaseColor.jpg",1.62f);
         var clipboard=GameObject.CreatePrimitive(PrimitiveType.Cube);clipboard.name="Daftar_Kebutuhan";clipboard.transform.SetParent(rina.transform,false);clipboard.transform.localPosition=new Vector3(0,.03f,.3f);clipboard.transform.localScale=new Vector3(.26f,.34f,.025f);UnityEngine.Object.DestroyImmediate(clipboard.GetComponent<Collider>());
         clipboard.GetComponent<Renderer>().sharedMaterial=materials.Values.First();
         var arif=new GameObject("PakArif_Warga");arif.transform.SetParent(root.transform,false);arif.transform.position=new Vector3(9,1,5.4f);AddCharacter(arif,"Pak Arif",Characters+"PakArif.fbx",Characters+"PakArif_BaseColor.jpg",1.7f);
-        var story=rina.AddComponent<P02Listening>();var serialized=new SerializedObject(story);
-        var npcs=serialized.FindProperty("briefingNpcs");npcs.arraySize=2;npcs.GetArrayElementAtIndex(0).objectReferenceValue=jonathan.GetComponent<StoryNpcController>();npcs.GetArrayElementAtIndex(1).objectReferenceValue=ophelia.GetComponent<StoryNpcController>();
+        var story=rina.AddComponent<P02_MendengarkanWarga>();var serialized=new SerializedObject(story);
+        var npcs=serialized.FindProperty("briefingNpcs");npcs.arraySize=2;npcs.GetArrayElementAtIndex(0).objectReferenceValue=jonathan.GetComponent<StoryDialog_InteraksiNPC>();npcs.GetArrayElementAtIndex(1).objectReferenceValue=ophelia.GetComponent<StoryDialog_InteraksiNPC>();
         serialized.FindProperty("logisticsVisuals").objectReferenceValue=logistics;serialized.ApplyModifiedPropertiesWithoutUndo();
         GateSafetyIntegration.ApplyToScene(scene);
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();

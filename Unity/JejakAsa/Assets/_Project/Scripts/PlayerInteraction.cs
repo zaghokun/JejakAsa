@@ -61,13 +61,13 @@ namespace JejakAsa
         private DialogueLine[] dialogueLines;
         private int dialogueLineIndex;
         private int dialogueAdvanceFrame = -1;
-        private DialoguePresentation dialoguePresentation;
+        private StoryDialog_Tampilan dialoguePresentation;
         private int outcomeOpenedFrame = -1;
         private float outcomeOpenedTime = -10f;
         private bool returningToPosko;
         private Texture2D missionReportArt;
 
-        private bool ReturnsToPosko => outcome == MissionOutcome.Success && GameFlowManager.Instance.CurrentPhase == DayPhase.DiLevel;
+        private bool ReturnsToPosko => outcome == MissionOutcome.Success && StoryFlow_PengaturAlur.Instance.CurrentPhase == DayPhase.DiLevel;
 
         public InteractionTarget CurrentTarget { get; private set; }
         public InteractionTarget DialogueTarget { get; private set; }
@@ -112,7 +112,7 @@ namespace JejakAsa
 
             // Jika dalam alur campaign dan pemain belum mengambil paket di Posko,
             // misi pengantaran dan timer belum dimulai sampai mengambil paket di Posko
-            if (GameFlowManager.Instance != null && !GameFlowManager.Instance.Progress.hasPickedUpBansos && (GameFlowManager.Instance.CurrentPhase == DayPhase.PoskoBriefing || GameFlowManager.Instance.LastSpawnPoint == "RumahVicky"))
+            if (StoryFlow_PengaturAlur.Instance != null && !StoryFlow_PengaturAlur.Instance.Progress.hasPickedUpBansos && (StoryFlow_PengaturAlur.Instance.CurrentPhase == DayPhase.PoskoBriefing || StoryFlow_PengaturAlur.Instance.LastSpawnPoint == "RumahVicky"))
             {
                 isMissionActive = false;
                 packagesRemaining = 0;
@@ -130,7 +130,7 @@ namespace JejakAsa
             outcomeReason = "";
             isOutcomeOpen = false;
 
-            DialoguePresentation.StylePrompt(promptPanel, promptText);
+            StoryDialog_Tampilan.StylePrompt(promptPanel, promptText);
             promptPanel.SetActive(false);
             dialoguePanel.SetActive(false);
             closeButton.onClick.AddListener(AdvanceDialogue);
@@ -155,7 +155,7 @@ namespace JejakAsa
                 return;
             }
 
-            if (StoryNpcController.AnyDialogueOpen)
+            if (StoryDialog_InteraksiNPC.AnyDialogueOpen)
             {
                 CurrentTarget = null;
                 promptPanel.SetActive(false);
@@ -314,7 +314,7 @@ namespace JejakAsa
             if (ReturnsToPosko)
             {
                 returningToPosko = true;
-                if (GameFlowManager.Instance.OnLevelSuccess())
+                if (StoryFlow_PengaturAlur.Instance.OnLevelSuccess())
                     SceneManager.LoadScene("Assets/_Project/Scenes/Posko.unity", LoadSceneMode.Single);
                 else
                     returningToPosko = false;
@@ -510,9 +510,9 @@ namespace JejakAsa
         {
             if (dialoguePresentation == null)
             {
-                dialoguePresentation = dialoguePanel.GetComponent<DialoguePresentation>();
+                dialoguePresentation = dialoguePanel.GetComponent<StoryDialog_Tampilan>();
                 if (dialoguePresentation == null)
-                    dialoguePresentation = dialoguePanel.AddComponent<DialoguePresentation>();
+                    dialoguePresentation = dialoguePanel.AddComponent<StoryDialog_Tampilan>();
                 dialoguePresentation.Setup(dialogueTitle, dialogueBody, closeButton);
             }
             dialoguePresentation.Open(dialogueTitle.text);
@@ -585,7 +585,7 @@ namespace JejakAsa
             GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
             bool success = outcome == MissionOutcome.Success;
             Rect r = new Rect((sw - 620) / 2, (sh - 602) / 2, 620, 602);
-            CozyGuiTheme.Header(r, "LAPORAN PENGANTARAN / HARI " + GameFlowManager.Instance.CurrentDay,
+            CozyGuiTheme.Header(r, "LAPORAN PENGANTARAN / HARI " + StoryFlow_PengaturAlur.Instance.CurrentDay,
                 success ? "Harapan telah sampai." : "Masih ada kesempatan.", outcomeReason, missionReportArt);
             GUI.Label(new Rect(r.x + 28, r.y + 210, 564, 27), success ? "MISI SELESAI" : outcome == MissionOutcome.PartialSuccess ? "SEBAGIAN BANTUAN TERANTAR" : "WAKTU PENGANTARAN BERAKHIR", CozyGuiTheme.Eyebrow);
             Rect stats = new Rect(r.x + 28, r.y + 250, 564, 172);
@@ -599,7 +599,7 @@ namespace JejakAsa
             }
             string recipients = deliveredCount > 0 ? "Terima kasih sudah hadir untuk warga hari ini." : "Susun kembali rute, lalu coba sekali lagi.";
             GUI.Label(new Rect(r.x + 28, r.y + 432, 564, 42), recipients, CozyGuiTheme.Small);
-            bool returnToPosko = success && GameFlowManager.Instance.CurrentPhase == DayPhase.DiLevel;
+            bool returnToPosko = success && StoryFlow_PengaturAlur.Instance.CurrentPhase == DayPhase.DiLevel;
             string action = returnToPosko ? "Kembali ke posko" : "Coba pengantaran lagi";
             if (CozyGuiTheme.Button(new Rect(r.x + 28, r.y + 492, 564, 54), action + "    >", CozyGuiTheme.TealBtnStyle)) AcknowledgeOutcome();
             GUI.Label(new Rect(r.x + 28, r.y + 561, 564, 20), "Enter / Spasi  " + action, CozyGuiTheme.HintStyle);

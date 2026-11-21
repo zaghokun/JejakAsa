@@ -13,10 +13,10 @@ public sealed class GuiPresentationTests
     [UnityTest]
     public IEnumerator DialogueHasNoOpaqueBackingAndOutcomeRenders()
     {
-        var before = GameFlowManager.Instance.Progress.Clone();
+        var before = StoryFlow_PengaturAlur.Instance.Progress.Clone();
         try
         {
-            GameFlowManager.Instance.StartNewCampaign();
+            StoryFlow_PengaturAlur.Instance.StartNewCampaign();
             yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Kampung.unity");
             var player = Object.FindFirstObjectByType<PlayerInteraction>();
             player.OpenSystemDialogue("Vicky", "Akhirnya pulang juga. Rasanya gang ini lebih sempit daripada yang kuingat.");
@@ -40,7 +40,7 @@ public sealed class GuiPresentationTests
             ScreenCapture.CaptureScreenshot("Library/GuiRedesignCaptures/08-confirm.png");
             yield return new WaitForSecondsRealtime(.3f);
         }
-        finally { GameFlowManager.Instance.SetStateForTesting(before); Time.timeScale=1; }
+        finally { StoryFlow_PengaturAlur.Instance.SetStateForTesting(before); Time.timeScale=1; }
     }
 }
 #endif

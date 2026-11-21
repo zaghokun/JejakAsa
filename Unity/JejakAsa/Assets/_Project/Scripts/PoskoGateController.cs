@@ -78,8 +78,8 @@ namespace JejakAsa
         {
             isGateMenuOpen = true;
             gateOpenedAt = Time.unscaledTime;
-            GameFlowManager.Instance.CanDepartToLevel(out lockedDepartReason);
-            GameFlowManager.Instance.CanGoHomeFromPosko(out lockedHomeReason);
+            StoryFlow_PengaturAlur.Instance.CanDepartToLevel(out lockedDepartReason);
+            StoryFlow_PengaturAlur.Instance.CanGoHomeFromPosko(out lockedHomeReason);
         }
 
         public void CloseGateMenu()
@@ -89,9 +89,9 @@ namespace JejakAsa
 
         public void TryDepartToLevel()
         {
-            if (GameFlowManager.Instance.CanDepartToLevel(out string reason))
+            if (StoryFlow_PengaturAlur.Instance.CanDepartToLevel(out string reason))
             {
-                int level = GameFlowManager.Instance.CurrentLevel;
+                int level = StoryFlow_PengaturAlur.Instance.CurrentLevel;
                 if (level < 1 || level > 5)
                 {
                     lockedDepartReason = "Level aktif tidak valid.";
@@ -103,8 +103,8 @@ namespace JejakAsa
                     lockedDepartReason = "Wilayah misi tidak tersedia di build.";
                     return;
                 }
-                GameFlowManager.Instance.LastSpawnPoint = "PosBantuan";
-                GameFlowManager.Instance.DepartToLevel();
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint = "PosBantuan";
+                StoryFlow_PengaturAlur.Instance.DepartToLevel();
                 isGateMenuOpen = false;
                 SceneManager.LoadScene(scenePath, LoadSceneMode.Single);
             }
@@ -116,9 +116,9 @@ namespace JejakAsa
 
         public void TryGoHome()
         {
-            if (GameFlowManager.Instance.CanGoHomeFromPosko(out string reason))
+            if (StoryFlow_PengaturAlur.Instance.CanGoHomeFromPosko(out string reason))
             {
-                GameFlowManager.Instance.GoHomeFromPosko();
+                StoryFlow_PengaturAlur.Instance.GoHomeFromPosko();
                 isGateMenuOpen = false;
                 SceneManager.LoadScene(homeScenePath, LoadSceneMode.Single);
             }
@@ -130,7 +130,7 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if(SessionMenu.InputBlocked || StoryNpcController.AnyDialogueOpen) return;
+            if(SessionMenu.InputBlocked || StoryDialog_InteraksiNPC.AnyDialogueOpen) return;
             CozyGuiTheme.EnsureInitialized();
             if(isPlayerInRange && !isGateMenuOpen && PoskoDistributionTrigger.IsNearestInteraction(this,playerTransform)) CozyGuiTheme.Prompt("Pilih tujuan perjalanan");
             if(!isGateMenuOpen) return;
@@ -140,10 +140,10 @@ namespace JejakAsa
             float sw=Screen.width/scale,sh=Screen.height/scale;
             GUI.DrawTexture(new Rect(0,0,sw,sh),CozyGuiTheme.DimTex);
             Rect r=new Rect((sw-660)/2,(sh-580)/2,660,580);
-            CozyGuiTheme.Header(r,"GERBANG POSKO / HARI "+GameFlowManager.Instance.CurrentDay,"Ke mana langkahmu?","Perjalanan mengikuti persiapan dan tugas yang sudah kamu selesaikan.");
-            bool depart=GameFlowManager.Instance.CanDepartToLevel(out string departReason);
-            bool home=GameFlowManager.Instance.CanGoHomeFromPosko(out string homeReason);
-            if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+214,604,58),"1. Antarkan bantuan / Wilayah "+GameFlowManager.Instance.CurrentLevel,depart?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryDepartToLevel();
+            CozyGuiTheme.Header(r,"GERBANG POSKO / HARI "+StoryFlow_PengaturAlur.Instance.CurrentDay,"Ke mana langkahmu?","Perjalanan mengikuti persiapan dan tugas yang sudah kamu selesaikan.");
+            bool depart=StoryFlow_PengaturAlur.Instance.CanDepartToLevel(out string departReason);
+            bool home=StoryFlow_PengaturAlur.Instance.CanGoHomeFromPosko(out string homeReason);
+            if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+214,604,58),"1. Antarkan bantuan / Wilayah "+StoryFlow_PengaturAlur.Instance.CurrentLevel,depart?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryDepartToLevel();
             GUI.Label(new Rect(r.x+32,r.y+278,596,44),depart?(string.IsNullOrEmpty(lockedDepartReason)?"Paket siap. Warga menantikan kedatanganmu.":lockedDepartReason):"Terkunci · "+departReason,CozyGuiTheme.Small);
             if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+330,604,58),"2. Pulang ke rumah",home?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryGoHome();
             GUI.Label(new Rect(r.x+32,r.y+400,596,48),home?"Kembali ke rumah Vicky untuk beristirahat.":"Terkunci · "+homeReason,CozyGuiTheme.Small);

@@ -12,7 +12,7 @@ public sealed class EnvironmentReadabilityTests
     [UnityTest]
     public IEnumerator CourtyardReliefHasWalkableCollisionAndClearNpcStandingAreas()
     {
-        var flow=GameFlowManager.Instance;var before=flow.Progress.Clone();string spawn=flow.LastSpawnPoint;
+        var flow=StoryFlow_PengaturAlur.Instance;var before=flow.Progress.Clone();string spawn=flow.LastSpawnPoint;
         try
         {
             flow.SetStateForTesting(new GameProgressData { currentPhase=DayPhase.PoskoBriefing });
@@ -33,7 +33,7 @@ public sealed class EnvironmentReadabilityTests
     [UnityTest]
     public IEnumerator GateAndWelcomeSignRemainVisibleWhileApproaching()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var before = flow.Progress.Clone(); string spawn = flow.LastSpawnPoint;
         try
         {

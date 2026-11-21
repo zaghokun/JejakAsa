@@ -9,20 +9,20 @@ using UnityEngine.TestTools;
 public sealed class P02ListeningTests
 {
     GameProgressData before;string spawn;
-    [SetUp] public void Setup(){before=GameFlowManager.Instance.Progress.Clone();spawn=GameFlowManager.Instance.LastSpawnPoint;}
+    [SetUp] public void Setup(){before=StoryFlow_PengaturAlur.Instance.Progress.Clone();spawn=StoryFlow_PengaturAlur.Instance.LastSpawnPoint;}
     [UnityTearDown] public IEnumerator Cleanup()
     {
-        GameFlowManager.Instance.SetStateForTesting(before);GameFlowManager.Instance.LastSpawnPoint=spawn;
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(before);StoryFlow_PengaturAlur.Instance.LastSpawnPoint=spawn;
         var scene=SceneManager.GetActiveScene();SceneManager.SetActiveScene(SceneManager.CreateScene("P02ListeningCleanup"));
         if(scene.IsValid()&&scene.isLoaded)yield return SceneManager.UnloadSceneAsync(scene);
     }
     [UnityTest] public IEnumerator FirstArrivalRequiresAllFiveLinesAndSurvivesSceneReload()
     {
-        var flow=GameFlowManager.Instance;
+        var flow=StoryFlow_PengaturAlur.Instance;
         flow.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing,requiresP02Listening=true});
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity");
-        var rina=GameObject.Find("BuRina_NPC").GetComponent<StoryNpcController>();
-        var story=rina.GetComponent<P02Listening>();
+        var rina=GameObject.Find("BuRina_NPC").GetComponent<StoryDialog_InteraksiNPC>();
+        var story=rina.GetComponent<P02_MendengarkanWarga>();
         Assert.That(flow.CompleteBriefing(),Is.False);Assert.That(flow.CanDepartToLevel(out _),Is.False);
         Assert.That(Object.FindFirstObjectByType<PlayerController>().enabled,Is.True);
         Assert.That(story.BeginConversation(),Is.True);
@@ -39,22 +39,22 @@ public sealed class P02ListeningTests
         Assert.That(flow.Progress.isP02ListeningDone,Is.False);
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity");
         Assert.That(flow.Progress.isP02ListeningDone,Is.False,"Unloading a partial conversation must not finish it.");
-        rina=GameObject.Find("BuRina_NPC").GetComponent<StoryNpcController>();story=rina.GetComponent<P02Listening>();
+        rina=GameObject.Find("BuRina_NPC").GetComponent<StoryDialog_InteraksiNPC>();story=rina.GetComponent<P02_MendengarkanWarga>();
         Assert.That(story.BeginConversation(),Is.True);
         for(int i=0;i<4;i++){rina.CloseDialogue();yield return null;Assert.That(flow.Progress.isP02ListeningDone,Is.False);}
         rina.CloseDialogue();yield return null;
         Assert.That(flow.Progress.isP02ListeningDone,Is.True);Assert.That(flow.Progress.isBriefingDone,Is.False);
         Assert.That(Object.FindFirstObjectByType<PlayerController>().enabled,Is.True);
-        Assert.That(flow.CompleteBriefing(),Is.True);
+        Assert.That(flow.CompleteBriefing(),Is.False,"P03-P05 must finish before the first delivery briefing.");
         var restored=JsonUtility.FromJson<GameProgressData>(JsonUtility.ToJson(flow.Progress));
         restored.ResetDailyFlags();Assert.That(restored.isP02ListeningDone,Is.True);
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity");
-        Assert.That(GameObject.Find("Jonathan_NPC").GetComponent<StoryNpcController>().enabled,Is.True);
+        Assert.That(GameObject.Find("Jonathan_NPC").GetComponent<StoryDialog_InteraksiNPC>().enabled,Is.True);
         Assert.That(flow.Progress.isP02ListeningDone,Is.True);
     }
     [UnityTest] public IEnumerator CharactersAndEnvironmentAreIntegratedAtHumanScale()
     {
-        GameFlowManager.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing});
+        StoryFlow_PengaturAlur.Instance.SetStateForTesting(new GameProgressData{currentPhase=DayPhase.PoskoBriefing});
         yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity");
         Assert.That(GameObject.Find("P02_Posko_Environment"),Is.Not.Null);
         yield return new WaitForSecondsRealtime(.5f);

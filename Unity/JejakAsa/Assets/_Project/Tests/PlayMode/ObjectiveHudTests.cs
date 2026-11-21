@@ -8,7 +8,7 @@ public sealed class ObjectiveHudTests
     [Test]
     public void ObjectiveFollowsBriefingAndReportProgress()
     {
-        var method = typeof(ObjectiveHud).GetMethod("GetObjective", BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(StoryObjective_TujuanAktif).GetMethod("GetObjective", BindingFlags.NonPublic | BindingFlags.Static);
         var progress = new GameProgressData { currentPhase = DayPhase.PoskoBriefing };
         Assert.That(method.Invoke(null, new object[] { progress }), Is.EqualTo("Temui Pak Jonathan"));
         progress.isBriefingDone = true;

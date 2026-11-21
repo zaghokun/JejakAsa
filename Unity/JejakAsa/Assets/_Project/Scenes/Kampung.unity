@@ -4969,7 +4969,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a982cd9818060c14eb8ced9172720ce3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.ObjectiveHud
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.StoryObjective_TujuanAktif
 --- !u!114 &1989879651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5371,7 +5371,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c0d1e2f3a4b56789012cdef3456789a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa:StoryNpcController
+  m_EditorClassIdentifier: JejakAsa:StoryDialog_InteraksiNPC
   npcType: 0
   characterName: Pak Jonathan
   interactionRadius: 2.2
@@ -5503,7 +5503,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c0d1e2f3a4b56789012cdef3456789a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa:StoryNpcController
+  m_EditorClassIdentifier: JejakAsa:StoryDialog_InteraksiNPC
   npcType: 1
   characterName: Ophelia
   interactionRadius: 2.2

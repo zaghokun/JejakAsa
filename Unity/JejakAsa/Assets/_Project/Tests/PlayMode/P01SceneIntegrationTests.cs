@@ -45,7 +45,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator VickyAnimatesWalkingRunningAndStopping()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -125,7 +125,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator FurnishedHomeKeepsBedroomAndExitReachable()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -181,7 +181,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator NewGameFadesThenPlaysP01OnceAndProgressSurvivesReload()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         const string slotKey = "JejakAsa_SaveSlot_3";
@@ -192,7 +192,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
         string oldTime = PlayerPrefs.GetString(timeKey);
         var speakers = new List<string>();
         System.Action<string> onSpeaker = speaker => speakers.Add(speaker);
-        StoryNpcController.SpeakerChanged += onSpeaker;
+        StoryDialog_InteraksiNPC.SpeakerChanged += onSpeaker;
         try
         {
             yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/MainMenu.unity", LoadSceneMode.Single);
@@ -255,7 +255,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
         }
         finally
         {
-            StoryNpcController.SpeakerChanged -= onSpeaker;
+            StoryDialog_InteraksiNPC.SpeakerChanged -= onSpeaker;
             if (hadSlot) PlayerPrefs.SetString(slotKey, oldSlot);
             else PlayerPrefs.DeleteKey(slotKey);
             if (hadTime) PlayerPrefs.SetString(timeKey, oldTime);

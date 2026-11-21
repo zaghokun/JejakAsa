@@ -75,7 +75,7 @@ Data yang dipersistensikan dan tidak boleh hilang saat transisi antar scene:
 ## 5. Pembagian Tanggung Jawab Role
 
 - **Role A (Gameplay & Integrasi):**
-  - Mengimplementasikan `GameFlowManager` (state machine alur harian & transisi scene).
+  - Mengimplementasikan `StoryFlow_PengaturAlur` (state machine alur harian & transisi scene).
   - Membuat scene graybox `Posko.unity` dan `Rumah.unity` dengan titik interaksi Jonathan, Ophelia, Ibu/Ayah, tempat tidur, dan gerbang bersama (AB-D02).
   - Mengatur transisi spawn dan persistensi data antar scene.
 - **Role B (Verifikasi):**

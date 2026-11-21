@@ -37,7 +37,7 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 | Kode | Kebutuhan | Status |
 | --- | --- | --- |
 | R01, R03–R06 | Alur harian, rumah, posko, lima map, pengantaran, timer, hasil dan retry | Core graybox tersedia; uji ulang setelah revisi |
-| R02, R07 | Prolog dan dialog cerita berurutan | Naskah dan core dialog tersedia; integrasi cerita final menyusul |
+| R02, R07 | Prolog dan dialog cerita berurutan | P01–P05 terintegrasi; cerita harian dan penutup berikutnya menyusul |
 | R08–R12 | Reward, item/weapon, boss battle, encounter pilihan dan bantuan warga untuk membuka jalan | Dikeluarkan dari cakupan revisi |
 | R13–R14 | Save/load tiga slot, menu utama dan menu ingame | Core tersedia; verifikasi ulang setelah revisi |
 | R15 | Regresi dan build | Uji ulang dan build revisi diperlukan |
@@ -48,7 +48,9 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 
 **Penataan rumah P02 (19 November 2026):** rumah mendapat 17 tambahan furnitur/dekorasi dari katalog lokal `AssetLibrary_Staging`, termasuk area belajar, rak sepatu, kipas, tanaman dan perlengkapan meja/dapur. Tambahan visual dan delapan BoxCollider terpisah di `P02_Home_Dressing`; dekorasi kecil tidak menghalangi gerak. Sumber Blender baru `ArtSource/P01/P02_Rumah_Dressed.blend`, integrasi di `Rumah.unity`. Enam tes Play Mode lulus, mencakup jalur ke Ibu/tempat tidur/pintu, batas lantai, animasi dan alur rumah. Pratinjau: [Blender](Previews/HouseRedesign/rumah-blender.png), [Unity](Previews/HouseRedesign/rumah-unity.png).
 
-**Story P02 dan lingkungan Posko (19 November 2026):** percakapan lima baris “Mendengarkan warga” bersama Bu Rina tersedia pada kunjungan pertama setelah P01 dalam permainan baru. Briefing/pengambilan paket dan keberangkatan menunggu percakapan selesai; pembatalan melalui unload tidak menyelesaikan adegan. Penanda P02 bertahan pada data campaign dan serialisasi. Scene Posko mendapat lingkungan kampung, area warga, naungan, papan, bangku, pepohonan, lima visual karakter dan collider terpisah. Stok bantuan visual disembunyikan saat P02 masih berlangsung. Delapan belas tes Play Mode lulus; dua tes P02 juga diulang untuk bukti visual. P03–P05 belum diintegrasikan sebagai cerita final; handoff setelah P02 memakai core briefing yang sudah ada. [Catatan dan cara mencoba](docs/p02-posko.md).
+**Story P02 dan lingkungan Posko (19 November 2026):** percakapan lima baris “Mendengarkan warga” bersama Bu Rina tersedia pada kunjungan pertama setelah P01 dalam permainan baru. Briefing/pengambilan paket dan keberangkatan menunggu percakapan selesai; pembatalan melalui unload tidak menyelesaikan adegan. Penanda P02 bertahan pada data campaign dan serialisasi. Scene Posko mendapat lingkungan kampung, area warga, naungan, papan, bangku, pepohonan, lima visual karakter dan collider terpisah. Stok bantuan visual disembunyikan saat P02 masih berlangsung. Delapan belas tes Play Mode lulus; dua tes P02 juga diulang untuk bukti visual. [Catatan P02](docs/p02-posko.md).
+
+**Story P03–P05 / SB-03–SB-05 (21 November 2026):** setelah Bu Rina, Jonathan mengenalkan sponsor dan warga menyiapkan posko lewat montage singkat. Persediaan dan daftar warga muncul setelah tahap ini; berikutnya Vicky bertemu kembali dengan Ophelia. P05 otomatis memperlihatkan Mr. Deddy bersama anak buah di gang gelap, lalu Mr. Gas Oke di meja peta rute: kamera mendekat perlahan, cahaya dingin/hangat, jeda dialog, fade dan suara rendah membangun ancaman. Naskah mengikuti storyboard. Setelah selesai, kamera, pencahayaan, volume lingkungan dan gerak dipulihkan untuk briefing harian yang sudah tersedia. Flag campaign terserialisasi dan tidak terhapus oleh reset harian; save lama yang sudah mengantar serta hari berikutnya tidak dipaksa mengulang. Total 28 tes unik Play Mode terkait lulus (24 tes alur, lalu 10 tes pemeriksaan ulang dengan enam tes yang beririsan). Build Windows baru belum dibuat. [Cara mencoba, sumber dan bukti visual](docs/p03-p05-posko.md).
 
 **GUI revisi:** menu utama memakai latar dari referensi desain, tombol dan teks interaktif; menu jeda memakai clipboard dan catatan misi. Dialog menampilkan potret karakter, sementara HUD menunjukkan tujuan serta hari dan fase. Panel dan pilihan menu memiliki animasi singkat. Penerima graybox tanpa identitas khusus memakai potret warga sementara; penetapan potret sesuai cerita menyusul. Build lama belum memuat revisi GUI ini.
 
@@ -83,7 +85,7 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 
 ### AB-D01 — Kontrak alur dan pembagian kerja · R01
 
-- [x] **A:** petakan transisi `rumah → posko → map level → posko → rumah`, state siang/istirahat, titik masuk/keluar, serta kondisi berhasil dan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan diterapkan di `GameFlowManager.cs`.
+- [x] **A:** petakan transisi `rumah → posko → map level → posko → rumah`, state siang/istirahat, titik masuk/keluar, serta kondisi berhasil dan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan diterapkan di `StoryFlow_PengaturAlur.cs`.
 - [ ] **B:** verifikasi kontrak hasil misi, retry, dan save/load setelah revisi.
 - [x] **A/B + C:** sepakati skala, penempatan gerbang, batas area interaksi, kebutuhan visual/animasi, dan kepemilikan scene/file berdasarkan [C-D01](docs/cd01-arah-visual.md).
 - [x] **A/B:** tiga slot save manual di rumah; tidak ada autosave tengah level.
@@ -94,7 +96,7 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 - [x] **A:** buat satu map posko berupa lapangan terbuka graybox (`Posko.unity`, 28×24 m); rumah tetap berupa map interior (`Rumah.unity`, 14×10 m), tanpa map luar rumah.
 - [x] **A:** sediakan satu gerbang bersama di posko (`PoskoGateController.cs`); saat didekati pemain dapat memilih `Pulang ke Rumah`, `Berangkat ke Level`, atau `Batal`. Tujuan yang belum tersedia menunjukkan alasan sesuai progres.
 - [x] **A:** perpindahan rumah → posko memakai pintu/gerbang (`HomeInteractionController.cs`); dari rumah tidak ada akses langsung ke level.
-- [x] **A:** sediakan titik interaksi Jonathan, Ophelia, Ibu, tempat tidur (istirahat/save) dan titik transisi menggunakan graybox via `StoryNpcController.cs`.
+- [x] **A:** sediakan titik interaksi Jonathan, Ophelia, Ibu, tempat tidur (istirahat/save) dan titik transisi menggunakan graybox via `StoryDialog_InteraksiNPC.cs`.
 - [x] **B:** uji kedua arah transisi, batal, tujuan terkunci, input/fokus, collision serta spawn agar tidak memicu perpindahan berulang atau kehilangan state.
 - [x] **Bukti terima:** `Rumah.unity` dan `Posko.unity` terdaftar di Build Settings; transisi gerbang, dialog Pak Jonathan, Ophelia, dan Ibu berfungsi dengan kontrol WASD & E.
 - **Pembaruan posko:** kontrol Shift kiri/kanan menggandakan kecepatan jalan; animasi karakter lari dari lab belum terhubung ke gameplay. Area interaksi memilih objek terdekat, dan briefing serta pengambilan paket diperlukan sebelum berangkat.

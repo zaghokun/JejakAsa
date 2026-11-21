@@ -9,15 +9,15 @@ namespace JejakAsa
 {
     public class P01OpeningTests
     {
-        private GameFlowManager flow;
+        private StoryFlow_PengaturAlur flow;
         private GameProgressData previous;
         private GameObject playerObject;
         private GameObject npcObject;
         private GameObject openingObject;
         private GameObject cameraObject;
         private PlayerController player;
-        private StoryNpcController ibu;
-        private readonly List<P01Opening> previousOpenings = new List<P01Opening>();
+        private StoryDialog_InteraksiNPC ibu;
+        private readonly List<P01_VickyPulang> previousOpenings = new List<P01_VickyPulang>();
         private readonly List<string> speakers = new List<string>();
 
         [SetUp]
@@ -25,9 +25,9 @@ namespace JejakAsa
         {
             speakers.Clear();
             previousOpenings.Clear();
-            foreach (var existing in Object.FindObjectsByType<P01Opening>(FindObjectsSortMode.None))
+            foreach (var existing in Object.FindObjectsByType<P01_VickyPulang>(FindObjectsSortMode.None))
                 if (existing.enabled) { previousOpenings.Add(existing); existing.enabled = false; }
-            flow = GameFlowManager.Instance;
+            flow = StoryFlow_PengaturAlur.Instance;
             previous = flow.Progress.Clone();
             flow.StartNewCampaign(true);
             cameraObject = new GameObject("P01 test camera");
@@ -39,20 +39,20 @@ namespace JejakAsa
                 .SetValue(player, cameraObject.transform);
             playerObject.SetActive(true);
             npcObject = new GameObject("P01 test Ibu");
-            ibu = npcObject.AddComponent<StoryNpcController>();
+            ibu = npcObject.AddComponent<StoryDialog_InteraksiNPC>();
             ibu.npcType = StoryNpcType.Ibu;
             openingObject = new GameObject("P01 test opening");
             openingObject.SetActive(false);
-            StoryNpcController.SpeakerChanged += OnSpeakerChanged;
-            var opening = openingObject.AddComponent<P01Opening>();
-            typeof(P01Opening).GetField("playerReference", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(opening, player);
-            typeof(P01Opening).GetField("ibuReference", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(opening, ibu);
+            StoryDialog_InteraksiNPC.SpeakerChanged += OnSpeakerChanged;
+            var opening = openingObject.AddComponent<P01_VickyPulang>();
+            typeof(P01_VickyPulang).GetField("playerReference", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(opening, player);
+            typeof(P01_VickyPulang).GetField("ibuReference", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(opening, ibu);
         }
 
         [TearDown]
         public void TearDown()
         {
-            StoryNpcController.SpeakerChanged -= OnSpeakerChanged;
+            StoryDialog_InteraksiNPC.SpeakerChanged -= OnSpeakerChanged;
             Object.DestroyImmediate(openingObject);
             Object.DestroyImmediate(npcObject);
             Object.DestroyImmediate(playerObject);
@@ -72,7 +72,7 @@ namespace JejakAsa
             openingObject.SetActive(true);
             yield return null;
             Assert.IsFalse(player.enabled);
-            var lines = (DialogueLine[])typeof(StoryNpcController)
+            var lines = (DialogueLine[])typeof(StoryDialog_InteraksiNPC)
                 .GetField("activeLines", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(ibu);
             CollectionAssert.AreEqual(new[]
             {
@@ -83,7 +83,7 @@ namespace JejakAsa
                 "Aku ingin cari tahu apa yang benar-benar mereka perlukan. Aku tidak mau datang lalu asal membagikan sesuatu.",
                 "Bagus. Mulai dengan mendengarkan mereka, ya."
             }, System.Array.ConvertAll(lines, line => line.text));
-            var portrait = typeof(StoryNpcController).Assembly.GetType("JejakAsa.DialoguePresentation")
+            var portrait = typeof(StoryDialog_InteraksiNPC).Assembly.GetType("JejakAsa.StoryDialog_Tampilan")
                 .GetMethod("Portrait", BindingFlags.Static | BindingFlags.NonPublic);
             for (int i = 0; i < 6; i++)
             {
@@ -105,8 +105,8 @@ namespace JejakAsa
         public IEnumerator OpeningWaitsForFade()
         {
             var fade = cameraObject.AddComponent<SceneStartFade>();
-            typeof(P01Opening).GetField("fadeReference", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(openingObject.GetComponent<P01Opening>(), fade);
+            typeof(P01_VickyPulang).GetField("fadeReference", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(openingObject.GetComponent<P01_VickyPulang>(), fade);
             openingObject.SetActive(true);
             yield return null;
             Assert.IsFalse(player.enabled);

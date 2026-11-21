@@ -41,7 +41,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator GateLoadsEachLevelWithItsOwnLayout()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -82,7 +82,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator OverlappingTargetsOnlyTriggerTheClosest()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         try
         {
@@ -90,7 +90,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
             flow.GoToPoskoFromHome();
             yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity", LoadSceneMode.Single);
             var player = GameObject.FindGameObjectWithTag("Player").transform;
-            var npcs = Object.FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None);
+            var npcs = Object.FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None);
             var jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
             var packages = Object.FindFirstObjectByType<PoskoDistributionTrigger>();
             jonathan.transform.position = new Vector3(0.5f, 1f, 0f);
@@ -120,7 +120,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
         var player = GameObject.FindGameObjectWithTag("Player").transform;
         yield return WalkTo(player, new Vector2(-5f, -5f));
         yield return WalkTo(player, new Vector2(-5f, 3.1f));
-        var npcs = Object.FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None);
+        var npcs = Object.FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None);
         var jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
         Assert.That(Vector3.Distance(player.position, jonathan.transform.position), Is.LessThan(jonathan.interactionRadius));
         yield return WalkTo(player, new Vector2(-5f, -2.5f));
@@ -155,7 +155,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator RumahPoskoDeliveryReportAndReturnHome()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -176,9 +176,9 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
             Assert.That(flow.Progress.hasPickedUpBansos, Is.False);
             Assert.That(flow.Progress.isBriefingDone, Is.False);
 
-            var npcs = Object.FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None);
-            StoryNpcController jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
-            StoryNpcController ophelia = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Ophelia);
+            var npcs = Object.FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None);
+            StoryDialog_InteraksiNPC jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
+            StoryDialog_InteraksiNPC ophelia = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Ophelia);
             Assert.That(jonathan, Is.Not.Null);
             Assert.That(ophelia, Is.Not.Null);
             MoveNear(player, jonathan.transform.position);
@@ -222,7 +222,7 @@ public sealed class PoskoFlowIntegrationTests : InputTestFixture
             Assert.That(flow.CurrentPhase, Is.EqualTo(DayPhase.PoskoLaporan));
 
             player = GameObject.FindGameObjectWithTag("Player").transform;
-            npcs = Object.FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None);
+            npcs = Object.FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None);
             jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
             ophelia = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Ophelia);
             MoveNear(player, jonathan.transform.position);

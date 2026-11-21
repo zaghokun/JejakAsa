@@ -19,13 +19,13 @@ namespace JejakAsa
 
         private void OnEnable()
         {
-            StoryNpcController.SpeakerChanged += OnSpeakerChanged;
+            StoryDialog_InteraksiNPC.SpeakerChanged += OnSpeakerChanged;
             previousPosition = transform.position;
         }
 
         private void OnDisable()
         {
-            StoryNpcController.SpeakerChanged -= OnSpeakerChanged;
+            StoryDialog_InteraksiNPC.SpeakerChanged -= OnSpeakerChanged;
         }
 
         private void OnSpeakerChanged(string speaker)

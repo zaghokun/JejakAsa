@@ -11,7 +11,7 @@ public sealed class P01FadeTests
     [UnityTest]
     public IEnumerator MainMenuStartsPrologWithUnscaledFade()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         float previousTimeScale = Time.timeScale;
@@ -42,7 +42,7 @@ public sealed class P01FadeTests
     [Test]
     public void ProgressedCampaignDoesNotFade()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         GameObject camera = new GameObject("Fade test camera");
         try
