@@ -1,0 +1,1630 @@
+{
+  "items": [
+    {
+      "name": "P02_Community_Paving",
+      "center": [
+        0.0,
+        0.014999999664723873,
+        0.0
+      ],
+      "materials": [
+        "Paving_0.002",
+        "Paving_1.002",
+        "Paving_2.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Neighborhood_House_0",
+      "center": [
+        -10.0,
+        1.399999976158142,
+        16.0
+      ],
+      "materials": [
+        "Kampung_Plaster_0"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tiled_Roof",
+      "center": [
+        -10.0,
+        3.399999976158142,
+        15.999999523162842
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_House_Door",
+      "center": [
+        -10.899999618530273,
+        1.0499999523162842,
+        13.975000381469727
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter",
+      "center": [
+        -8.800000190734863,
+        1.649999976158142,
+        13.949999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.001",
+      "center": [
+        -7.8500001430511475,
+        1.649999976158142,
+        13.949999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Awning",
+      "center": [
+        -9.999999761581421,
+        2.5,
+        13.300000190734863
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post",
+      "center": [
+        -12.800000190734863,
+        1.25,
+        12.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.001",
+      "center": [
+        -7.199999809265137,
+        1.25,
+        12.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Threshold",
+      "center": [
+        -10.0,
+        0.07999999821186066,
+        13.399999618530273
+      ],
+      "materials": [
+        "Paving_1.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Neighborhood_House_1",
+      "center": [
+        0.0,
+        1.399999976158142,
+        17.0
+      ],
+      "materials": [
+        "Kampung_Plaster_1"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tiled_Roof.001",
+      "center": [
+        0.0,
+        3.399999976158142,
+        16.999999523162842
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_House_Door.001",
+      "center": [
+        -0.8999999761581421,
+        1.0499999523162842,
+        14.975000381469727
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.002",
+      "center": [
+        1.2000000476837158,
+        1.649999976158142,
+        14.949999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.003",
+      "center": [
+        2.1500000953674316,
+        1.649999976158142,
+        14.949999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Awning.001",
+      "center": [
+        0.0,
+        2.5,
+        14.300000190734863
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.002",
+      "center": [
+        -2.799999952316284,
+        1.25,
+        13.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.003",
+      "center": [
+        2.799999952316284,
+        1.25,
+        13.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Threshold.001",
+      "center": [
+        0.0,
+        0.07999999821186066,
+        14.399999618530273
+      ],
+      "materials": [
+        "Paving_1.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Neighborhood_House_2",
+      "center": [
+        10.0,
+        1.399999976158142,
+        16.0
+      ],
+      "materials": [
+        "Kampung_Plaster_2"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tiled_Roof.002",
+      "center": [
+        10.0,
+        3.399999976158142,
+        15.999999523162842
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_House_Door.002",
+      "center": [
+        9.100000381469727,
+        1.0499999523162842,
+        13.975000381469727
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.004",
+      "center": [
+        11.199999809265137,
+        1.649999976158142,
+        13.949999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.005",
+      "center": [
+        12.149999618530273,
+        1.649999976158142,
+        13.949999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Awning.002",
+      "center": [
+        9.999999761581421,
+        2.5,
+        13.300000190734863
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.004",
+      "center": [
+        7.199999809265137,
+        1.25,
+        12.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.005",
+      "center": [
+        12.800000190734863,
+        1.25,
+        12.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Threshold.002",
+      "center": [
+        10.0,
+        0.07999999821186066,
+        13.399999618530273
+      ],
+      "materials": [
+        "Paving_1.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Neighborhood_House_3",
+      "center": [
+        -18.0,
+        1.399999976158142,
+        3.9999999701976776
+      ],
+      "materials": [
+        "Kampung_Plaster_3"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tiled_Roof.003",
+      "center": [
+        -17.999999523162842,
+        3.399999976158142,
+        4.000000059604645
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_House_Door.003",
+      "center": [
+        -20.024999618530273,
+        1.0499999523162842,
+        4.900000095367432
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.006",
+      "center": [
+        -20.049999237060547,
+        1.649999976158142,
+        2.8000001907348633
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.007",
+      "center": [
+        -20.049999237060547,
+        1.649999976158142,
+        1.8499999046325684
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Awning.003",
+      "center": [
+        -20.700000762939453,
+        2.5,
+        3.9999999701976776
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.006",
+      "center": [
+        -21.299999237060547,
+        1.25,
+        6.800000190734863
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.007",
+      "center": [
+        -21.299999237060547,
+        1.25,
+        1.200000286102295
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Threshold.003",
+      "center": [
+        -20.600000381469727,
+        0.07999999821186066,
+        4.0
+      ],
+      "materials": [
+        "Paving_1.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Neighborhood_House_4",
+      "center": [
+        18.0,
+        1.399999976158142,
+        4.999999940395355
+      ],
+      "materials": [
+        "Kampung_Plaster_4"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tiled_Roof.004",
+      "center": [
+        17.999999523162842,
+        3.399999976158142,
+        5.000000059604645
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_House_Door.004",
+      "center": [
+        20.024999618530273,
+        1.0499999523162842,
+        4.099999904632568
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.008",
+      "center": [
+        20.049999237060547,
+        1.649999976158142,
+        6.199999809265137
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Window_Shutter.009",
+      "center": [
+        20.049999237060547,
+        1.649999976158142,
+        7.149999618530273
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Awning.004",
+      "center": [
+        20.700000762939453,
+        2.5,
+        5.000000238418579
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.008",
+      "center": [
+        21.299999237060547,
+        1.25,
+        2.1999998092651367
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Awning_Post.009",
+      "center": [
+        21.299999237060547,
+        1.25,
+        7.799999713897705
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Threshold.004",
+      "center": [
+        20.600000381469727,
+        0.07999999821186066,
+        5.0
+      ],
+      "materials": [
+        "Paving_1.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Shelter_Roof",
+      "center": [
+        -4.9999998807907104,
+        3.3499999046325684,
+        7.000000238418579
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Roof_Trim",
+      "center": [
+        -5.0,
+        3.25,
+        4.940000057220459
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Shelter_Pole",
+      "center": [
+        -8.399999618530273,
+        1.649999976158142,
+        5.199999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Shelter_Pole.001",
+      "center": [
+        -8.399999618530273,
+        1.649999976158142,
+        8.800000190734863
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Shelter_Pole.002",
+      "center": [
+        -1.600000023841858,
+        1.649999976158142,
+        5.199999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Shelter_Pole.003",
+      "center": [
+        -1.600000023841858,
+        1.649999976158142,
+        8.800000190734863
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Community_Desk",
+      "center": [
+        -5.0,
+        0.6221587657928467,
+        6.800000190734863
+      ],
+      "materials": [
+        "Textures.012"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Desk_Chair",
+      "center": [
+        -5.0,
+        0.6740288138389587,
+        8.199999809265137
+      ],
+      "materials": [
+        "Textures.013"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Notice_Board",
+      "center": [
+        -10.0,
+        1.7407849431037903,
+        6.699999809265137
+      ],
+      "materials": [
+        "Textures.015"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Board_Post",
+      "center": [
+        -10.699999809265137,
+        0.699999988079071,
+        6.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Board_Post.001",
+      "center": [
+        -9.300000190734863,
+        0.699999988079071,
+        6.699999809265137
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Community_Bench",
+      "center": [
+        6.999999761581421,
+        0.44999998807907104,
+        7.0
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Bench_Leg",
+      "center": [
+        6.199999809265137,
+        0.20000000298023224,
+        7.0
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Bench_Leg.001",
+      "center": [
+        7.800000190734863,
+        0.20000000298023224,
+        7.0
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Community_Bench.001",
+      "center": [
+        10.100000381469727,
+        0.44999998807907104,
+        7.0
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Bench_Leg.002",
+      "center": [
+        9.300000190734863,
+        0.20000000298023224,
+        7.0
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Bench_Leg.003",
+      "center": [
+        10.899999618530273,
+        0.20000000298023224,
+        7.0
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Trunk_0",
+      "center": [
+        -11.0,
+        1.2000000476837158,
+        -7.5
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy",
+      "center": [
+        -11.0,
+        3.0000000596046448,
+        -7.5
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.001",
+      "center": [
+        -11.699999809265137,
+        2.5999999046325684,
+        -7.349999904632568
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.002",
+      "center": [
+        -10.350000381469727,
+        2.799999952316284,
+        -7.599999904632568
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Planter_0",
+      "center": [
+        -11.0,
+        0.2199999988079071,
+        -7.499999761581421
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Trunk_1",
+      "center": [
+        11.0,
+        1.2000000476837158,
+        -7.5
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.003",
+      "center": [
+        11.0,
+        3.0000000596046448,
+        -7.5
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.004",
+      "center": [
+        10.300000190734863,
+        2.5999999046325684,
+        -7.349999904632568
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.005",
+      "center": [
+        11.649999618530273,
+        2.799999952316284,
+        -7.599999904632568
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Planter_1",
+      "center": [
+        11.0,
+        0.2199999988079071,
+        -7.499999761581421
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Trunk_2",
+      "center": [
+        11.0,
+        1.2000000476837158,
+        9.5
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.006",
+      "center": [
+        11.0,
+        3.0000000596046448,
+        9.5
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.007",
+      "center": [
+        10.300000190734863,
+        2.5999999046325684,
+        9.649999618530273
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.008",
+      "center": [
+        11.649999618530273,
+        2.799999952316284,
+        9.399999618530273
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Planter_2",
+      "center": [
+        11.0,
+        0.2199999988079071,
+        9.5
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Trunk_3",
+      "center": [
+        -12.0,
+        1.2000000476837158,
+        9.5
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.009",
+      "center": [
+        -12.0,
+        3.0000000596046448,
+        9.5
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.010",
+      "center": [
+        -12.699999809265137,
+        2.5999999046325684,
+        9.649999618530273
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Broadleaf_Canopy.011",
+      "center": [
+        -11.350000381469727,
+        2.799999952316284,
+        9.399999618530273
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Tree_Planter_3",
+      "center": [
+        -12.0,
+        0.2199999988079071,
+        9.5
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Potted_Plant_0",
+      "center": [
+        6.199999809265137,
+        0.5499999523162842,
+        8.800000190734863
+      ],
+      "materials": [
+        "Textures.016"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Potted_Plant_1",
+      "center": [
+        -9.800000190734863,
+        0.5499999523162842,
+        3.299999952316284
+      ],
+      "materials": [
+        "Textures.016"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Potted_Plant_2",
+      "center": [
+        9.0,
+        0.5499999523162842,
+        -1.9999999403953552
+      ],
+      "materials": [
+        "Textures.016"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Relief_Crate_0",
+      "center": [
+        -9.0,
+        0.20173631608486176,
+        -0.5000000149011612
+      ],
+      "materials": [
+        "Textures.014"
+      ],
+      "logistics": true
+    },
+    {
+      "name": "P02_Relief_Crate_1",
+      "center": [
+        -8.200000047683716,
+        0.20173631608486176,
+        -0.5000000149011612
+      ],
+      "materials": [
+        "Textures.014"
+      ],
+      "logistics": true
+    },
+    {
+      "name": "P02_Relief_Crate_2",
+      "center": [
+        -9.0,
+        0.20173631608486176,
+        0.20000001043081284
+      ],
+      "materials": [
+        "Textures.014"
+      ],
+      "logistics": true
+    },
+    {
+      "name": "P02_Relief_Crate_3",
+      "center": [
+        -9.0,
+        0.701736330986023,
+        -0.5000000149011612
+      ],
+      "materials": [
+        "Textures.014"
+      ],
+      "logistics": true
+    },
+    {
+      "name": "P02_Gate_Post",
+      "center": [
+        -2.200000047683716,
+        1.350000023841858,
+        -11.5
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Gate_Post.001",
+      "center": [
+        2.200000047683716,
+        1.350000023841858,
+        -11.5
+      ],
+      "materials": [
+        "Posko_DeepGreen.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Gate_Header",
+      "center": [
+        0.0,
+        2.75,
+        -11.5
+      ],
+      "materials": [
+        "Posko_Timber.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Planter_Wall",
+      "center": [
+        -8.100000143051147,
+        0.3499999940395355,
+        -11.649999618530273
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Front_Planter_Wall.001",
+      "center": [
+        8.100000143051147,
+        0.3499999940395355,
+        -11.649999618530273
+      ],
+      "materials": [
+        "Posko_Terracotta.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Sign_RUANG WARGA",
+      "center": [
+        -4.988450050354004,
+        3.312299966812134,
+        4.840000152587891
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    },
+    {
+      "name": "P02_Sign_SELAMAT DATANG",
+      "center": [
+        -0.0028349757194519043,
+        2.7316101789474487,
+        -11.619999885559082
+      ],
+      "materials": [
+        "Posko_Canvas.002"
+      ],
+      "logistics": false
+    }
+  ],
+  "colliders": [
+    {
+      "name": "P02_Neighborhood_House_0_Collider",
+      "center": [
+        -10.0,
+        1.399999976158142,
+        16.0
+      ],
+      "size": [
+        6.0,
+        2.799999952316284,
+        4.0
+      ]
+    },
+    {
+      "name": "P02_Neighborhood_House_1_Collider",
+      "center": [
+        0.0,
+        1.399999976158142,
+        17.0
+      ],
+      "size": [
+        6.0,
+        2.799999952316284,
+        4.0
+      ]
+    },
+    {
+      "name": "P02_Neighborhood_House_2_Collider",
+      "center": [
+        10.0,
+        1.399999976158142,
+        16.0
+      ],
+      "size": [
+        6.0,
+        2.799999952316284,
+        4.0
+      ]
+    },
+    {
+      "name": "P02_Neighborhood_House_3_Collider",
+      "center": [
+        -18.0,
+        1.399999976158142,
+        3.9999999701976776
+      ],
+      "size": [
+        4.0,
+        2.799999952316284,
+        6.000000059604645
+      ]
+    },
+    {
+      "name": "P02_Neighborhood_House_4_Collider",
+      "center": [
+        18.0,
+        1.399999976158142,
+        4.999999940395355
+      ],
+      "size": [
+        4.0,
+        2.799999952316284,
+        6.0000001192092896
+      ]
+    },
+    {
+      "name": "P02_Shelter_Pole_Collider",
+      "center": [
+        -8.399999618530273,
+        1.649999976158142,
+        5.199999809265137
+      ],
+      "size": [
+        0.15999984741210938,
+        3.299999952316284,
+        0.15999984741210938
+      ]
+    },
+    {
+      "name": "P02_Shelter_Pole.001_Collider",
+      "center": [
+        -8.399999618530273,
+        1.649999976158142,
+        8.800000190734863
+      ],
+      "size": [
+        0.15999984741210938,
+        3.299999952316284,
+        0.15999984741210938
+      ]
+    },
+    {
+      "name": "P02_Shelter_Pole.002_Collider",
+      "center": [
+        -1.600000023841858,
+        1.649999976158142,
+        5.199999809265137
+      ],
+      "size": [
+        0.16000008583068848,
+        3.299999952316284,
+        0.15999984741210938
+      ]
+    },
+    {
+      "name": "P02_Shelter_Pole.003_Collider",
+      "center": [
+        -1.600000023841858,
+        1.649999976158142,
+        8.800000190734863
+      ],
+      "size": [
+        0.16000008583068848,
+        3.299999952316284,
+        0.15999984741210938
+      ]
+    },
+    {
+      "name": "P02_Community_Desk_Collider",
+      "center": [
+        -5.0,
+        0.6221587657928467,
+        6.800000190734863
+      ],
+      "size": [
+        2.6999998092651367,
+        1.2443175315856934,
+        1.7327098846435547
+      ]
+    },
+    {
+      "name": "P02_Desk_Chair_Collider",
+      "center": [
+        -5.0,
+        0.6740288138389587,
+        8.199999809265137
+      ],
+      "size": [
+        0.6000003814697266,
+        1.3480576276779175,
+        0.7620639801025391
+      ]
+    },
+    {
+      "name": "P02_Notice_Board_Collider",
+      "center": [
+        -10.0,
+        1.7407849431037903,
+        6.699999809265137
+      ],
+      "size": [
+        2.0,
+        1.2815698385238647,
+        0.12
+      ]
+    },
+    {
+      "name": "P02_Board_Post_Collider",
+      "center": [
+        -10.699999809265137,
+        0.699999988079071,
+        6.699999809265137
+      ],
+      "size": [
+        0.09000015258789062,
+        1.399999976158142,
+        0.12
+      ]
+    },
+    {
+      "name": "P02_Board_Post.001_Collider",
+      "center": [
+        -9.300000190734863,
+        0.699999988079071,
+        6.699999809265137
+      ],
+      "size": [
+        0.09000015258789062,
+        1.399999976158142,
+        0.12
+      ]
+    },
+    {
+      "name": "P02_Community_Bench_Collider",
+      "center": [
+        6.999999761581421,
+        0.44999998807907104,
+        7.0
+      ],
+      "size": [
+        2.299999713897705,
+        0.12000000476837158,
+        0.619999885559082
+      ]
+    },
+    {
+      "name": "P02_Community_Bench.001_Collider",
+      "center": [
+        10.100000381469727,
+        0.44999998807907104,
+        7.0
+      ],
+      "size": [
+        2.299999237060547,
+        0.12000000476837158,
+        0.619999885559082
+      ]
+    },
+    {
+      "name": "P02_Tree_Planter_0_Collider",
+      "center": [
+        -11.0,
+        0.2199999988079071,
+        -7.499999761581421
+      ],
+      "size": [
+        1.2999992370605469,
+        0.4399999976158142,
+        1.299999713897705
+      ]
+    },
+    {
+      "name": "P02_Tree_Planter_1_Collider",
+      "center": [
+        11.0,
+        0.2199999988079071,
+        -7.499999761581421
+      ],
+      "size": [
+        1.2999992370605469,
+        0.4399999976158142,
+        1.299999713897705
+      ]
+    },
+    {
+      "name": "P02_Tree_Planter_2_Collider",
+      "center": [
+        11.0,
+        0.2199999988079071,
+        9.5
+      ],
+      "size": [
+        1.2999992370605469,
+        0.4399999976158142,
+        1.2999992370605469
+      ]
+    },
+    {
+      "name": "P02_Tree_Planter_3_Collider",
+      "center": [
+        -12.0,
+        0.2199999988079071,
+        9.5
+      ],
+      "size": [
+        1.2999992370605469,
+        0.4399999976158142,
+        1.2999992370605469
+      ]
+    },
+    {
+      "name": "P02_Gate_Post_Collider",
+      "center": [
+        -2.200000047683716,
+        1.350000023841858,
+        -11.5
+      ],
+      "size": [
+        0.23999977111816406,
+        2.700000047683716,
+        0.23999977111816406
+      ]
+    },
+    {
+      "name": "P02_Gate_Post.001_Collider",
+      "center": [
+        2.200000047683716,
+        1.350000023841858,
+        -11.5
+      ],
+      "size": [
+        0.23999977111816406,
+        2.700000047683716,
+        0.23999977111816406
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Paving_0.002",
+      "color": [
+        0.5799999833106995,
+        0.5600000023841858,
+        0.47999998927116394,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Paving_1.002",
+      "color": [
+        0.6399999856948853,
+        0.6200000047683716,
+        0.5400000214576721,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Paving_2.002",
+      "color": [
+        0.5400000214576721,
+        0.5400000214576721,
+        0.4699999988079071,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Kampung_Plaster_0",
+      "color": [
+        0.6499999761581421,
+        0.6800000071525574,
+        0.47999998927116394,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Posko_Terracotta.002",
+      "color": [
+        0.550000011920929,
+        0.23000000417232513,
+        0.11999999731779099,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Posko_Timber.002",
+      "color": [
+        0.36000001430511475,
+        0.23000000417232513,
+        0.12999999523162842,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Posko_DeepGreen.002",
+      "color": [
+        0.12999999523162842,
+        0.3100000023841858,
+        0.23000000417232513,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Posko_Canvas.002",
+      "color": [
+        0.8299999833106995,
+        0.7400000095367432,
+        0.5199999809265137,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Kampung_Plaster_1",
+      "color": [
+        0.6700000166893005,
+        0.44999998807907104,
+        0.3199999928474426,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Kampung_Plaster_2",
+      "color": [
+        0.36000001430511475,
+        0.5600000023841858,
+        0.5,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Kampung_Plaster_3",
+      "color": [
+        0.6499999761581421,
+        0.6000000238418579,
+        0.41999998688697815,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Kampung_Plaster_4",
+      "color": [
+        0.47999998927116394,
+        0.5799999833106995,
+        0.6399999856948853,
+        1.0
+      ],
+      "texture": ""
+    },
+    {
+      "name": "Textures.012",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "texture": "atlas_6bf81675.png"
+    },
+    {
+      "name": "Textures.013",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "texture": "atlas_6bf81675.png"
+    },
+    {
+      "name": "Textures.015",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "texture": "atlas_6bf81675.png"
+    },
+    {
+      "name": "Textures.016",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "texture": "atlas_6bf81675.png"
+    },
+    {
+      "name": "Textures.014",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "texture": "atlas_6bf81675.png"
+    }
+  ]
+}

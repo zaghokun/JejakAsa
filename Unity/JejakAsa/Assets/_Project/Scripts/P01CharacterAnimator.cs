@@ -19,13 +19,13 @@ namespace JejakAsa
 
         private void OnEnable()
         {
-            StoryNpcController.SpeakerChanged += OnSpeakerChanged;
+            StoryDialog_InteraksiNPC.SpeakerChanged += OnSpeakerChanged;
             previousPosition = transform.position;
         }
 
         private void OnDisable()
         {
-            StoryNpcController.SpeakerChanged -= OnSpeakerChanged;
+            StoryDialog_InteraksiNPC.SpeakerChanged -= OnSpeakerChanged;
         }
 
         private void OnSpeakerChanged(string speaker)
@@ -36,7 +36,7 @@ namespace JejakAsa
                 animator.CrossFadeInFixedTime("Idle", 0.12f);
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             Vector3 displacement = transform.position - previousPosition;
             previousPosition = transform.position;

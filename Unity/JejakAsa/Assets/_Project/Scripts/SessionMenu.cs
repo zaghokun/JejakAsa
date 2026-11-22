@@ -14,7 +14,7 @@ namespace JejakAsa
 
         private static SessionMenu active;
         private static int blockedFrame = -1;
-        internal static bool InputBlocked => (active != null && active.IsPaused) || blockedFrame == Time.frameCount;
+        internal static bool InputBlocked => (active != null && active.IsPaused) || blockedFrame == Time.frameCount || P03_SponsorDanPosko.PresentationActive;
 
         private PlayerInteraction interaction;
         private PlayerController movement;
@@ -26,15 +26,29 @@ namespace JejakAsa
         private enum MenuPage { Main, Load, Settings, ConfirmNew, Exit, ConfirmQuit, ConfirmLoad }
         private MenuPage page;
         private int pendingLoadSlot;
-        private Vector2 menuScroll;
-        private GUIStyle rpgText;
-        private GUIStyle rpgSmall;
-        private GUIStyle rpgButton;
+        private Texture2D menuBackground;
+        private Texture2D titleLogo;
+        private float pageOpenedAt;
+        private float highlightRow;
+        private Vector2 lastPointerPosition;
+        private bool hasPointerPosition;
         private string notice = "";
         private const string VolumeKey = "JejakAsa_MasterVolume";
         private const string FullscreenKey = "JejakAsa_Fullscreen";
+        private static readonly string[] MainMenuOptions = { "Permainan Baru", "Lanjutkan", "Muat Data", "Pengaturan", "Keluar" };
 
         public string MenuNotice => notice;
+
+        // Dipakai Canvas "MenuUtama" (tampilan uGUI pixel). Kalau true, menu utama versi OnGUI ga digambar,
+        // tapi logika (halaman, pilihan, keyboard) tetap jalan di sini.
+        public bool pakaiMenuBaru;
+        public string HalamanSekarang => page.ToString();
+        public int PilihanSekarang => selected;
+        public int JumlahPilihan => OptionCount();
+        public string KeteranganHalaman => PageDescription();
+        public string LabelPilihan(int i) => RowLabel(i);
+        public void SorotPilihan(int i) { if (i >= 0 && i < OptionCount()) selected = i; }
+        public void PilihDariTombol(int i) { if (i < 0 || i >= OptionCount()) return; selected = i; Activate(i); }
 
 
         private void Awake()
@@ -42,6 +56,9 @@ namespace JejakAsa
             active = this;
             interaction = GetComponent<PlayerInteraction>();
             movement = GetComponent<PlayerController>();
+            menuBackground = Resources.Load<Texture2D>("JejakAsaUI/MenuBackground");
+            titleLogo = Resources.Load<Texture2D>("JejakAsaUI/Generated/JejakAsaLogo");
+            pageOpenedAt = Time.unscaledTime;
             AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(VolumeKey, 1f));
             if (PlayerPrefs.HasKey(FullscreenKey))
                 Screen.fullScreen = PlayerPrefs.GetInt(FullscreenKey) != 0;
@@ -57,12 +74,16 @@ namespace JejakAsa
 
         private void Update()
         {
+            if (P03_SponsorDanPosko.PresentationActive) return;
+            UpdatePointerSelection();
+            highlightRow = Mathf.MoveTowards(highlightRow, selected, Time.unscaledDeltaTime * 10f);
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
                 return;
 
             if (!isMainMenu && keyboard.escapeKey.wasPressedThisFrame)
             {
+                if (!IsPaused && (HomeInteractionController.AnyMenuOpen || PoskoGateController.AnyMenuOpen)) return;
                 if (IsPaused)
                 {
                     if (confirming) CancelReturnToMenu();
@@ -72,7 +93,7 @@ namespace JejakAsa
                     else Resume();
                 }
                 else if ((interaction == null || !interaction.IsDialogueOpen) &&
-                    !StoryNpcController.AnyDialogueOpen && !StoryNpcController.EscapeConsumedThisFrame)
+                    !StoryDialog_InteraksiNPC.AnyDialogueOpen && !StoryDialog_InteraksiNPC.EscapeConsumedThisFrame)
                 {
                     Pause();
                 }
@@ -93,17 +114,48 @@ namespace JejakAsa
             else if (keyboard.digit3Key.wasPressedThisFrame && count > 2) Activate(2);
             else if (keyboard.digit4Key.wasPressedThisFrame && count > 3) Activate(3);
             else if (keyboard.digit5Key.wasPressedThisFrame && count > 4) Activate(4);
-            else if (keyboard.digit6Key.wasPressedThisFrame && count > 5) Activate(5);
-            else if (keyboard.digit7Key.wasPressedThisFrame && count > 6) Activate(6);
-            else if (keyboard.digit8Key.wasPressedThisFrame && count > 7) Activate(7);
-            else if (keyboard.digit9Key.wasPressedThisFrame && count > 8) Activate(8);
             else if (keyboard.enterKey.wasPressedThisFrame || keyboard.spaceKey.wasPressedThisFrame) Activate(selected);
             else if (isMainMenu && keyboard.escapeKey.wasPressedThisFrame && page != MenuPage.Main) ShowPage(MenuPage.Main);
         }
 
+        private void UpdatePointerSelection()
+        {
+            if ((!isMainMenu && !IsPaused) || (isMainMenu && pakaiMenuBaru) || Mouse.current == null)
+                return;
+            Vector2 position = Mouse.current.position.ReadValue();
+            bool moved = !hasPointerPosition || (position - lastPointerPosition).sqrMagnitude > .01f;
+            lastPointerPosition = position;
+            hasPointerPosition = true;
+            // A resting mouse must not take selection back from keyboard navigation.
+            if (!moved && !Mouse.current.leftButton.wasPressedThisFrame) return;
+            float scale = CozyGuiTheme.Scale;
+            Vector2 point = new Vector2(position.x, Screen.height - position.y) / scale;
+            Rect area = RowsArea();
+            float height = page == MenuPage.Load ? 76 : 62;
+            for (int i = 0; i < OptionCount(); i++)
+                if (new Rect(area.x, area.y + i * height, area.width, height - 8).Contains(point))
+                {
+                    selected = i;
+                    return;
+                }
+        }
+
+        private Rect RowsArea()
+        {
+            float scale = CozyGuiTheme.Scale;
+            float sw = Screen.width / scale, sh = Screen.height / scale;
+            if (isMainMenu && page == MenuPage.Main)
+            {
+                float entry = 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - pageOpenedAt) / .2f)));
+                return new Rect(64, (sh - 656) / 2 + entry + 334, 366, 285);
+            }
+            float cardHeight = Mathf.Min(656, 280 + OptionCount() * 64);
+            return new Rect((sw - 720) / 2 + 60, (sh - cardHeight) / 2 + 214, 600, 320);
+        }
+
         public void Pause()
         {
-            if (isMainMenu || IsPaused)
+            if (isMainMenu || IsPaused || P03_SponsorDanPosko.PresentationActive)
                 return;
             active = this;
             IsPaused = true;
@@ -113,6 +165,8 @@ namespace JejakAsa
             selected = 0;
             confirming = false;
             page = MenuPage.Main;
+            pageOpenedAt = Time.unscaledTime;
+            highlightRow = 0f;
             notice = "";
             pendingLoadSlot = 0;
             if (movement != null)
@@ -149,6 +203,8 @@ namespace JejakAsa
             confirming = true;
             selected = 0;
             page = MenuPage.Exit;
+            pageOpenedAt = Time.unscaledTime;
+            highlightRow = 0f;
         }
 
         public void CancelReturnToMenu()
@@ -158,6 +214,8 @@ namespace JejakAsa
             confirming = false;
             selected = 0;
             page = MenuPage.Exit;
+            pageOpenedAt = Time.unscaledTime;
+            highlightRow = 0f;
         }
 
         public void ConfirmReturnToMenu()
@@ -174,8 +232,8 @@ namespace JejakAsa
             if (!isMainMenu)
                 return;
             Time.timeScale = 1f;
-            if (GameFlowManager.Instance != null)
-                GameFlowManager.Instance.StartNewCampaign();
+            if (StoryFlow_PengaturAlur.Instance != null)
+                StoryFlow_PengaturAlur.Instance.StartNewCampaign();
 
             SceneManager.LoadScene("Assets/_Project/Scenes/Kampung.unity", LoadSceneMode.Single);
         }
@@ -183,9 +241,9 @@ namespace JejakAsa
         public void StartCampaignFromHome()
         {
             Time.timeScale = 1f;
-            if (GameFlowManager.Instance != null)
-                GameFlowManager.Instance.StartNewCampaign(true);
-            GameFlowManager.Instance.LastSpawnPoint = null;
+            if (StoryFlow_PengaturAlur.Instance != null)
+                StoryFlow_PengaturAlur.Instance.StartNewCampaign(true);
+            StoryFlow_PengaturAlur.Instance.LastSpawnPoint = null;
 
             SceneManager.LoadScene("Assets/_Project/Scenes/Rumah.unity", LoadSceneMode.Single);
         }
@@ -193,18 +251,23 @@ namespace JejakAsa
         {
             page = next;
             selected = 0;
-            menuScroll = Vector2.zero;
+            pageOpenedAt = Time.unscaledTime;
+            highlightRow = 0f;
             notice = "";
         }
 
         private int OptionCount()
         {
             if (isMainMenu)
-                return page == MenuPage.Main ? 5 : page == MenuPage.Load || page == MenuPage.Settings ? 4 : 2;
+            {
+                if (page == MenuPage.Main) return MainMenuOptions.Length;
+                if (page == MenuPage.Load || page == MenuPage.Settings) return 4;
+                return 2;
+            }
             if (confirming || page == MenuPage.ConfirmQuit || page == MenuPage.ConfirmLoad)
                 return 2;
-            if (page == MenuPage.Main) return 4;
-            if (page == MenuPage.Settings || page == MenuPage.Load) return 4;
+            if (page == MenuPage.Main || page == MenuPage.Settings || page == MenuPage.Load)
+                return 4;
             return 3;
         }
 
@@ -213,9 +276,9 @@ namespace JejakAsa
         {
             int latest = 0;
             string latestTime = "";
-            for (int slot = 1; slot <= GameFlowManager.MaxSaveSlots; slot++)
+            for (int slot = 1; slot <= StoryFlow_PengaturAlur.MaxSaveSlots; slot++)
             {
-                if (!GameFlowManager.HasSave(slot)) continue;
+                if (!StoryFlow_PengaturAlur.HasSave(slot)) continue;
                 string time = PlayerPrefs.GetString("JejakAsa_SaveSlot_" + slot + "_Time", "");
                 if (latest == 0 || string.CompareOrdinal(time, latestTime) > 0)
                 {
@@ -229,12 +292,12 @@ namespace JejakAsa
 
         private void LoadSlot(int slot)
         {
-            if (!GameFlowManager.HasSave(slot))
+            if (!StoryFlow_PengaturAlur.HasSave(slot))
             {
                 notice = "Slot " + slot + " kosong.";
                 return;
             }
-            if (!GameFlowManager.TryReadSave(slot, out GameProgressData data) ||
+            if (!StoryFlow_PengaturAlur.TryReadSave(slot, out GameProgressData data) ||
                 (data.currentPhase != DayPhase.RumahPagi && data.currentPhase != DayPhase.RumahMalam &&
                  data.currentPhase != DayPhase.Prolog && data.currentPhase != DayPhase.Tamat))
             {
@@ -252,13 +315,13 @@ namespace JejakAsa
                 notice = "Scene rumah tidak tersedia; save tidak dimuat.";
                 return;
             }
-            if (!GameFlowManager.Instance.LoadGame(slot))
+            if (!StoryFlow_PengaturAlur.Instance.LoadGame(slot))
             {
                 notice = "Gagal memuat slot " + slot + ".";
                 return;
             }
             if (IsPaused) Resume();
-            GameFlowManager.Instance.LastSpawnPoint = null;
+            StoryFlow_PengaturAlur.Instance.LastSpawnPoint = null;
             Time.timeScale = 1f;
             SceneManager.LoadScene("Assets/_Project/Scenes/Rumah.unity", LoadSceneMode.Single);
         }
@@ -274,12 +337,17 @@ namespace JejakAsa
                     else if (choice == 1) ContinueGame();
                     else if (choice == 2) ShowPage(MenuPage.Load);
                     else if (choice == 3) ShowPage(MenuPage.Settings);
-                    else Application.Quit();
+                    else ShowPage(MenuPage.ConfirmQuit);
                 }
                 else if (page == MenuPage.ConfirmNew)
                 {
                     if (choice == 0) ShowPage(MenuPage.Main);
                     else StartCampaignFromHome();
+                }
+                else if (page == MenuPage.ConfirmQuit)
+                {
+                    if (choice == 0) ShowPage(MenuPage.Main);
+                    else Application.Quit();
                 }
                 else if (page == MenuPage.Load)
                 {
@@ -341,157 +409,139 @@ namespace JejakAsa
             PlayerPrefs.Save();
         }
 
-        private static void DrawRpgPanel(Rect rect)
+        private string RowLabel(int i)
         {
-            Color previous = GUI.color;
-            GUI.color = new Color(0.73f, 0.84f, 0.94f, 1f);
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = new Color(0.07f, 0.15f, 0.33f, 1f);
-            GUI.DrawTexture(new Rect(rect.x + 3f, rect.y + 3f, rect.width - 6f, rect.height - 6f), Texture2D.whiteTexture);
-            GUI.color = previous;
-        }
-
-        private string PauseOption(int index)
-        {
-            if (confirming) return index == 0 ? "Batal" : "Ya, ke menu utama";
-            if (page == MenuPage.ConfirmQuit) return index == 0 ? "Batal" : "Ya, keluar game";
-            if (page == MenuPage.ConfirmLoad) return index == 0 ? "Batal" : "Ya, muat slot " + pendingLoadSlot;
-            if (page == MenuPage.Main)
+            if (confirming) return i == 0 ? "Kembali" : "Ya, ke menu utama";
+            if (page == MenuPage.ConfirmQuit) return i == 0 ? "Kembali" : "Ya, keluar game";
+            if (page == MenuPage.ConfirmLoad) return i == 0 ? "Kembali" : "Ya, muat perjalanan";
+            if (page == MenuPage.ConfirmNew) return i == 0 ? "Kembali" : "Mulai perjalanan";
+            if (page == MenuPage.Load)
             {
-                switch (index)
-                {
-                    case 0: return "Lanjutkan";
-                    case 1: return "Pengaturan";
-                    case 2: return "Muat";
-                    default: return "Keluar";
-                }
+                if (i == 3) return "Kembali";
+                var meta = StoryFlow_PengaturAlur.GetSlotMeta(i + 1);
+                return "Slot 0" + (i + 1) + (meta.exists ? "     Hari " + meta.day + " / 5" : "     Belum tersimpan");
             }
             if (page == MenuPage.Settings)
-                return index == 0 ? "Volume -  (" + Mathf.RoundToInt(AudioListener.volume * 100) + "%)" :
-                    index == 1 ? "Volume +" : index == 2 ? "Layar penuh: " + (Screen.fullScreen ? "Ya" : "Tidak") : "Kembali";
-            if (page == MenuPage.Load)
-                return index == 3 ? "Kembali" : "Slot " + (index + 1) + (GameFlowManager.HasSave(index + 1) ? "  —  Tersimpan" : "  —  Kosong");
-            return index == 0 ? "Kembali" : index == 1 ? "Menu utama" : "Keluar game";
+                return i == 0 ? "Volume turun     " + Mathf.RoundToInt(AudioListener.volume * 100) + "%" :
+                    i == 1 ? "Volume naik" : i == 2 ? "Layar penuh     " + (Screen.fullScreen ? "Aktif" : "Nonaktif") : "Kembali";
+            if (isMainMenu) return MainMenuOptions[i];
+            if (page == MenuPage.Exit) return i == 0 ? "Kembali" : i == 1 ? "Menu utama" : "Keluar game";
+            return i == 0 ? "Lanjutkan perjalanan" : i == 1 ? "Pengaturan" : i == 2 ? "Muat perjalanan" : "Keluar";
         }
 
-        private void DrawPauseMenu()
+        private void DrawRows(Rect area)
         {
-            if (rpgText == null)
-            {
-                rpgText = new GUIStyle(GUI.skin.label) { fontSize = 20, fontStyle = FontStyle.Bold };
-                rpgText.normal.textColor = Color.white;
-                rpgSmall = new GUIStyle(GUI.skin.label) { fontSize = 15, wordWrap = true };
-                rpgSmall.normal.textColor = new Color(0.86f, 0.91f, 1f);
-                rpgButton = new GUIStyle { fontSize = 17, alignment = TextAnchor.MiddleLeft, padding = new RectOffset(12, 4, 2, 2) };
-                rpgButton.normal.textColor = rpgButton.hover.textColor = rpgButton.active.textColor = Color.white;
-            }
-
-            GUI.depth = -1000;
-            Matrix4x4 previousMatrix = GUI.matrix;
-            float scale = CozyGuiTheme.Scale;
-            GUI.matrix = previousMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-            float sw = Screen.width / scale;
-            float sh = Screen.height / scale;
-            GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
-            float width = Mathf.Min(800f, sw - 32f);
-            float height = Mathf.Min(390f, sh - 32f);
-            float x = (sw - width) * 0.5f;
-            float y = (sh - height) * 0.5f;
-            float commandWidth = width * 0.37f;
-            Rect status = new Rect(x, y, width - commandWidth - 10f, height);
-            Rect commands = new Rect(status.xMax + 10f, y, commandWidth, height);
-            DrawRpgPanel(status);
-            DrawRpgPanel(commands);
-
-            var progress = GameFlowManager.Instance.Progress;
-            GUI.Label(new Rect(status.x + 20f, y + 18f, status.width - 40f, 30f), "VICKY", rpgText);
-            GUI.Label(new Rect(status.x + 20f, y + 54f, status.width - 40f, 24f),
-                $"Hari {progress.currentDay}     Level {progress.currentLevel}", rpgSmall);
-            string detail;
-            if (confirming) detail = "Kembali ke menu utama? Progres sesi yang belum disimpan akan hilang.";
-            else if (page == MenuPage.ConfirmQuit) detail = "Keluar dari game? Progres sesi yang belum disimpan akan hilang.";
-            else if (page == MenuPage.ConfirmLoad) detail = "Muat slot " + pendingLoadSlot + "? Progres sesi yang belum disimpan akan diganti.";
-            else if (page == MenuPage.Settings) detail = "Atur volume dan mode layar. Pengaturan tersimpan di perangkat ini.";
-            else if (page == MenuPage.Load) detail = "Pilih slot save dari rumah.\nMemuat akan meminta konfirmasi terlebih dahulu.";
-            else if (page == MenuPage.Exit) detail = "Pilih kembali ke menu utama atau keluar game.";
-            else detail = "Permainan dijeda.\nPilih perintah di sebelah kanan.";
-            GUI.Label(new Rect(status.x + 20f, y + 94f, status.width - 40f, height - 165f), detail, rpgSmall);
-            if (!string.IsNullOrEmpty(notice))
-                GUI.Label(new Rect(status.x + 20f, y + height - 72f, status.width - 40f, 42f), notice, rpgSmall);
-            GUI.Label(new Rect(status.x + 20f, y + height - 28f, status.width - 40f, 20f), "Panah / Tab + Enter   •   Esc kembali", rpgSmall);
-
-            string heading = confirming || page == MenuPage.ConfirmQuit || page == MenuPage.ConfirmLoad ? "KONFIRMASI" :
-                page == MenuPage.Settings ? "PENGATURAN" : page == MenuPage.Load ? "MUAT" : page == MenuPage.Exit ? "KELUAR" : "PERINTAH";
-            GUI.Label(new Rect(commands.x + 14f, y + 16f, commands.width - 28f, 28f), heading, rpgText);
             int count = OptionCount();
-            float rowHeight = 38f;
-            float viewHeight = height - 62f;
-            if (selected * rowHeight < menuScroll.y) menuScroll.y = selected * rowHeight;
-            if ((selected + 1) * rowHeight > menuScroll.y + viewHeight) menuScroll.y = (selected + 1) * rowHeight - viewHeight;
-            Rect viewport = new Rect(commands.x + 8f, y + 48f, commands.width - 16f, viewHeight);
-            menuScroll = GUI.BeginScrollView(viewport, menuScroll, new Rect(0f, 0f, viewport.width - 18f, count * rowHeight));
+            float rowHeight = page == MenuPage.Load ? 76 : 62;
+            // A fixed set of at most five choices fits at the shared 1280 x 720 reference size.
             for (int i = 0; i < count; i++)
             {
-                Rect row = new Rect(0f, i * rowHeight, viewport.width - 20f, rowHeight - 2f);
-                if (i == selected)
+                Rect row = new Rect(area.x, area.y + i * rowHeight, area.width, rowHeight - 8);
+                bool chosen = i == selected;
+                GUIStyle style = chosen ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.AmberBtnStyle;
+                if (CozyGuiTheme.Button(row, GUIContent.none, style, false)) { selected = i; Activate(i); break; }
+                GUIStyle label = chosen ? CozyGuiTheme.White : CozyGuiTheme.ButtonLabel;
+                GUI.Label(new Rect(row.x + 16, row.y, 28, row.height), (i + 1).ToString("00"), chosen ? CozyGuiTheme.White : CozyGuiTheme.Small);
+                GUI.Label(new Rect(row.x + 54, row.y, row.width - 80, row.height), RowLabel(i), label);
+                GUI.Label(new Rect(row.xMax - 28, row.y, 20, row.height), chosen ? ">" : "", label);
+                if (page == MenuPage.Load && i < 3)
                 {
-                    Color old = GUI.color;
-                    GUI.color = new Color(0.23f, 0.39f, 0.68f, 1f);
-                    GUI.DrawTexture(row, Texture2D.whiteTexture);
-                    GUI.color = old;
-                }
-                if (GUI.Button(row, (i == selected ? "> " : "  ") + PauseOption(i), rpgButton))
-                {
-                    selected = i;
-                    Activate(i);
+                    var meta = StoryFlow_PengaturAlur.GetSlotMeta(i + 1);
+                    GUI.Label(new Rect(row.x + 16, row.yMax + 1, row.width - 20, 18), meta.exists ? meta.timestamp : "Simpan progres melalui tempat tidur di rumah.", CozyGuiTheme.Small);
                 }
             }
-            GUI.EndScrollView();
-            GUI.matrix = previousMatrix;
+        }
+
+        private string PageTitle()
+        {
+            if (confirming) return "Kembali ke awal?";
+            return page switch
+            {
+                MenuPage.Load => "Jejak tersimpan", MenuPage.Settings => "Atur kenyamanan",
+                MenuPage.ConfirmNew => "Langkah pertama", MenuPage.ConfirmQuit => "Sampai jumpa?",
+                MenuPage.ConfirmLoad => "Lanjutkan jejak ini?", MenuPage.Exit => "Akhiri sejenak",
+                _ => "Ambil waktu sejenak."
+            };
+        }
+
+        private string PageDescription()
+        {
+            if (confirming) return "Progres yang belum disimpan akan hilang saat kembali ke menu utama.";
+            return page switch
+            {
+                MenuPage.Load => "Pilih satu dari tiga catatan perjalananmu.",
+                MenuPage.Settings => "Sesuaikan suara dan tampilan untuk perjalananmu.",
+                MenuPage.ConfirmNew => "Mulai dari rumah Vicky pada hari pertama. Slot simpan lama tetap tersedia.",
+                MenuPage.ConfirmQuit => "Progres yang belum disimpan akan hilang saat keluar.",
+                MenuPage.ConfirmLoad => "Muat slot " + pendingLoadSlot + ". Progres sesi yang belum disimpan akan diganti.",
+                MenuPage.Exit => "Simpan di rumah sebelum mengakhiri perjalanan.",
+                _ => "Kampung menunggu. Lanjutkan saat kamu siap."
+            };
+        }
+
+        private void DrawJournal(Rect r)
+        {
+            CozyGuiTheme.Header(r, "CATATAN RELAWAN", "Setiap langkah berarti.", "Bantuan sampai, harapan tumbuh.");
+            var flow = StoryFlow_PengaturAlur.Instance;
+            GUI.Label(new Rect(r.x + 28, r.y + 194, r.width - 56, 20), "TUJUAN SAAT INI", CozyGuiTheme.Eyebrow);
+            GUI.Label(new Rect(r.x + 28, r.y + 224, r.width - 56, 68), StoryObjective_TujuanAktif.GetObjective(flow.Progress), CozyGuiTheme.LabelStyle);
+            CozyGuiTheme.Rule(r.x + 28, r.y + 312, r.width - 56);
+            GUI.Label(new Rect(r.x + 28, r.y + 334, r.width - 56, 24), "Hari " + flow.CurrentDay + " / 5  ·  " + CozyGuiTheme.PhaseName(flow.CurrentPhase), CozyGuiTheme.Body);
+            CozyGuiTheme.Journey(new Rect(r.x + 28, r.y + 396, r.width - 70, 100), flow.CurrentDay, flow.CurrentPhase == DayPhase.Tamat ? 5 : flow.CurrentDay - 1);
+            GUI.Label(new Rect(r.x + 28, r.y + 536, r.width - 56, 48), "WASD  Bergerak     Shift  Berlari\nE  Berinteraksi        Esc  Jeda", CozyGuiTheme.Small);
         }
 
         private void OnGUI()
         {
-            if (!isMainMenu && !IsPaused)
-                return;
-
+            if (!isMainMenu && !IsPaused) return;
+            if (isMainMenu && pakaiMenuBaru) return;
             CozyGuiTheme.EnsureInitialized();
-            if (!isMainMenu)
-            {
-                DrawPauseMenu();
-                return;
-            }
             GUI.depth = -1000;
+            Matrix4x4 old = GUI.matrix;
             float scale = CozyGuiTheme.Scale;
-            Matrix4x4 previousMatrix = GUI.matrix;
-            GUI.matrix = previousMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-            float screenWidth = Screen.width / scale;
-            float screenHeight = Screen.height / scale;
-            GUI.DrawTexture(new Rect(0, 0, screenWidth, screenHeight), CozyGuiTheme.DimTex);
-
-            float width = Mathf.Min(440f, screenWidth - 32f);
-            int count = OptionCount();
-            float height = 150f + count * 48f;
-            float x = (screenWidth - width) * 0.5f;
-            float y = (screenHeight - height) * 0.5f;
-            GUI.Box(new Rect(x, y, width, height), GUIContent.none, CozyGuiTheme.CardStyle);
-            string title = page == MenuPage.Load ? "MUAT PERMAINAN" : page == MenuPage.Settings ? "PENGATURAN" : page == MenuPage.ConfirmNew ? "PERMAINAN BARU?" : "JEJAK ASA";
-            string description = page == MenuPage.ConfirmNew ? "Progres sesi ini akan hilang. Save tetap aman." : notice;
-            GUI.Label(new Rect(x + 20f, y + 18f, width - 40f, 30f), title, CozyGuiTheme.RibbonStyle);
-            GUI.Label(new Rect(x + 20f, y + 54f, width - 40f, 28f), description, CozyGuiTheme.OutcomeDescStyle);
-
-            for (int i = 0; i < count; i++)
+            GUI.matrix = old * Matrix4x4.Scale(new Vector3(scale, scale, 1));
+            float sw = Screen.width / scale, sh = Screen.height / scale;
+            if (isMainMenu && menuBackground != null) GUI.DrawTexture(new Rect(0, 0, sw, sh), menuBackground, ScaleMode.ScaleAndCrop);
+            else GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
+            float entry = 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - pageOpenedAt) / .2f)));
+            float y = (sh - 656) / 2 + entry;
+            bool cover = isMainMenu && page == MenuPage.Main;
+            if (cover)
             {
-                string label;
-                if (page == MenuPage.Main) label = new[] { "Permainan Baru", "Lanjutkan", "Muat", "Pengaturan", "Keluar" }[i];
-                else if (page == MenuPage.ConfirmNew) label = i == 0 ? "Batal" : "Ya, mulai baru";
-                else if (page == MenuPage.Load) label = i == 3 ? "Kembali" : "Slot " + (i + 1) + (GameFlowManager.HasSave(i + 1) ? " — " + PlayerPrefs.GetString("JejakAsa_SaveSlot_" + (i + 1) + "_Time", "-") : " — Kosong");
-                else label = i == 0 ? "Volume - (" + Mathf.RoundToInt(AudioListener.volume * 100) + "%)" : i == 1 ? "Volume +" : i == 2 ? "Layar penuh: " + (Screen.fullScreen ? "Ya" : "Tidak") : "Kembali";
-                if (GUI.Button(new Rect(x + 30f, y + 90f + i * 48f, width - 60f, 40f), (selected == i ? "> " : "") + label, i == 0 ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.CoralBtnStyle))
-                    Activate(i);
+                Rect sheet = new Rect(32, y, 430, 656);
+                CozyGuiTheme.Fill(new Rect(0,0,490,sh), new Color(.04f,.10f,.07f,.55f));
+
+                if (titleLogo != null) GUI.DrawTexture(new Rect(54, y + 75, 386, 150), titleLogo, ScaleMode.ScaleToFit, true);
+                else GUI.Label(new Rect(64, y + 100, 360, 100), "JEJAK ASA", CozyGuiTheme.Title);
+                GUI.Label(new Rect(68, y + 244, 354, 48), "Bantuan sampai,\nharapan tumbuh.", CozyGuiTheme.White);
+                CozyGuiTheme.Rule(68, y + 312, 354);
+                DrawRows(RowsArea());
+
+                Rect caption = new Rect(sw - 464, sh - 159, 420, 113);
+                CozyGuiTheme.Card(caption);
+                var captionArt = Resources.Load<Texture2D>("JejakAsaUI/Generated/VolunteerDialogPanel");
+                if (captionArt != null) GUI.DrawTexture(caption, captionArt, ScaleMode.StretchToFill, true);
+                GUI.Label(new Rect(caption.x + 24, caption.y + 16, 372, 22), "PULANG. PEDULI. BERGERAK BERSAMA.", CozyGuiTheme.Eyebrow);
+                GUI.Label(new Rect(caption.x + 24, caption.y + 44, 372, 47), "Lima hari menyusuri kampung.\nSatu langkah kecil untuk sesama.", CozyGuiTheme.Body);
+                if (!string.IsNullOrEmpty(notice))
+                {
+                    Rect toast = new Rect(490, 32, Mathf.Min(680, sw - 522), 62);
+                    CozyGuiTheme.Card(toast); GUI.Label(new Rect(toast.x + 20, toast.y + 8, toast.width - 40, 46), notice, CozyGuiTheme.Body);
+                }
             }
-            GUI.Label(new Rect(x + 12f, y + height - 50f, width - 24f, 40f), "[1-5] Pilih  |  Panah/Tab + Enter  |  Esc", CozyGuiTheme.HintStyle);
-            GUI.matrix = previousMatrix;
+            else
+            {
+                if (isMainMenu) GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
+                float cardHeight = Mathf.Min(656, 280 + OptionCount() * 64);
+                float x = (sw - 720) / 2;
+                float top = (sh - cardHeight) / 2;
+                Rect sheet = new Rect(x,top,720,cardHeight);
+                CozyGuiTheme.Header(sheet,isMainMenu ? "JEJAK ASA" : "PERJALANAN DIJEDA",PageTitle(),PageDescription());
+                DrawRows(RowsArea());
+                if (!string.IsNullOrEmpty(notice)) GUI.Label(new Rect(x+60,top+cardHeight-100,600,44),notice,CozyGuiTheme.Body);
+                GUI.Label(new Rect(x+60,top+cardHeight-48,600,22),"Mouse / Atas-Bawah  Pilih     Klik / Enter  Lanjut     Esc  Kembali",CozyGuiTheme.HintStyle);
+            }
+            GUI.matrix = old;
         }
     }
 }

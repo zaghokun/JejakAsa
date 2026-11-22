@@ -22,11 +22,11 @@ Checkbox U adalah kriteria penerimaan game, bukan nomor hari atau checklist yang
 | Kamera | Isometrik dengan orientasi tetap |
 | Kontrol | Input System resmi; CharacterController untuk gerak, tahan Shift kiri/kanan untuk lari |
 | Antarmuka | Unity UI / uGUI dan TextMeshPro; prompt/dialog U03 sudah tersedia |
-| Cakupan graybox saat ini | Posko, rumah, lima map level, tiga penerima per level, timer, dialog, hasil dan retry |
-| Rencana berikutnya | Preman mengejar dalam radius tertentu dan mengurangi timer saat menyentuh pemain; lumpur/genangan memperlambat gerak. Keduanya belum diimplementasikan |
+| Cakupan graybox saat ini | Posko, rumah, lima map level, tiga penerima per level, timer, dialog, hasil, retry, preman dan genangan |
+| Integrasi berikutnya | Cerita, visual karakter dan lingkungan, penempatan serta kalibrasi rintangan final |
 | Waktu | Rencana awal 21 hari dan cadangan hingga 28 hari; estimasi untuk cakupan revisi perlu disusun ulang |
 
-Urutan development **gameplay-first**: loop pengantaran dan progres harian tersedia sebagai graybox; integrasi cerita, aset final, rintangan baru, dan pengujian akhir menyusul.
+Urutan development **gameplay-first**: loop pengantaran, progres harian, preman dan genangan tersedia sebagai graybox; integrasi cerita, aset final dan pengujian akhir menyusul.
 
 Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertempuran; juga multiplayer, akun/backend, database server, crafting, serta chapter di luar lima level.
 
@@ -37,12 +37,22 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 | Kode | Kebutuhan | Status |
 | --- | --- | --- |
 | R01, R03–R06 | Alur harian, rumah, posko, lima map, pengantaran, timer, hasil dan retry | Core graybox tersedia; rancangan diferensiasi 5 level terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
-| R02, R07 | Prolog dan dialog cerita berurutan | Naskah dan core dialog tersedia; integrasi cerita final menyusul |
+| R02, R07 | Prolog dan dialog cerita berurutan | P01–P05 terintegrasi; cerita harian dan penutup berikutnya menyusul |
 | R08–R12 | Reward, item/weapon, boss battle, encounter pilihan dan bantuan warga untuk membuka jalan | Dikeluarkan dari cakupan revisi |
 | R13–R14 | Save/load tiga slot, menu utama dan menu ingame | Core tersedia; verifikasi ulang setelah revisi |
 | R15 | Regresi dan build | Uji ulang dan build revisi diperlukan |
 
-**Belum diimplementasikan:** preman mengejar ketika pemain masuk radius dan mengurangi waktu saat kontak; lumpur/genangan memperlambat pemain. Posisi, nilai radius, penalti dan perlambatan akan ditentukan saat implementasi.
+**Rintangan graybox:** setiap level memiliki satu preman dan satu genangan. Preman mendeteksi dalam radius 7 m, mengejar dengan kecepatan 2,8 m/detik, mengurangi timer 10 detik saat kontak, lalu memiliki cooldown 2 detik. Setelah tiga kontak yang terkena penalti, preman menghilang sampai misi diulang. Pemain dapat melewati preman agar tidak terjebak, sementara preman tetap tertahan collider lingkungan. Genangan mengurangi kecepatan jalan dan lari menjadi 50% selama berada di dalamnya. Nilai dan penempatan ini sementara; perlu playtest dan kalibrasi.
+
+**Perbaikan rumah P01:** collider tak terlihat menutup sisi lantai yang terbuka tanpa menghalangi interaksi pintu. Sampling animasi karakter dilakukan setelah gerak pada frame yang sama; klip jalan dan lari memakai loop pose. Pengujian Play Mode rumah lulus 5/5, termasuk jalur keluar dan kontinuitas state animasi pada simulasi 30/144 fps. Build `Builds/Windows-HouseFix/JejakAsa.exe` berhasil dibuat dan dibuka hingga Vicky bergerak di rumah; kelancaran visual tetap perlu ditinjau langsung.
+
+**Penataan rumah P02 (19 November 2026):** rumah mendapat 17 tambahan furnitur/dekorasi dari katalog lokal `AssetLibrary_Staging`, termasuk area belajar, rak sepatu, kipas, tanaman dan perlengkapan meja/dapur. Tambahan visual dan delapan BoxCollider terpisah di `P02_Home_Dressing`; dekorasi kecil tidak menghalangi gerak. Sumber Blender baru `ArtSource/P01/P02_Rumah_Dressed.blend`, integrasi di `Rumah.unity`. Enam tes Play Mode lulus, mencakup jalur ke Ibu/tempat tidur/pintu, batas lantai, animasi dan alur rumah. Pratinjau: [Blender](Previews/HouseRedesign/rumah-blender.png), [Unity](Previews/HouseRedesign/rumah-unity.png).
+
+**Story P02 dan lingkungan Posko (19 November 2026):** percakapan lima baris “Mendengarkan warga” bersama Bu Rina tersedia pada kunjungan pertama setelah P01 dalam permainan baru. Briefing/pengambilan paket dan keberangkatan menunggu percakapan selesai; pembatalan melalui unload tidak menyelesaikan adegan. Penanda P02 bertahan pada data campaign dan serialisasi. Scene Posko mendapat lingkungan kampung, area warga, naungan, papan, bangku, pepohonan, lima visual karakter dan collider terpisah. Stok bantuan visual disembunyikan saat P02 masih berlangsung. Delapan belas tes Play Mode lulus; dua tes P02 juga diulang untuk bukti visual. [Catatan P02](docs/p02-posko.md).
+
+**Story P03–P05 / SB-03–SB-05 (21 November 2026):** setelah Bu Rina, Jonathan mengenalkan sponsor dan warga menyiapkan posko lewat montage singkat. Persediaan dan daftar warga muncul setelah tahap ini; berikutnya Vicky bertemu kembali dengan Ophelia. P05 otomatis memperlihatkan Mr. Deddy bersama anak buah di gang gelap, lalu Mr. Gas Oke di meja peta rute: kamera mendekat perlahan, cahaya dingin/hangat, jeda dialog, fade dan suara rendah membangun ancaman. Naskah mengikuti storyboard. Setelah selesai, kamera, pencahayaan, volume lingkungan dan gerak dipulihkan untuk briefing harian yang sudah tersedia. Flag campaign terserialisasi dan tidak terhapus oleh reset harian; save lama yang sudah mengantar serta hari berikutnya tidak dipaksa mengulang. Total 28 tes unik Play Mode terkait lulus (24 tes alur, lalu 10 tes pemeriksaan ulang dengan enam tes yang beririsan). Build Windows baru belum dibuat. [Cara mencoba, sumber dan bukti visual](docs/p03-p05-posko.md).
+
+**GUI revisi:** menu utama memakai latar dari referensi desain, tombol dan teks interaktif; menu jeda memakai clipboard dan catatan misi. Dialog menampilkan potret karakter, sementara HUD menunjukkan tujuan serta hari dan fase. Panel dan pilihan menu memiliki animasi singkat. Penerima graybox tanpa identitas khusus memakai potret warga sementara; penetapan potret sesuai cerita menyusul. Build lama belum memuat revisi GUI ini.
 
 Save lama tetap mempertahankan field inventori/reward untuk kompatibilitas data, tanpa fungsi gameplay. Aset dan visual final belum menjadi bagian penerimaan revisi ini.
 
@@ -53,7 +63,7 @@ Dua anggota berkolaborasi pada A/B, satu anggota menangani C. Tidak ada penetapa
 | Role | Tanggung jawab | Batas progres saat ini |
 | --- | --- | --- |
 | A — Gameplay dan integrasi | Gerak, interaksi, misi/timer/trust, integrasi scene dan build | Loop misi dan menu graybox tersedia; revisi perlu diuji. |
-| B — Verifikasi dan rintangan | Regresi alur, timer, retry dan save/load; implementasi rintangan pada tahap berikutnya | Pengejaran dan perlambatan belum dikerjakan. |
+| B — Verifikasi dan rintangan | Regresi alur, timer, retry dan save/load; rintangan graybox | Pengejaran dan genangan tersedia; kalibrasi dan integrasi visual final menyusul. |
 | C — Visual, level, UI, audio | Aset low-poly, layout, prefab visual/UI, animasi, suara, serta keterbacaan | Integrasi final dan pengujian bersama A/B masih diperlukan. |
 
 ## Tracking penerimaan dan revisi core
@@ -62,8 +72,8 @@ Hasil uji graybox lama tidak otomatis membuktikan revisi ini. Kriteria battle, b
 
 - [ ] **R01, R03–R06 — Siklus dan misi:** uji rumah → posko → level → laporan → rumah untuk lima hari, tiga penerima per map, timer, hasil dan retry.
 - [ ] **R02, R07 — Cerita:** hubungkan prolog dan dialog sesuai [storyboard](docs/storyboard-dialog-jejak-asa.md); jaga urutan dialog setelah retry dan load.
-- [ ] **Preman pengejar — rencana:** uji pemicu radius, pengejaran dan pengurangan waktu saat kontak setelah mekanik diimplementasikan.
-- [ ] **Lumpur/genangan — rencana:** uji perlambatan dan pemulihan kecepatan setelah mekanik diimplementasikan.
+- [ ] **Preman pengejar — graybox:** uji radius, pengejaran, pengurangan waktu, pause dan retry; kalibrasi kesulitan setelah integrasi.
+- [ ] **Genangan — graybox:** uji perlambatan dan pemulihan kecepatan; kalibrasi penempatan setelah integrasi.
 - [ ] **R13–R14 — Save/load dan menu:** uji tiga slot, konfirmasi overwrite/load/keluar, serta menu ingame Lanjutkan, Pengaturan, Muat dan Keluar.
 - [ ] **R15, U19–U21 — Integrasi dan build:** uji seluruh alur, kamera, audio, UI, build Windows dan komputer kedua setelah integrasi akhir.
 
@@ -75,7 +85,7 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 
 ### AB-D01 — Kontrak alur dan pembagian kerja · R01
 
-- [x] **A:** petakan transisi `rumah → posko → map level → posko → rumah`, state siang/istirahat, titik masuk/keluar, serta kondisi berhasil dan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan diterapkan di `GameFlowManager.cs`.
+- [x] **A:** petakan transisi `rumah → posko → map level → posko → rumah`, state siang/istirahat, titik masuk/keluar, serta kondisi berhasil dan gagal; terdokumentasi di [docs/r01-kontrak-alur.md](docs/r01-kontrak-alur.md) dan diterapkan di `StoryFlow_PengaturAlur.cs`.
 - [ ] **B:** verifikasi kontrak hasil misi, retry, dan save/load setelah revisi.
 - [x] **A/B + C:** sepakati skala, penempatan gerbang, batas area interaksi, kebutuhan visual/animasi, dan kepemilikan scene/file berdasarkan [C-D01](docs/cd01-arah-visual.md).
 - [x] **A/B:** tiga slot save manual di rumah; tidak ada autosave tengah level.
@@ -86,7 +96,7 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 - [x] **A:** buat satu map posko berupa lapangan terbuka graybox (`Posko.unity`, 28×24 m); rumah tetap berupa map interior (`Rumah.unity`, 14×10 m), tanpa map luar rumah.
 - [x] **A:** sediakan satu gerbang bersama di posko (`PoskoGateController.cs`); saat didekati pemain dapat memilih `Pulang ke Rumah`, `Berangkat ke Level`, atau `Batal`. Tujuan yang belum tersedia menunjukkan alasan sesuai progres.
 - [x] **A:** perpindahan rumah → posko memakai pintu/gerbang (`HomeInteractionController.cs`); dari rumah tidak ada akses langsung ke level.
-- [x] **A:** sediakan titik interaksi Jonathan, Ophelia, Ibu, tempat tidur (istirahat/save) dan titik transisi menggunakan graybox via `StoryNpcController.cs`.
+- [x] **A:** sediakan titik interaksi Jonathan, Ophelia, Ibu, tempat tidur (istirahat/save) dan titik transisi menggunakan graybox via `StoryDialog_InteraksiNPC.cs`.
 - [x] **B:** uji kedua arah transisi, batal, tujuan terkunci, input/fokus, collision serta spawn agar tidak memicu perpindahan berulang atau kehilangan state.
 - [x] **Bukti terima:** `Rumah.unity` dan `Posko.unity` terdaftar di Build Settings; transisi gerbang, dialog Pak Jonathan, Ophelia, dan Ibu berfungsi dengan kontrol WASD & E.
 - **Pembaruan posko:** kontrol Shift kiri/kanan menggandakan kecepatan jalan; animasi karakter lari dari lab belum terhubung ke gameplay. Area interaksi memilih objek terdekat, dan briefing serta pengambilan paket diperlukan sebelum berangkat.
@@ -106,13 +116,13 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 - [ ] **A/B:** uji briefing → level → laporan Jonathan → dialog Ophelia → pulang dan penutup level 5; pastikan tahap dialog tetap benar setelah retry/load.
 - [ ] **A/B + C:** tentukan pemicu, pose/animasi dan handoff dialog.
 
-### AB-D05 — Preman pengejar · rencana
+### AB-D05 — Preman pengejar
 
-- [ ] Tentukan radius, penalti waktu, perilaku setelah kontak dan penempatan; implementasikan dan uji pada tahap berikutnya.
+- [ ] Uji pengejaran, kontak dan reset pada lima level; sesuaikan rute dan nilai setelah playtest bersama.
 
-### AB-D06 — Rintangan permukaan · rencana
+### AB-D06 — Rintangan permukaan
 
-- [ ] Tentukan penempatan lumpur/genangan dan tingkat perlambatan; implementasikan dan uji masuk/keluar area pada tahap berikutnya.
+- [ ] Uji perlambatan jalan/lari dan keluar dari genangan; sesuaikan penempatan dan visual final bersama Role C.
 
 ### AB-D07 — Save/load dan main menu · R13–R14
 
@@ -275,7 +285,7 @@ Eksplorasi: [Loop Town — Fupi](https://opengameart.org/content/loop-town), CC0
 
 ### Pengujian otomatis Play Mode
 
-Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Regresi terarah setelah penghapusan sistem lama: **42/42 lulus** di Editor, mencakup alur lima level, rute, penyerahan, timer, retry, menu dan save/load. Ini belum membuktikan build atau integrasi aset final.
+Di Unity buka **Window → General → Test Runner**, pilih **PlayMode**, lalu jalankan tes terkait perubahan. Regresi GUI terarah lulus **24/24**, lalu uji dialog warga dan klik mouse lulus **2/2** setelah penambahan potret warga sementara. Hasil ini belum membuktikan build baru atau pengujian komputer kedua.
 
 Tes mengirim input keyboard sintetis ke controller sebenarnya. Tes integrasi memuat Kampung aktual untuk menelusuri rute atau membuka dialog dan mengklik Tutup dengan input mouse. Scene percobaan dibongkar dan input fixture dipulihkan setelah selesai. Jangan menghentikan runner atau mengubah scene di tengah tes.
 

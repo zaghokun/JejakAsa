@@ -1,0 +1,254 @@
+{
+  "items": [
+    {
+      "name": "Posko_Courtyard_Relief",
+      "center": [
+        0.0,
+        0.12160003464668989,
+        0.0
+      ],
+      "materials": [
+        "Posko_Earth_Dry"
+      ],
+      "collision": true
+    },
+    {
+      "name": "Posko_Worn_Walkway_0",
+      "center": [
+        -0.8387389481067657,
+        0.03130691684782505,
+        -7.7427077293396
+      ],
+      "materials": [
+        "Posko_Earth_Compact"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Worn_Walkway_1",
+      "center": [
+        -3.308181643486023,
+        0.025623583234846592,
+        0.5534341335296631
+      ],
+      "materials": [
+        "Posko_Earth_Compact"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Worn_Walkway_2",
+      "center": [
+        1.6768741607666016,
+        0.03145347349345684,
+        0.5311565399169922
+      ],
+      "materials": [
+        "Posko_Earth_Compact"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Fieldstone_2",
+      "center": [
+        -4.9791154861450195,
+        0.03369088098406792,
+        3.044943332672119
+      ],
+      "materials": [
+        "Posko_Fieldstone_2"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Fieldstone_0",
+      "center": [
+        -2.4341996908187866,
+        0.03438998758792877,
+        2.938367247581482
+      ],
+      "materials": [
+        "Posko_Fieldstone_0"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Fieldstone_1",
+      "center": [
+        -3.331619143486023,
+        0.034995900467038155,
+        2.4160131216049194
+      ],
+      "materials": [
+        "Posko_Fieldstone_1"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_0",
+      "center": [
+        -24.137405395507812,
+        0.5799999972805381,
+        -12.025407314300537
+      ],
+      "materials": [
+        "Posko_Berm_0"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_1",
+      "center": [
+        23.987733840942383,
+        0.6549999853596091,
+        -10.992469310760498
+      ],
+      "materials": [
+        "Posko_Berm_1"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_2",
+      "center": [
+        -27.85515785217285,
+        0.880000009201467,
+        5.977498292922974
+      ],
+      "materials": [
+        "Posko_Berm_2"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_3",
+      "center": [
+        27.9680757522583,
+        0.805000021122396,
+        7.844347059726715
+      ],
+      "materials": [
+        "Posko_Berm_0"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_4",
+      "center": [
+        -20.138838291168213,
+        0.8299999972805381,
+        26.041836738586426
+      ],
+      "materials": [
+        "Posko_Berm_1"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_5",
+      "center": [
+        20.074913501739502,
+        0.9799999734386802,
+        27.145934104919434
+      ],
+      "materials": [
+        "Posko_Berm_2"
+      ],
+      "collision": false
+    },
+    {
+      "name": "Posko_Planted_Bank_6",
+      "center": [
+        -0.2230973243713379,
+        0.7299999734386802,
+        28.937456130981445
+      ],
+      "materials": [
+        "Posko_Berm_0"
+      ],
+      "collision": false
+    }
+  ],
+  "materials": [
+    {
+      "name": "Posko_Earth_Dry",
+      "color": [
+        0.7300000190734863,
+        0.6200000047683716,
+        0.46000000834465027,
+        1.0
+      ],
+      "earth": true
+    },
+    {
+      "name": "Posko_Earth_Compact",
+      "color": [
+        0.6600000262260437,
+        0.5199999809265137,
+        0.3400000035762787,
+        1.0
+      ],
+      "earth": true
+    },
+    {
+      "name": "Posko_Fieldstone_0",
+      "color": [
+        0.5400000214576721,
+        0.5299999713897705,
+        0.4300000071525574,
+        1.0
+      ],
+      "earth": false
+    },
+    {
+      "name": "Posko_Fieldstone_1",
+      "color": [
+        0.6399999856948853,
+        0.6100000143051147,
+        0.47999998927116394,
+        1.0
+      ],
+      "earth": false
+    },
+    {
+      "name": "Posko_Fieldstone_2",
+      "color": [
+        0.47999998927116394,
+        0.49000000953674316,
+        0.41999998688697815,
+        1.0
+      ],
+      "earth": false
+    },
+    {
+      "name": "Posko_Berm_0",
+      "color": [
+        0.3400000035762787,
+        0.4300000071525574,
+        0.20000000298023224,
+        1.0
+      ],
+      "earth": false
+    },
+    {
+      "name": "Posko_Berm_1",
+      "color": [
+        0.4000000059604645,
+        0.47999998927116394,
+        0.23999999463558197,
+        1.0
+      ],
+      "earth": false
+    },
+    {
+      "name": "Posko_Berm_2",
+      "color": [
+        0.44999998807907104,
+        0.5,
+        0.27000001072883606,
+        1.0
+      ],
+      "earth": false
+    }
+  ]
+}

@@ -188,14 +188,14 @@ public sealed class U03InteractionTests : InputTestFixture
     [UnityTest]
     public IEnumerator StorySequenceCompletesOnlyAfterFinalKeyboardAdvance()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         try
         {
             flow.SetStateForTesting(new GameProgressData { currentDay = 1, currentLevel = 1, currentPhase = DayPhase.PoskoBriefing });
             var npc = new GameObject("Story NPC");
             npc.transform.SetParent(root.transform);
-            var story = npc.AddComponent<StoryNpcController>();
+            var story = npc.AddComponent<StoryDialog_InteraksiNPC>();
             story.playerTransform = player;
             var fields = new SerializedObject(story);
             var lines = fields.FindProperty("dialogueLines");
@@ -228,21 +228,21 @@ public sealed class U03InteractionTests : InputTestFixture
     [Test]
     public void ReportAndOpheliaConversationCompleteWithoutGrantingRewards()
     {
-        GameFlowManager flow = GameFlowManager.Instance;
+        StoryFlow_PengaturAlur flow = StoryFlow_PengaturAlur.Instance;
         GameProgressData previous = flow.Progress.Clone();
         try
         {
             flow.SetStateForTesting(new GameProgressData { currentDay = 1, currentLevel = 1, currentPhase = DayPhase.PoskoLaporan });
             var opheliaObject = new GameObject("Ophelia");
             opheliaObject.transform.SetParent(root.transform);
-            var ophelia = opheliaObject.AddComponent<StoryNpcController>();
+            var ophelia = opheliaObject.AddComponent<StoryDialog_InteraksiNPC>();
             ophelia.npcType = StoryNpcType.Ophelia;
             ophelia.OpenDialogue();
             ophelia.CloseDialogue();
 
             var jonathanObject = new GameObject("Jonathan");
             jonathanObject.transform.SetParent(root.transform);
-            var jonathan = jonathanObject.AddComponent<StoryNpcController>();
+            var jonathan = jonathanObject.AddComponent<StoryDialog_InteraksiNPC>();
             jonathan.OpenDialogue();
             Assert.That(flow.Progress.isReportDone, Is.True);
             Assert.That(flow.Progress.isOpheliaTalkDone, Is.True);

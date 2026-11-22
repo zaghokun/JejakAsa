@@ -19,8 +19,14 @@ namespace JejakAsa
         public string levelScenePath = "Assets/_Project/Scenes/Kampung.unity";
         public string homeScenePath = "Assets/_Project/Scenes/Rumah.unity";
 
+        private static PoskoGateController activeMenu;
+        internal static bool AnyMenuOpen => activeMenu != null && activeMenu.isGateMenuOpen;
+        private void OnEnable() => activeMenu = this;
+        private void OnDisable() { if (activeMenu == this) activeMenu = null; }
+
         private bool isPlayerInRange;
         private bool isGateMenuOpen;
+        private float gateOpenedAt;
         private string lockedDepartReason;
         private string lockedHomeReason;
         internal bool IsMenuOpen => isGateMenuOpen;
@@ -71,8 +77,9 @@ namespace JejakAsa
         public void OpenGateMenu()
         {
             isGateMenuOpen = true;
-            GameFlowManager.Instance.CanDepartToLevel(out lockedDepartReason);
-            GameFlowManager.Instance.CanGoHomeFromPosko(out lockedHomeReason);
+            gateOpenedAt = Time.unscaledTime;
+            StoryFlow_PengaturAlur.Instance.CanDepartToLevel(out lockedDepartReason);
+            StoryFlow_PengaturAlur.Instance.CanGoHomeFromPosko(out lockedHomeReason);
         }
 
         public void CloseGateMenu()
@@ -82,9 +89,9 @@ namespace JejakAsa
 
         public void TryDepartToLevel()
         {
-            if (GameFlowManager.Instance.CanDepartToLevel(out string reason))
+            if (StoryFlow_PengaturAlur.Instance.CanDepartToLevel(out string reason))
             {
-                int level = GameFlowManager.Instance.CurrentLevel;
+                int level = StoryFlow_PengaturAlur.Instance.CurrentLevel;
                 if (level < 1 || level > 5)
                 {
                     lockedDepartReason = "Level aktif tidak valid.";
@@ -96,8 +103,8 @@ namespace JejakAsa
                     lockedDepartReason = "Wilayah misi tidak tersedia di build.";
                     return;
                 }
-                GameFlowManager.Instance.LastSpawnPoint = "PosBantuan";
-                GameFlowManager.Instance.DepartToLevel();
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint = "PosBantuan";
+                StoryFlow_PengaturAlur.Instance.DepartToLevel();
                 isGateMenuOpen = false;
                 SceneManager.LoadScene(scenePath, LoadSceneMode.Single);
             }
@@ -109,9 +116,9 @@ namespace JejakAsa
 
         public void TryGoHome()
         {
-            if (GameFlowManager.Instance.CanGoHomeFromPosko(out string reason))
+            if (StoryFlow_PengaturAlur.Instance.CanGoHomeFromPosko(out string reason))
             {
-                GameFlowManager.Instance.GoHomeFromPosko();
+                StoryFlow_PengaturAlur.Instance.GoHomeFromPosko();
                 isGateMenuOpen = false;
                 SceneManager.LoadScene(homeScenePath, LoadSceneMode.Single);
             }
@@ -123,89 +130,27 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (SessionMenu.InputBlocked)
-                return;
-
+            if(SessionMenu.InputBlocked || StoryDialog_InteraksiNPC.AnyDialogueOpen) return;
             CozyGuiTheme.EnsureInitialized();
-
-            // 1. Prompt saat pemain berada di dekat gerbang
-            if (isPlayerInRange && !isGateMenuOpen)
-            {
-                float pW = 280f;
-                float pH = 44f;
-                float pX = (Screen.width - pW) * 0.5f;
-                float pY = Screen.height - 110f;
-
-                GUI.DrawTexture(new Rect(pX + 2, pY + 2, pW, pH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(pX, pY, pW, pH), GUIContent.none, CozyGuiTheme.CardStyle);
-                GUI.Label(new Rect(pX, pY + 10, pW, 24), "Tekan [E] Buka Gerbang Posko", CozyGuiTheme.HintStyle);
-                return;
-            }
-
-            // 2. Menu Gerbang Posko
-            if (isGateMenuOpen)
-            {
-                GUI.depth = -100;
-                float scale = CozyGuiTheme.Scale;
-                Matrix4x4 prevMatrix = GUI.matrix;
-                GUI.matrix = prevMatrix * Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-
-                float sw = Screen.width / scale;
-                float sh = Screen.height / scale;
-
-                GUI.DrawTexture(new Rect(0, 0, sw, sh), CozyGuiTheme.DimTex);
-
-                float cardW = 440f;
-                float cardH = 340f;
-                float cardX = (sw - cardW) * 0.5f;
-                float cardY = (sh - cardH) * 0.5f;
-
-                GUI.DrawTexture(new Rect(cardX + 4, cardY + 6, cardW, cardH), CozyGuiTheme.ShadowTex);
-                GUI.Box(new Rect(cardX, cardY, cardW, cardH), GUIContent.none, CozyGuiTheme.CardStyle);
-
-                // Header
-                GUI.Label(new Rect(cardX + 16, cardY + 16, 150, 24), "GERBANG POSKO", CozyGuiTheme.RibbonStyle);
-                GUI.Label(new Rect(cardX + 16, cardY + 48, cardW - 32, 22), "Pilih tujuan perjalananmu keluar posko:", CozyGuiTheme.OutcomeDescStyle);
-
-                float rowY = cardY + 84f;
-
-                // Opsi 1: Berangkat ke Level
-                bool canDepart = GameFlowManager.Instance.CanDepartToLevel(out string departReason);
-                if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 42), "1. Berangkat ke Wilayah Misi (Level)", canDepart ? CozyGuiTheme.TealBtnStyle : CozyGuiTheme.LockedBtnStyle))
-                {
-                    TryDepartToLevel();
-                }
-                if (!canDepart || !string.IsNullOrEmpty(lockedDepartReason))
-                {
-                    GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), "⚠ " + (canDepart ? lockedDepartReason : departReason), CozyGuiTheme.SubLabelStyle);
-                }
-
-                rowY += 68f;
-
-                // Opsi 2: Pulang ke Rumah
-                bool canGoHome = GameFlowManager.Instance.CanGoHomeFromPosko(out string homeReason);
-                if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 42), "2. Pulang ke Rumah", canGoHome ? CozyGuiTheme.AmberBtnStyle : CozyGuiTheme.LockedBtnStyle))
-                {
-                    TryGoHome();
-                }
-                if (!canGoHome && !string.IsNullOrEmpty(homeReason))
-                {
-                    GUI.Label(new Rect(cardX + 24, rowY + 44, cardW - 48, 20), "⚠ " + homeReason, CozyGuiTheme.SubLabelStyle);
-                }
-
-                rowY += 68f;
-
-                // Opsi 3: Batal
-                if (GUI.Button(new Rect(cardX + 20, rowY, cardW - 40, 38), "3. Batal / Tutup Gerbang", CozyGuiTheme.CoralBtnStyle))
-                {
-                    CloseGateMenu();
-                }
-
-                GUI.Label(new Rect(cardX + 20, cardY + cardH - 24, cardW - 40, 18), "[1/2/3] Pilih Opsi  |  [Esc] Tutup", CozyGuiTheme.HintStyle);
-
-                GUI.matrix = prevMatrix;
-            }
+            if(isPlayerInRange && !isGateMenuOpen && PoskoDistributionTrigger.IsNearestInteraction(this,playerTransform)) CozyGuiTheme.Prompt("Pilih tujuan perjalanan");
+            if(!isGateMenuOpen) return;
+            GUI.depth=-100;
+            Matrix4x4 old=GUI.matrix; float scale=CozyGuiTheme.Scale;
+            GUI.matrix=old*Matrix4x4.Scale(new Vector3(scale,scale,1));
+            float sw=Screen.width/scale,sh=Screen.height/scale;
+            GUI.DrawTexture(new Rect(0,0,sw,sh),CozyGuiTheme.DimTex);
+            Rect r=new Rect((sw-660)/2,(sh-580)/2,660,580);
+            CozyGuiTheme.Header(r,"GERBANG POSKO / HARI "+StoryFlow_PengaturAlur.Instance.CurrentDay,"Ke mana langkahmu?","Perjalanan mengikuti persiapan dan tugas yang sudah kamu selesaikan.");
+            bool depart=StoryFlow_PengaturAlur.Instance.CanDepartToLevel(out string departReason);
+            bool home=StoryFlow_PengaturAlur.Instance.CanGoHomeFromPosko(out string homeReason);
+            if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+214,604,58),"1. Antarkan bantuan / Wilayah "+StoryFlow_PengaturAlur.Instance.CurrentLevel,depart?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryDepartToLevel();
+            GUI.Label(new Rect(r.x+32,r.y+278,596,44),depart?(string.IsNullOrEmpty(lockedDepartReason)?"Paket siap. Warga menantikan kedatanganmu.":lockedDepartReason):"Terkunci · "+departReason,CozyGuiTheme.Small);
+            if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+330,604,58),"2. Pulang ke rumah",home?CozyGuiTheme.TealBtnStyle:CozyGuiTheme.LockedBtnStyle)) TryGoHome();
+            GUI.Label(new Rect(r.x+32,r.y+400,596,48),home?"Kembali ke rumah Vicky untuk beristirahat.":"Terkunci · "+homeReason,CozyGuiTheme.Small);
+            if(CozyGuiTheme.Button(new Rect(r.x+28,r.y+468,604,48),"3. Tetap di posko",CozyGuiTheme.AmberBtnStyle)) CloseGateMenu();
+            CozyGuiTheme.Rule(r.x+28,r.y+538,604);
+            GUI.Label(new Rect(r.x+28,r.y+550,604,20),"1–3  Pilih tujuan     Esc  Kembali",CozyGuiTheme.HintStyle);
+            GUI.matrix=old;
         }
     }
 }
-

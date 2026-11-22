@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,10 +15,23 @@ namespace JejakAsa
         private Vector3 cameraForward;
         private Vector3 cameraRight;
         private float verticalSpeed;
+        private Vector3 lastPosition;
+        private readonly HashSet<PuddleZone> puddles = new HashSet<PuddleZone>();
+
+        internal void EnterPuddle(PuddleZone puddle) => puddles.Add(puddle);
+        internal void ExitPuddle(PuddleZone puddle) => puddles.Remove(puddle);
+
+        private void OnDestroy()
+        {
+            foreach (PuddleZone puddle in puddles)
+                if (puddle != null)
+                    puddle.ForgetPlayer(this);
+        }
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+            lastPosition = transform.position;
             if (movementCamera == null)
             {
                 Debug.LogError("PlayerController requires a movement camera.", this);
@@ -33,6 +47,10 @@ namespace JejakAsa
 
         private void Update()
         {
+            if (!controller.enabled)
+                return;
+            if (transform.position != lastPosition)
+                ReconcilePuddles();
             Vector2 input = Vector2.zero;
             Keyboard keyboard = Keyboard.current;
             if (keyboard != null)
@@ -46,6 +64,11 @@ namespace JejakAsa
             input = Vector2.ClampMagnitude(input, 1f);
             float speed = keyboard != null && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed)
                 ? moveSpeed * 2f : moveSpeed;
+            float multiplier = 1f;
+            foreach (PuddleZone puddle in puddles)
+                if (puddle.isActiveAndEnabled && puddle.Overlaps(controller))
+                    multiplier = Mathf.Min(multiplier, puddle.SpeedMultiplier);
+            speed *= multiplier;
             Vector3 velocity = (cameraForward * input.y + cameraRight * input.x) * speed;
             if (velocity.sqrMagnitude > 0f)
                 transform.rotation = Quaternion.LookRotation(velocity);
@@ -55,6 +78,26 @@ namespace JejakAsa
             verticalSpeed += Physics.gravity.y * Time.deltaTime;
             velocity.y = verticalSpeed;
             controller.Move(velocity * Time.deltaTime);
+            lastPosition = transform.position;
+        }
+
+        private void ReconcilePuddles()
+        {
+            foreach (PuddleZone puddle in puddles)
+                if (puddle != null)
+                    puddle.ForgetPlayer(this);
+            puddles.Clear();
+
+            Physics.SyncTransforms();
+            Bounds bounds = controller.bounds;
+            Collider[] overlaps = Physics.OverlapBox(bounds.center, bounds.extents, Quaternion.identity,
+                Physics.AllLayers, QueryTriggerInteraction.Collide);
+            foreach (Collider other in overlaps)
+            {
+                PuddleZone puddle = other.GetComponent<PuddleZone>();
+                if (puddle != null && puddle.isActiveAndEnabled && puddle.Overlaps(controller))
+                    puddle.AddPlayer(controller);
+            }
         }
     }
 }

@@ -41,7 +41,7 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
     [UnityTest]
     public IEnumerator AllFiveLevelsHaveReachableRecipients()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -118,7 +118,7 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
     [UnityTest]
     public IEnumerator FiveDaysDeliverAndFinish()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -130,7 +130,7 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                 Assert.That(flow.CurrentDay, Is.EqualTo(day));
                 Assert.That(flow.GoToPoskoFromHome(), Is.True);
                 yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Posko.unity", LoadSceneMode.Single);
-                var npcs = Object.FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None);
+                var npcs = Object.FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None);
                 var jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
                 var ophelia = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Ophelia);
                 var player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -170,7 +170,7 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                 yield return null;
                 Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Posko"));
                 Assert.That(flow.Progress.completedLevels, Does.Contain(day));
-                npcs = Object.FindObjectsByType<StoryNpcController>(FindObjectsSortMode.None);
+                npcs = Object.FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None);
                 jonathan = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Jonathan);
                 ophelia = System.Array.Find(npcs, n => n.npcType == StoryNpcType.Ophelia);
                 player = GameObject.FindGameObjectWithTag("Player").transform;

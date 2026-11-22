@@ -66,16 +66,16 @@ Data yang dipersistensikan dan tidak boleh hilang saat transisi antar scene:
 2. **Aturan Kegagalan & Retry per Level:**
    - Jika waktu misi habis, pemain dapat memilih **Ulang Misi (Retry)**.
    - Retry me-reset data level aktif, tetapi **TIDAK MENGHAPUS** progres hari-hari sebelumnya.
-3. **Arah mendatang, belum diimplementasikan:**
-   - Preman direncanakan mengejar pemain ketika berada dalam radius; kontak mengurangi timer.
-   - Lumpur atau genangan direncanakan memperlambat gerak pada setiap level.
+3. **Rintangan graybox:**
+   - Preman mengejar pemain dalam radius; kontak mengurangi timer dengan jeda antar penalti.
+   - Genangan memperlambat jalan dan lari selama pemain berada di dalamnya; nilai dan penempatan final masih perlu kalibrasi.
 
 ---
 
 ## 5. Pembagian Tanggung Jawab Role
 
 - **Role A (Gameplay & Integrasi):**
-  - Mengimplementasikan `GameFlowManager` (state machine alur harian & transisi scene).
+  - Mengimplementasikan `StoryFlow_PengaturAlur` (state machine alur harian & transisi scene).
   - Membuat scene graybox `Posko.unity` dan `Rumah.unity` dengan titik interaksi Jonathan, Ophelia, Ibu/Ayah, tempat tidur, dan gerbang bersama (AB-D02).
   - Mengatur transisi spawn dan persistensi data antar scene.
 - **Role B (Verifikasi):**

@@ -12,7 +12,7 @@ namespace JejakAsa
     /// </summary>
     public class R01FlowContractTests
     {
-        private GameFlowManager flow;
+        private StoryFlow_PengaturAlur flow;
         private GameProgressData previousProgress;
         private string previousSpawn;
         private bool createdFlow;
@@ -22,10 +22,10 @@ namespace JejakAsa
         [SetUp]
         public void SetUp()
         {
-            flow = Object.FindFirstObjectByType<GameFlowManager>();
+            flow = Object.FindFirstObjectByType<StoryFlow_PengaturAlur>();
             createdFlow = flow == null;
             if (createdFlow)
-                flow = GameFlowManager.Instance;
+                flow = StoryFlow_PengaturAlur.Instance;
             previousProgress = flow.Progress.Clone();
             previousSpawn = flow.LastSpawnPoint;
             for (int i = 0; i < slotValues.Length; i++)
@@ -105,7 +105,7 @@ namespace JejakAsa
                 StringAssert.Contains("Jonathan", (string)typeof(PoskoDistributionTrigger)
                     .GetField("feedbackText", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(trigger));
 
-                var jonathan = packages.AddComponent<StoryNpcController>();
+                var jonathan = packages.AddComponent<StoryDialog_InteraksiNPC>();
                 jonathan.OpenDialogue();
                 var gate = packages.AddComponent<PoskoGateController>();
                 gate.TryDepartToLevel();
@@ -304,9 +304,9 @@ namespace JejakAsa
             Assert.IsTrue(flow.RestAndAdvanceDay());
             bool saved = flow.SaveGame(2);
             Assert.IsTrue(saved);
-            Assert.IsTrue(GameFlowManager.HasSave(2));
+            Assert.IsTrue(StoryFlow_PengaturAlur.HasSave(2));
 
-            SaveSlotMeta meta = GameFlowManager.GetSlotMeta(2);
+            SaveSlotMeta meta = StoryFlow_PengaturAlur.GetSlotMeta(2);
             Assert.AreEqual(4, meta.day);
             Assert.AreEqual(4, meta.level);
 

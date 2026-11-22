@@ -36,9 +36,9 @@ Menyelesaikan pengantaran bantuan dengan mengatur waktu dan rute.
 - Pemain memilih urutan serta jalur pengantaran.
 - Batas waktu menjadi tantangan mengatur perjalanan. Kegagalan mencapai semua tujuan tidak membuat warga menjadi pihak yang disalahkan.
 
-### Arah mendatang — belum diimplementasikan
+### Pengejar dan genangan — graybox
 
-Preman direncanakan mengejar pemain ketika berada dalam radius; kontak mengurangi timer. Lumpur atau genangan pada setiap level direncanakan memperlambat gerak. Mekanik ini belum ada dalam permainan.
+Preman mengejar pemain dalam radius dan kontak mengurangi timer dengan jeda antar penalti. Genangan memperlambat jalan dan lari selama pemain berada di dalamnya. Nilai dan penempatan awal masih perlu kalibrasi saat integrasi level.
 
 ## 6. Kondisi Misi
 

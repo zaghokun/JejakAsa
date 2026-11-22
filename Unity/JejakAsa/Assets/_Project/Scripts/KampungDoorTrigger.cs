@@ -65,24 +65,22 @@ namespace JejakAsa
 
         private void TryRepositionPlayer()
         {
-            if (GameFlowManager.Instance != null && !string.IsNullOrEmpty(spawnPointKey) && GameFlowManager.Instance.LastSpawnPoint == spawnPointKey)
-            {
-                if (playerTransform != null)
-                {
-                    var cc = playerTransform.GetComponent<CharacterController>();
-                    if (cc != null) cc.enabled = false;
+            if (StoryFlow_PengaturAlur.Instance == null || string.IsNullOrEmpty(spawnPointKey) ||
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint != spawnPointKey || playerTransform == null)
+                return;
 
-                    Vector3 targetPos = transform.position + spawnOffset;
-                    playerTransform.position = targetPos;
-                    playerTransform.rotation = Quaternion.LookRotation(Vector3.forward);
+            var cc = playerTransform.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
 
-                    if (cc != null) cc.enabled = true;
-                    Physics.SyncTransforms();
+            Vector3 targetPos = transform.position + spawnOffset;
+            playerTransform.position = targetPos;
+            playerTransform.rotation = Quaternion.LookRotation(Vector3.forward);
 
-                    GameFlowManager.Instance.LastSpawnPoint = null;
-                    Debug.Log($"[KampungDoorTrigger] Pemain berhasil di-spawn di depan {spawnPointKey} pada posisi {targetPos}");
-                }
-            }
+            if (cc != null) cc.enabled = true;
+            Physics.SyncTransforms();
+
+            StoryFlow_PengaturAlur.Instance.LastSpawnPoint = null;
+            Debug.Log($"[KampungDoorTrigger] Pemain berhasil di-spawn di depan {spawnPointKey} pada posisi {targetPos}");
         }
 
         private void Update()
@@ -119,9 +117,9 @@ namespace JejakAsa
                 return;
             }
 
-            if (GameFlowManager.Instance != null && !string.IsNullOrEmpty(spawnPointKey))
+            if (StoryFlow_PengaturAlur.Instance != null && !string.IsNullOrEmpty(spawnPointKey))
             {
-                GameFlowManager.Instance.LastSpawnPoint = spawnPointKey;
+                StoryFlow_PengaturAlur.Instance.LastSpawnPoint = spawnPointKey;
             }
 
             Debug.Log($"[KampungDoorTrigger] Memuat scene {targetScenePath}...");

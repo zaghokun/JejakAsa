@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JejakAsa;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -33,6 +34,8 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     {
         Time.timeScale = 1f;
         Scene current = SceneManager.GetActiveScene();
+        if (current.name == "P01SceneTestCleanup")
+            yield break;
         Scene empty = SceneManager.CreateScene("P01SceneTestCleanup");
         SceneManager.SetActiveScene(empty);
         if (current.IsValid() && current.isLoaded)
@@ -42,7 +45,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator VickyAnimatesWalkingRunningAndStopping()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -66,11 +69,63 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
             flow.LastSpawnPoint = previousSpawn;
         }
     }
+    [UnityTest]
+    public IEnumerator LocomotionKeepsLoopingAcrossChangingFrameRates()
+    {
+        int previousCaptureFramerate = Time.captureFramerate;
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Characters/P01/Vicky.fbx");
+        var character = Object.Instantiate(prefab);
+        try
+        {
+            var animator = character.GetComponent<Animator>();
+            animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
+                "Assets/_Project/Art/Characters/P01/P01Character.controller");
+            animator.applyRootMotion = false;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            character.AddComponent<P01CharacterAnimator>();
+            var mover = character.AddComponent<P01AnimationTestMover>();
+
+            foreach (var clip in new[] { "Vicky", "Run" })
+            {
+                var importer = (ModelImporter)AssetImporter.GetAtPath("Assets/_Project/Art/Characters/P01/" + clip + ".fbx");
+                Assert.That(importer.clipAnimations[0].loopTime, Is.True);
+                Assert.That(importer.clipAnimations[0].loopPose, Is.True);
+            }
+
+            foreach (var state in new[] { "Walk", "Run" })
+            {
+                mover.speed = state == "Walk" ? 3.5f : 7f;
+                Time.captureFramerate = 60;
+                for (int i = 0; i < 30; i++)
+                    yield return null;
+                var initial = animator.GetCurrentAnimatorStateInfo(0);
+                Assert.That(initial.IsName(state), Is.True);
+                float previousTime = initial.normalizedTime;
+                for (int i = 0; i < 150; i++)
+                {
+                    Time.captureFramerate = i % 2 == 0 ? 30 : 144;
+                    yield return null;
+                    var current = animator.GetCurrentAnimatorStateInfo(0);
+                    Assert.That(current.IsName(state), Is.True);
+                    Assert.That(animator.IsInTransition(0), Is.False);
+                    Assert.That(current.normalizedTime, Is.GreaterThan(previousTime));
+                    previousTime = current.normalizedTime;
+                }
+                Assert.That(previousTime - initial.normalizedTime, Is.GreaterThan(1f));
+            }
+        }
+        finally
+        {
+            Time.captureFramerate = previousCaptureFramerate;
+            Object.Destroy(character);
+        }
+    }
+
 
     [UnityTest]
     public IEnumerator FurnishedHomeKeepsBedroomAndExitReachable()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         try
@@ -126,7 +181,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
     [UnityTest]
     public IEnumerator NewGameFadesThenPlaysP01OnceAndProgressSurvivesReload()
     {
-        var flow = GameFlowManager.Instance;
+        var flow = StoryFlow_PengaturAlur.Instance;
         var previous = flow.Progress.Clone();
         string previousSpawn = flow.LastSpawnPoint;
         const string slotKey = "JejakAsa_SaveSlot_3";
@@ -137,7 +192,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
         string oldTime = PlayerPrefs.GetString(timeKey);
         var speakers = new List<string>();
         System.Action<string> onSpeaker = speaker => speakers.Add(speaker);
-        StoryNpcController.SpeakerChanged += onSpeaker;
+        StoryDialog_InteraksiNPC.SpeakerChanged += onSpeaker;
         try
         {
             yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/MainMenu.unity", LoadSceneMode.Single);
@@ -186,7 +241,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
             Assert.That(speakers, Is.EqualTo(new[] { "Vicky", "Ibu", "Vicky", "Ibu", "Vicky", "Ibu", null }));
             Assert.That(flow.CurrentPhase, Is.EqualTo(DayPhase.RumahPagi));
             Assert.That(player.enabled, Is.True);
-            Assert.That(Camera.main.orthographicSize, Is.EqualTo(7.5f).Within(0.01f));
+            Assert.That(Camera.main.orthographicSize, Is.EqualTo(5.6f).Within(0.01f), "Opening must restore the closer Rumah gameplay framing.");
             Assert.That(Camera.main.GetComponent<FixedIsometricCamera>().enabled, Is.True);
             Assert.That(flow.CanGoToPoskoFromHome(out _), Is.True);
             Assert.That(flow.SaveGame(3), Is.True);
@@ -200,7 +255,7 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
         }
         finally
         {
-            StoryNpcController.SpeakerChanged -= onSpeaker;
+            StoryDialog_InteraksiNPC.SpeakerChanged -= onSpeaker;
             if (hadSlot) PlayerPrefs.SetString(slotKey, oldSlot);
             else PlayerPrefs.DeleteKey(slotKey);
             if (hadTime) PlayerPrefs.SetString(timeKey, oldTime);
@@ -217,6 +272,16 @@ public sealed class P01SceneIntegrationTests : InputTestFixture
         yield return null;
         InputSystem.QueueStateEvent(keyboard, new KeyboardState());
         yield return null;
+    }
+}
+
+public sealed class P01AnimationTestMover : MonoBehaviour
+{
+    public float speed;
+
+    private void Update()
+    {
+        transform.position += Vector3.forward * (speed * Time.deltaTime);
     }
 }
 #endif
