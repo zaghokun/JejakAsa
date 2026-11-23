@@ -36,7 +36,7 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 
 | Kode | Kebutuhan | Status |
 | --- | --- | --- |
-| R01, R03–R06 | Alur harian, rumah, posko, lima map, pengantaran, timer, hasil dan retry | Core graybox tersedia; uji ulang setelah revisi |
+| R01, R03–R06 | Alur harian, rumah, posko, lima map, pengantaran, timer, hasil dan retry | Core graybox tersedia; rancangan diferensiasi 5 level terdokumentasi di [docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md) |
 | R02, R07 | Prolog dan dialog cerita berurutan | P01–P05 terintegrasi; cerita harian dan penutup berikutnya menyusul |
 | R08–R12 | Reward, item/weapon, boss battle, encounter pilihan dan bantuan warga untuk membuka jalan | Dikeluarkan dari cakupan revisi |
 | R13–R14 | Save/load tiga slot, menu utama dan menu ingame | Core tersedia; verifikasi ulang setelah revisi |
@@ -77,7 +77,7 @@ Hasil uji graybox lama tidak otomatis membuktikan revisi ini. Kriteria battle, b
 - [ ] **R13–R14 — Save/load dan menu:** uji tiga slot, konfirmasi overwrite/load/keluar, serta menu ingame Lanjutkan, Pengaturan, Muat dan Keluar.
 - [ ] **R15, U19–U21 — Integrasi dan build:** uji seluruh alur, kamera, audio, UI, build Windows dan komputer kedua setelah integrasi akhir.
 
-Mr. Deddy dan Mr. Gas Oke tetap tokoh cerita, bukan boss battle. Detail penempatan rintangan, jumlah penerima final tiap level, aset dan dialog final masih perlu disepakati.
+Mr. Deddy dan Mr. Gas Oke tetap tokoh cerita, bukan boss battle. Detail penempatan rintangan, rancangan eskalasi 5 level ([docs/desain-gameplay-5-level.md](docs/desain-gameplay-5-level.md)), jumlah penerima final tiap level, aset dan dialog final masih perlu disepakati.
 
 ## Paket delivery revisi A/B
 

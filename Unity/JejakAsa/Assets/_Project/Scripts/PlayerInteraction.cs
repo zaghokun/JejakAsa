@@ -226,6 +226,19 @@ namespace JejakAsa
             movement.enabled = false;
             promptPanel.SetActive(false);
 
+            if (DialogueTarget != null)
+            {
+                Vector3 toPlayer = transform.position - DialogueTarget.transform.position;
+                toPlayer.y = 0f;
+                if (toPlayer.sqrMagnitude > 0.001f)
+                    DialogueTarget.transform.rotation = Quaternion.LookRotation(toPlayer);
+
+                Vector3 toTarget = DialogueTarget.transform.position - transform.position;
+                toTarget.y = 0f;
+                if (toTarget.sqrMagnitude > 0.001f)
+                    transform.rotation = Quaternion.LookRotation(toTarget);
+            }
+
             dialogueTitle.text = DialogueTarget.DisplayName;
 
             // Logika Penyerahan Bansos Otomatis (U04, U05, U06, U07)

@@ -17,25 +17,22 @@ namespace JejakAsa
         internal static Texture2D Portrait(string speaker)
         {
             string key = speaker == null ? "" : speaker.Trim().ToLowerInvariant();
-            string asset = key switch
-            {
-                "vicky" => "Vicky",
-                "ibu" => "Ibu",
-                "bu rina" => "WargaPerempuan",
-                "ayah" => "Ayah",
-                "jonathan" => "Jonathan",
-                "pak jonathan" => "Jonathan",
-                "ophelia" => "Ophelia",
-                "deddy" => "Deddy",
-                "mr. deddy" => "Deddy",
-                "gas oke" => "GasOke",
-                "mr. gas oke" => "GasOke",
-                "preman" => "Preman",
-                "warga perempuan" => "WargaPerempuan",
-                "warga laki-laki" => "WargaLaki",
-                _ when key.StartsWith("warga ") => "WargaLaki",
-                _ => null
-            };
+            string asset = null;
+
+            if (key.Contains("vicky")) asset = "Vicky";
+            else if (key.Contains("ibu nur") || key.Contains("warga pos")) asset = "Ibu";
+            else if (key.Contains("ibu")) asset = "Ibu";
+            else if (key.Contains("rina") || key.Contains("warga timur")) asset = "WargaPerempuan";
+            else if (key.Contains("arif") || key.Contains("warga tengah")) asset = "WargaLaki";
+            else if (key.Contains("ayah")) asset = "Ayah";
+            else if (key.Contains("jonathan") || key.Contains("pak jonathan")) asset = "Jonathan";
+            else if (key.Contains("ophelia")) asset = "Ophelia";
+            else if (key.Contains("deddy")) asset = "Deddy";
+            else if (key.Contains("gas oke")) asset = "GasOke";
+            else if (key.Contains("preman")) asset = "Preman";
+            else if (key.Contains("perempuan")) asset = "WargaPerempuan";
+            else if (key.Contains("laki") || key.Contains("warga") || key.Contains("pak")) asset = "WargaLaki";
+
             if (asset == null) return null;
             if (!Portraits.TryGetValue(asset, out Texture2D texture) || texture == null)
             {
