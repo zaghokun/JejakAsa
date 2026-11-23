@@ -182,7 +182,7 @@ Gunakan data C# sederhana dan referensi Inspector. Tidak perlu membuat Scriptabl
 
 | Pemilik data/logika | Tanggung jawab dan kontrak |
 | --- | --- |
-| PlayerController — A | Gerak dan collision; dapat diaktifkan/nonaktifkan oleh state misi. Tidak menghitung paket atau battle. |
+| Player_Gerak — A | Gerak dan collision; dapat diaktifkan/nonaktifkan oleh state misi. Tidak menghitung paket atau battle. |
 | MissionController — A | Sumber data waktu, state, paket, penerima selesai, kepercayaan, dan hasil. Mengontrol kapan interaksi/battle dapat dimulai. |
 | Recipient/interaksi warga — A | Memiliki ID unik; mengirim permintaan penyerahan ke MissionController. Tidak menambah progres sendiri. |
 | Encounter — A | Membuka tiga pilihan, mengecek syarat bantuan, dan menyimpan titik kembali aman. Memanggil masuk battle melalui kontrak. |
@@ -442,13 +442,13 @@ U02 sudah diimplementasikan pada scene Kampung dan diverifikasi di Unity Editor 
 
 ### 13.1 Perubahan yang sudah tersedia
 
-- PlayerController memakai Input System yang sudah terpasang: WASD atau panah, gerak relatif yaw kamera, kecepatan 3,5 meter/detik, pembatas panjang input diagonal, gravitasi, dan CharacterController.
-- FixedIsometricCamera mengikuti posisi pemain tanpa ikut berputar saat pemain berbelok. Referensi kamera/target yang hilang dilaporkan sebagai error konfigurasi, bukan diam-diam diganti.
+- Player_Gerak memakai Input System yang sudah terpasang: WASD atau panah, gerak relatif yaw kamera, kecepatan 3,5 meter/detik, pembatas panjang input diagonal, gravitasi, dan CharacterController.
+- Camera_IsometrikTetap mengikuti posisi pemain tanpa ikut berputar saat pemain berbelok. Referensi kamera/target yang hilang dilaporkan sebagai error konfigurasi, bukan diam-diam diganti.
 - Kampung mempertahankan scene dan GUID yang sama. Plane awal diperluas, Cube awal digunakan kembali sebagai PosBantuan, lalu ditambahkan tiga rumah, batas area, gang utama, gang memutar, tiga penanda warga, dan titik spawn/kembali.
 - Player hanya memiliki satu collider, yaitu CharacterController. Jalan visual tidak memiliki collider tambahan yang bisa menyebabkan tersangkut.
 - Pembatas gang dibuat setinggi satu meter agar pemain terbaca dari kamera. Penanda intimidasi merah belum menjadi musuh aktif, dan penanda warga belum memiliki interaksi pengantaran.
 
-File utama: Assets/_Project/Scripts/PlayerController.cs dan Assets/_Project/Scripts/FixedIsometricCamera.cs. Regresi tersedia pada Assets/_Project/Tests/PlayMode/U02MovementTests.cs dan U02KampungRouteTests.cs. Assembly definition hanya menghubungkan runtime ke Input System dan tes ke Unity Test Framework; tidak menambah package.
+File utama: Assets/_Project/Scripts/Player/Player_Gerak.cs dan Assets/_Project/Scripts/Camera/Camera_IsometrikTetap.cs. Regresi tersedia pada Assets/_Project/Tests/PlayMode/Movement/U02MovementTests.cs dan U02KampungRouteTests.cs. Assembly definition hanya menghubungkan runtime ke Input System dan tes ke Unity Test Framework; tidak menambah package.
 
 ### 13.2 Bukti pengujian
 

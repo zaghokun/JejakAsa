@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 21976637}
   - component: {fileID: 21976636}
   m_Layer: 5
-  m_Name: Canvas MenuUtama
+  m_Name: Canvas UI_MenuUtama
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d136f8b106bbcbb408e909b6b3b7154f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::MenuUtama
+  m_EditorClassIdentifier: JejakAsa.Gameplay::UI_MenuUtama
   sesi: {fileID: 1148727395}
   tombol:
   - {fileID: 732326528}
@@ -424,7 +424,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 21976636}
-        m_TargetAssemblyTypeName: MenuUtama, JejakAsa.Gameplay
+        m_TargetAssemblyTypeName: UI_MenuUtama, JejakAsa.Gameplay
         m_MethodName: KlikTombol
         m_Mode: 3
         m_Arguments:
@@ -1071,7 +1071,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 21976636}
-        m_TargetAssemblyTypeName: MenuUtama, JejakAsa.Gameplay
+        m_TargetAssemblyTypeName: UI_MenuUtama, JejakAsa.Gameplay
         m_MethodName: KlikTombol
         m_Mode: 3
         m_Arguments:
@@ -1515,7 +1515,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 21976636}
-        m_TargetAssemblyTypeName: MenuUtama, JejakAsa.Gameplay
+        m_TargetAssemblyTypeName: UI_MenuUtama, JejakAsa.Gameplay
         m_MethodName: KlikTombol
         m_Mode: 3
         m_Arguments:
@@ -1725,7 +1725,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5edfc7ea5dcdfbb479e2143ef8f96f2f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.SessionMenu
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.UI_MenuSesi
   isMainMenu: 1
   pakaiMenuBaru: 1
 --- !u!4 &1148727396
@@ -2846,7 +2846,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 21976636}
-        m_TargetAssemblyTypeName: MenuUtama, JejakAsa.Gameplay
+        m_TargetAssemblyTypeName: UI_MenuUtama, JejakAsa.Gameplay
         m_MethodName: KlikTombol
         m_Mode: 3
         m_Arguments:
@@ -3279,7 +3279,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 21976636}
-        m_TargetAssemblyTypeName: MenuUtama, JejakAsa.Gameplay
+        m_TargetAssemblyTypeName: UI_MenuUtama, JejakAsa.Gameplay
         m_MethodName: KlikTombol
         m_Mode: 3
         m_Arguments:

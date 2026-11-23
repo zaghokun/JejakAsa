@@ -16,7 +16,7 @@ Vegetasi dan pondasi dibuat untuk proyek ini melalui `ArtSource/P02/build_landsc
 - Paving grid lama dimatikan renderernya. Aset lama dipertahankan.
 - Kamera Posko 9 → 6.2, Rumah 7.5 → 5.6, dengan framing mengikuti pemain. SMAA High aktif pada kedua kamera; kompatibel dengan renderer Deferred+ proyek.
 - Tekstur karakter tetap memakai sumber 2048×2048, mipmaps, filtering trilinear, anisotropic 4, dan kompresi berkualitas tinggi. Portrait/UI tidak diubah.
-- `CharacterSightline` menjaga siluet pemain ketika atap naungan posko berada di depan kamera. Setelah revisi gerbang, palang dan tulisan gerbang selalu dirender.
+- `Camera_VisibilitasKarakter` menjaga siluet pemain ketika atap naungan posko berada di depan kamera. Setelah revisi gerbang, palang dan tulisan gerbang selalu dirender.
 - Game View editor disetel ke fixed 1920×1080 untuk pemeriksaan visual; tidak mengunci resolusi build pemain.
 
 Integrasi ulang eksplisit lewat menu `Jejak Asa > Environment > Apply Landscape Polish`. Jangan menjalankan menu integrasi Posko awal setelah polish tanpa menerapkan ulang landscape. Script tidak mengubah scene saat editor dibuka.
@@ -40,7 +40,7 @@ Permukaan posko kini menggunakan heightfield dengan relief 1.2–23.1 cm dan sat
 
 Kamera gameplay Posko sekarang orthographic size **4.35**, sebelumnya 6.2: siluet karakter sekitar 43% lebih besar pada resolusi yang sama. Framing pusat mengikuti pemain dengan jarak pandang ke depan 1.3 m. Kamera Rumah tetap 5.6.
 
-`SessionMenu` membaca posisi mouse langsung melalui Input System, memakai hit area yang sama dengan gambar menu, termasuk skala layar dan tinggi baris slot simpan. Mouse diam tidak mengambil kembali pilihan dari keyboard. Tombol krem pada menu dalam game mendapatkan sorotan teal ketika di-hover; label simpan menyesuaikan kontras. Menu jeda, pengaturan dan muat data tetap bekerja ketika time scale nol.
+`UI_MenuSesi` membaca posisi mouse langsung melalui Input System, memakai hit area yang sama dengan gambar menu, termasuk skala layar dan tinggi baris slot simpan. Mouse diam tidak mengambil kembali pilihan dari keyboard. Tombol krem pada menu dalam game mendapatkan sorotan teal ketika di-hover; label simpan menyesuaikan kontras. Menu jeda, pengaturan dan muat data tetap bekerja ketika time scale nol.
 
 Source tambahan: `ArtSource/P02/P02_Posko_Surface.blend`, `build_posko_surface.py`, dan salinan asset library lokal `Blender/AssetLibrary_Staging/P02_Landscape/JejakAsa_Posko_Surface.blend`. Integrasi ulang: `Jejak Asa > Posko > Apply Surface Relief`, setelah integrasi landscape awal.
 
@@ -50,11 +50,11 @@ Pratinjau revisi: [kamera gameplay](../Previews/PoskoSurface/posko-gameplay-clos
 
 ## Perbaikan gerbang dan collision pintu keluar
 
-Gerbang dan tulisan `SELAMAT DATANG` dikeluarkan dari daftar `CharacterSightline`, sehingga tidak menghilang ketika didekati. Renderer tulisan FBX lama dipertahankan tetapi disembunyikan; `Gate_Welcome_Front` memakai mesh/material yang sama dengan orientasi diperbaiki 180 derajat di sekitar pusatnya. Tulisan sudah diperiksa melalui capture kamera gameplay dan terbaca dari kiri ke kanan.
+Gerbang dan tulisan `SELAMAT DATANG` dikeluarkan dari daftar `Camera_VisibilitasKarakter`, sehingga tidak menghilang ketika didekati. Renderer tulisan FBX lama dipertahankan tetapi disembunyikan; `Gate_Welcome_Front` memakai mesh/material yang sama dengan orientasi diperbaiki 180 derajat di sekitar pusatnya. Tulisan sudah diperiksa melalui capture kamera gameplay dan terbaca dari kiri ke kanan.
 
 Masalah jatuh di posko berasal dari celah di antara `Batas_Lapangan_1` dan `Batas_Lapangan_2`: `Gate_Exit_Trigger` merupakan trigger interaksi, bukan penghalang fisik, dan lantai lapangan berhenti pada z=-12. Root `Map_Exit_Collision` sekarang menambahkan `Gate_Exit_Stopper` yang bertumpang tindih dengan kedua sisi, collider palang atas, dan collision tanah yang mengikuti seluruh hamparan visual. Di Rumah, `Home_Exit_Stopper` menutup sambungan kedua kusen. Kedua scene memiliki lantai pendukung untuk tanah luar dan batas fisik di ujung hamparan agar tidak berjalan ke void.
 
-Trigger E dan alur berpindah scene tetap dipakai. Perbaikan disimpan di scene melalui `GateSafetyIntegration`, menu `Jejak Asa > Environment > Repair Exit Collision And Gate`; integrasi landscape, surface dan P02 juga memanggil perbaikan ini agar regenerasi tidak mengembalikan bug.
+Trigger E dan alur berpindah scene tetap dipakai. Perbaikan disimpan di scene melalui `Editor_Gerbang_Keamanan`, menu `Jejak Asa > Environment > Repair Exit Collision And Gate`; integrasi landscape, surface dan P02 juga memanggil perbaikan ini agar regenerasi tidak mengembalikan bug.
 
 15 tes Play Mode lulus: `ExitSafetyTests` (2), `EnvironmentReadabilityTests` (2), `RumahBoundaryTests` (1), `P01SceneIntegrationTests` (4), `PoskoFlowIntegrationTests` (4), dan `P02ListeningTests` (2). Tes baru menahan gerak ke arah gerbang dan sambungan kusen berkali-kali, memeriksa pijakan tanah luar, jangkauan interaksi gerbang, dan memastikan palang/tulisan terus terlihat. Pemeriksaan tambahan dalam Play Mode: 100 gerakan ke gerbang berhenti pada (0, 1.09, -11.22), grounded; 150 gerakan ke pintu rumah berhenti pada (2, 1.08, -4.12), grounded.
 

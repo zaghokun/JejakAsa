@@ -1,0 +1,12 @@
+[11:56:30] Auto-reapplying Level 1 polish to open Kampung scene...
+[11:56:30] AutoApply Exception: System.InvalidOperationException: Stop Play Mode before applying Level 1 layout.
+  at Level1Integration.Apply () [0x0012b] in D:\project\grafkom-game\Unity\JejakAsa\Assets\_Project\Editor\Level1Integration.cs:102 
+  at Level1Integration.AutoApplyIfKampungOpen () [0x00035] in D:\project\grafkom-game\Unity\JejakAsa\Assets\_Project\Editor\Level1Integration.cs:37 
+[11:57:05] Auto-reapplying Level 1 polish to open Kampung scene...
+[11:57:05] AutoApply Exception: System.InvalidOperationException: Stop Play Mode before applying Level 1 layout.
+  at Level1Integration.Apply () [0x0012b] in D:\project\grafkom-game\Unity\JejakAsa\Assets\_Project\Editor\Level1Integration.cs:102 
+  at Level1Integration.AutoApplyIfKampungOpen () [0x00035] in D:\project\grafkom-game\Unity\JejakAsa\Assets\_Project\Editor\Level1Integration.cs:37 
+[11:58:13] Auto-reapplying Level 1 polish to open Kampung scene...
+[11:58:13] AutoApply Exception: System.InvalidOperationException: Stop Play Mode before applying Level 1 layout.
+  at Level1Integration.Apply () [0x0012b] in D:\project\grafkom-game\Unity\JejakAsa\Assets\_Project\Editor\Level1Integration.cs:102 
+  at Level1Integration.AutoApplyIfKampungOpen () [0x00035] in D:\project\grafkom-game\Unity\JejakAsa\Assets\_Project\Editor\Level1Integration.cs:37 

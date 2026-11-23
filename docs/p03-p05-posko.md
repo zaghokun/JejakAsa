@@ -6,7 +6,7 @@ File cerita sekarang dikelompokkan di `Assets/_Project/Scripts/Story/`: `P01_Vic
 
 Sesudah penamaan ulang, 14/14 tes Play Mode lulus: `P01OpeningTests`, `P01SceneIntegrationTests`, `P02ListeningTests`, dan `PoskoPrologueTests`.
 
-Script pengatur bersama juga dikelompokkan di `Assets/_Project/Scripts/Story/System/`: `StoryFlow_PengaturAlur.cs`, `StoryState_DataProgres.cs`, `StoryDialog_InteraksiNPC.cs`, `StoryDialog_Tampilan.cs`, dan `StoryObjective_TujuanAktif.cs`. File pertama mengatur fase harian, gerbang dan penyimpanan; file data tetap memakai field save yang sama. Peta nama lama dan baru ada di README folder Story.
+Script pengatur bersama juga dikelompokkan di `Assets/_Project/Scripts/Story/System/`: `StoryFlow_PengaturAlur.cs`, `StoryState_DataProgres.cs`, `StoryDialog_InteraksiNPC.cs`, `UI_DialogDanPotret.cs`, dan `UI_TujuanDanProgres.cs`. File pertama mengatur fase harian, gerbang dan penyimpanan; file data tetap memakai field save yang sama. Peta nama lama dan baru ada di README folder Story.
 
 Sesudah rename sistem bersama, 41/41 tes Play Mode lulus: pengenalan P01–P05, kontrak fase harian, posko, tujuan aktif, campaign lima hari, akses penerima pada lima level, dan menu/save/load. Kelima GUID script tetap sama.
 
@@ -32,7 +32,7 @@ Set dan pengikatan referensi dapat dibangun ulang melalui `Jejak Asa > Story > A
 
 - Deddy, Gas Oke dan anak buah memakai model Meshy lokal milik proyek dan rig Mixamo yang sudah ada di `Blender/Animation_References/Mixamo_Rerig_2026/Rigged/`. Tekstur diambil dari GLB sumber, bukan dibuat ulang.
 - Penyiapan model dan audio: `ArtSource/P03P05/prepare_assets.py`. Audio `UnderWatch.wav` dibuat dengan sintesis nada rendah dan noise deterministik; tidak memakai rekaman pihak ketiga.
-- Set gang, ruangan dan meja peta dibentuk dari geometri Unity oleh `P03P05_PoskoStoryIntegration.cs`. Material URP dan model diimpor di bawah `Assets/_Project/Art/`.
+- Set gang, ruangan dan meja peta dibentuk dari geometri Unity oleh `Editor_P03P05_IntegrasiStory.cs`. Material URP dan model diimpor di bawah `Assets/_Project/Art/`.
 - Registri lokal: `Blender/AssetLibrary_Staging/P03P05/ASSETS.md`. Folder Blender diabaikan Git; model Unity, source dan catatan ini tetap ikut repository. Tidak ada unduhan baru.
 
 ## Verifikasi

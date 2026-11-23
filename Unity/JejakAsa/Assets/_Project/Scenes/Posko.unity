@@ -367,7 +367,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d23b137158035694b8671d6c65b4cdf3, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.CharacterSightline
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Camera_VisibilitasKarakter
   subject: {fileID: 20000082}
   overheadScenery:
   - {fileID: 4875393257625552959}
@@ -2263,7 +2263,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Mr. Gas Oke
 --- !u!1 &31147036
 GameObject:
@@ -2952,7 +2952,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Pak Arif
 --- !u!1 &193482694
 GameObject:
@@ -3055,7 +3055,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1142f5a67caa48e2bebe9170f6a27119, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa:PoskoDistributionTrigger
+  m_EditorClassIdentifier: JejakAsa:Interaction_AmbilPaketPosko
   interactionRadius: 2.5
 --- !u!1 &200000810
 GameObject:
@@ -3091,7 +3091,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a982cd9818060c14eb8ced9172720ce3, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.StoryObjective_TujuanAktif
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.UI_TujuanDanProgres
 --- !u!1 &208996628
 GameObject:
   m_ObjectHideFlags: 0
@@ -3981,7 +3981,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Mr. Deddy
 --- !u!1 &516708448
 GameObject:
@@ -6358,7 +6358,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Vicky
 --- !u!1 &908843034
 GameObject:
@@ -10286,7 +10286,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Pak Jonathan
 --- !u!1 &1700123201
 GameObject:
@@ -10711,7 +10711,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Anak buah
 --- !u!1001 &1774107702
 PrefabInstance:
@@ -10818,7 +10818,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Bu Rina
 --- !u!1 &1784021565
 GameObject:
@@ -11121,7 +11121,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Ophelia
 --- !u!1 &1816638468
 GameObject:

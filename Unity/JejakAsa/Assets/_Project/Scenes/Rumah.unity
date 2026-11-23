@@ -335,7 +335,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7463e59dd6954ab099d20a830deee31c, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.SceneStartFade
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.UI_TransisiMasukScene
 --- !u!1 &10000011
 GameObject:
   m_ObjectHideFlags: 0
@@ -1767,7 +1767,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a982cd9818060c14eb8ced9172720ce3, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.StoryObjective_TujuanAktif
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.UI_TujuanDanProgres
 --- !u!1 &101247796
 GameObject:
   m_ObjectHideFlags: 0
@@ -2121,7 +2121,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Ibu
 --- !u!1 &598830626
 GameObject:
@@ -2307,7 +2307,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fbdcbeb05e00d49a5396cc941e57d8, type: 3}
   m_Name:
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.P01CharacterAnimator
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Character_AnimasiGerak
   characterName: Vicky
 --- !u!1001 &754704806
 PrefabInstance:

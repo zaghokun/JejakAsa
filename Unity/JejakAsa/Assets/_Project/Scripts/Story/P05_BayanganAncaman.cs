@@ -20,8 +20,8 @@ namespace JejakAsa
         private bool playing, gasShot, ending;
         private float fade, shotStartedAt, startedAt;
         private Camera cameraReference;
-        private FixedIsometricCamera follow;
-        private PlayerController movement;
+        private Camera_IsometrikTetap follow;
+        private Player_Gerak movement;
         private bool followEnabled, movementEnabled, orthographic;
         private Vector3 oldPosition;
         private Quaternion oldRotation;
@@ -64,9 +64,9 @@ namespace JejakAsa
             oldPosition = cameraReference.transform.position; oldRotation = cameraReference.transform.rotation;
             oldSize = cameraReference.orthographicSize; oldFov = cameraReference.fieldOfView;
             orthographic = cameraReference.orthographic; oldClear = cameraReference.clearFlags; oldBackground = cameraReference.backgroundColor;
-            follow = cameraReference.GetComponent<FixedIsometricCamera>(); followEnabled = follow != null && follow.enabled;
+            follow = cameraReference.GetComponent<Camera_IsometrikTetap>(); followEnabled = follow != null && follow.enabled;
             if (follow != null) follow.enabled = false;
-            movement = player.GetComponent<PlayerController>(); movementEnabled = movement != null && movement.enabled;
+            movement = player.GetComponent<Player_Gerak>(); movementEnabled = movement != null && movement.enabled;
             if (movement != null) movement.enabled = false;
             oldAmbientMode = RenderSettings.ambientMode; oldAmbient = RenderSettings.ambientLight;
             oldAmbientIntensity = RenderSettings.ambientIntensity;
@@ -190,23 +190,23 @@ namespace JejakAsa
             float scale = Mathf.Max(.1f, Mathf.Min(Screen.width / 1280f, Screen.height / 720f));
             Matrix4x4 old = GUI.matrix; GUI.matrix = Matrix4x4.Scale(new Vector3(scale,scale,1));
             float w = Screen.width / scale, h = Screen.height / scale;
-            CozyGuiTheme.Fill(new Rect(0,0,w,58), Color.black);
-            CozyGuiTheme.Fill(new Rect(0,h-166,w,166), new Color(.008f,.011f,.018f,1));
+            UI_TemaVisual.Fill(new Rect(0,0,w,58), Color.black);
+            UI_TemaVisual.Fill(new Rect(0,h-166,w,166), new Color(.008f,.011f,.018f,1));
             if (narrator != null && narrator.IsDialogueOpen && fade < .8f)
             {
-                CozyGuiTheme.EnsureInitialized();
+                UI_TemaVisual.EnsureInitialized();
                 if (subtitleStyle == null)
                 {
-                    subtitleStyle = CozyGuiTheme.Text(23,new Color(.92f,.91f,.86f));
-                    speakerStyle = CozyGuiTheme.Text(15,new Color(.78f,.56f,.33f),true);
-                    hintStyle = CozyGuiTheme.Text(13,new Color(.58f,.61f,.63f),false,TextAnchor.MiddleRight);
+                    subtitleStyle = UI_TemaVisual.Text(23,new Color(.92f,.91f,.86f));
+                    speakerStyle = UI_TemaVisual.Text(15,new Color(.78f,.56f,.33f),true);
+                    hintStyle = UI_TemaVisual.Text(13,new Color(.58f,.61f,.63f),false,TextAnchor.MiddleRight);
                 }
                 GUI.Label(new Rect(76,h-151,w-152,24),narrator.ActiveSpeaker.ToUpperInvariant(),speakerStyle);
                 GUI.Label(new Rect(76,h-120,w-152,82),narrator.ActiveText,subtitleStyle);
                 if (Time.unscaledTime >= narrator.EarliestAdvanceTime && GUI.Button(new Rect(w-320,h-32,244,24),"Enter / Klik untuk lanjut  >",hintStyle))
                     narrator.CloseDialogue();
             }
-            if (fade > 0) CozyGuiTheme.Fill(new Rect(0,0,w,h),new Color(0,0,0,fade));
+            if (fade > 0) UI_TemaVisual.Fill(new Rect(0,0,w,h),new Color(0,0,0,fade));
             GUI.matrix = old;
         }
     }

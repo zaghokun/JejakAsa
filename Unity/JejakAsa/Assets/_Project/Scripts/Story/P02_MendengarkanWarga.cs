@@ -34,7 +34,7 @@ namespace JejakAsa
         }
         public bool BeginConversation()
         {
-            if(SessionMenu.InputBlocked || resident==null) return false;
+            if(UI_MenuSesi.InputBlocked || resident==null) return false;
             if(IsPending(StoryFlow_PengaturAlur.Instance.Progress))
             {
                 bool opened=resident.OpenSequence(Lines,Complete);

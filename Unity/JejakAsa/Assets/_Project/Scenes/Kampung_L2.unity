@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: da559ad3cf4ad734084aadebdffa9a58, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.PremanController
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Obstacle_Preman
   player: {fileID: 1306168564}
   detectionRadius: 7
   moveSpeed: 2.8
@@ -1074,7 +1074,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32c3c19e98ebcc14c88b8f5f78765d37, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.FixedIsometricCamera
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Camera_IsometrikTetap
   target: {fileID: 1306168563}
 --- !u!82 &330585549
 AudioSource:
@@ -1766,7 +1766,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9d7144b01e8774a94666fc0184c6cc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.InteractionTarget
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Mission_PenerimaBantuan
   displayName: Warga Gang Timur
   dialogue: Gang ini sering dijaga preman yang melarang bantuan masuk. Berhati-hatilah
     kalau lewat sana...
@@ -2498,7 +2498,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9d7144b01e8774a94666fc0184c6cc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.InteractionTarget
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Mission_PenerimaBantuan
   displayName: Warga Gang Tengah
   dialogue: Di gang dalam sini banyak lansia yang kesulitan keluar membeli bahan
     pokok...
@@ -3665,7 +3665,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8c951a017f2f4d4eb57c866e76db83f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.PlayerController
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Player_Gerak
   movementCamera: {fileID: 330585546}
   moveSpeed: 3.5
 --- !u!143 &1306168560
@@ -3776,7 +3776,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3060d2eceb6ba254b9d683b38c0c93b2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.PlayerInteraction
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Mission_PengantaranBantuan
   interactionDistance: 1.8
   promptPanel: {fileID: 919678115}
   promptText: {fileID: 1819915627}
@@ -4468,7 +4468,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca9d7144b01e8774a94666fc0184c6cc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.InteractionTarget
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Mission_PenerimaBantuan
   displayName: Warga Pos
   dialogue: Saya sedang menunggu bantuan kebutuhan pokok. Semoga masih ada bagian
     beras untuk dapur kami...
@@ -4621,7 +4621,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c96e9fb87de447f9b9e9e31e4c10b714, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.PuddleZone
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.Obstacle_Genangan
   speedMultiplier: 0.5
 --- !u!54 &1815812732
 Rigidbody:
@@ -4956,7 +4956,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5edfc7ea5dcdfbb479e2143ef8f96f2f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.SessionMenu
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.UI_MenuSesi
   isMainMenu: 0
 --- !u!114 &1900000203
 MonoBehaviour:
@@ -4969,7 +4969,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a982cd9818060c14eb8ced9172720ce3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.StoryObjective_TujuanAktif
+  m_EditorClassIdentifier: JejakAsa.Gameplay::JejakAsa.UI_TujuanDanProgres
 --- !u!114 &1989879651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5108,7 +5108,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0087a84fa8047cf819928e55a95d45d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa:KampungDoorTrigger
+  m_EditorClassIdentifier: JejakAsa:Interaction_PintuKampung
   targetScenePath: Assets/_Project/Scenes/Rumah.unity
   promptLabel: Masuk ke Rumah
   spawnPointKey: RumahVicky
@@ -5238,7 +5238,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0087a84fa8047cf819928e55a95d45d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: JejakAsa:KampungDoorTrigger
+  m_EditorClassIdentifier: JejakAsa:Interaction_PintuKampung
   targetScenePath: Assets/_Project/Scenes/Posko.unity
   promptLabel: Masuk ke Posko
   spawnPointKey: PosBantuan

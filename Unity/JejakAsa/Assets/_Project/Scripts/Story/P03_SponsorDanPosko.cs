@@ -16,10 +16,10 @@ namespace JejakAsa
         private static P03_SponsorDanPosko active;
         private bool settingUp, actorsPlaced;
         private float fade;
-        private PlayerController lockedPlayer;
+        private Player_Gerak lockedPlayer;
         private bool movementBeforeSetup;
         private Camera setupCamera;
-        private FixedIsometricCamera setupFollow;
+        private Camera_IsometrikTetap setupFollow;
         private bool followBeforeSetup;
         private Vector3 cameraPosition;
         private Quaternion cameraRotation;
@@ -69,7 +69,7 @@ namespace JejakAsa
         {
             RefreshAvailability();
             if (GetStage(StoryFlow_PengaturAlur.Instance.Progress) == PoskoIntroStage.Threat && !PresentationActive &&
-                !StoryDialog_InteraksiNPC.AnyDialogueOpen && !SessionMenu.InputBlocked && threat != null && threat.isActiveAndEnabled)
+                !StoryDialog_InteraksiNPC.AnyDialogueOpen && !UI_MenuSesi.InputBlocked && threat != null && threat.isActiveAndEnabled)
                 threat.Play();
         }
 
@@ -95,7 +95,7 @@ namespace JejakAsa
             var stage = GetStage(StoryFlow_PengaturAlur.Instance.Progress);
             if (stage == PoskoIntroStage.None) return false;
             if (stage == PoskoIntroStage.Listening && npc == sceneIntro.resident) return false;
-            if (PresentationActive || SessionMenu.InputBlocked) return true;
+            if (PresentationActive || UI_MenuSesi.InputBlocked) return true;
             if (stage == PoskoIntroStage.Sponsor && npc == sceneIntro.jonathan)
             {
                 FaceConversation(npc);
@@ -120,13 +120,13 @@ namespace JejakAsa
         private IEnumerator EstablishPosko()
         {
             settingUp = true;
-            lockedPlayer = jonathan.playerTransform.GetComponent<PlayerController>();
+            lockedPlayer = jonathan.playerTransform.GetComponent<Player_Gerak>();
             movementBeforeSetup = lockedPlayer != null && lockedPlayer.enabled;
             if (lockedPlayer != null) lockedPlayer.enabled = false;
             setupCamera = Camera.main;
             if (setupCamera != null)
             {
-                setupFollow = setupCamera.GetComponent<FixedIsometricCamera>();
+                setupFollow = setupCamera.GetComponent<Camera_IsometrikTetap>();
                 followBeforeSetup = setupFollow != null && setupFollow.enabled;
                 if (setupFollow != null) setupFollow.enabled = false;
                 cameraPosition = setupCamera.transform.position; cameraRotation = setupCamera.transform.rotation;
@@ -201,11 +201,11 @@ namespace JejakAsa
         {
             if (!settingUp) return;
             GUI.depth = -2000;
-            if (fade > 0) CozyGuiTheme.Fill(new Rect(0, 0, Screen.width, Screen.height), new Color(0, 0, 0, fade));
+            if (fade > 0) UI_TemaVisual.Fill(new Rect(0, 0, Screen.width, Screen.height), new Color(0, 0, 0, fade));
             if (fade < .5f)
             {
-                CozyGuiTheme.EnsureInitialized();
-                GUI.Label(new Rect(24, Screen.height - 65, Screen.width - 48, 40), "Warga menyiapkan posko bersama.", CozyGuiTheme.White);
+                UI_TemaVisual.EnsureInitialized();
+                GUI.Label(new Rect(24, Screen.height - 65, Screen.width - 48, 40), "Warga menyiapkan posko bersama.", UI_TemaVisual.White);
             }
         }
     }

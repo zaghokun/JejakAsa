@@ -120,12 +120,12 @@ Pengembangan diferensiasi gameplay ini dirancang khusus agar dapat dikerjakan se
 1. **Komponen `EnvironmentalHazard.cs`**:
    - Dibuat sebagai komponen MonoBehaviour dengan `BoxCollider` (`isTrigger = true`).
    - Menyimpan nilai `speedMultiplier = 0.5f`.
-   - Pada `OnTriggerEnter(Collider other)`, jika objek bertag `"Player"`, set pengali kecepatan di `PlayerController`. Pada `OnTriggerExit`, kembalikan ke kecepatan normal.
+   - Pada `OnTriggerEnter(Collider other)`, jika objek bertag `"Player"`, set pengali kecepatan di `Player_Gerak`. Pada `OnTriggerExit`, kembalikan ke kecepatan normal.
 2. **Komponen `MovingPatrol.cs`**:
    - Dipasang pada GameObject preman patroli (misal di Level 4).
    - Menggerakkan posisi lokal/dunia preman bolak-balik antara `pointA` dan `pointB` dengan `Vector3.MoveTowards` secara berkala.
 3. **Inspector Scene (`Kampung_L*.unity`)**:
-   - `initialTimeSeconds` diatur langsung pada komponen `PlayerInteraction` di setiap scene:
+   - `initialTimeSeconds` diatur langsung pada komponen `Mission_PengantaranBantuan` di setiap scene:
      - `Kampung.unity`: 180s
      - `Kampung_L2.unity`: 160s
      - `Kampung_L3.unity`: 170s

@@ -1,0 +1,16 @@
+{
+  "asset": "Ground025",
+  "author": "Lennart Demes / ambientCG",
+  "source": "https://ambientcg.com/view?id=Ground025",
+  "download": "https://ambientcg.com/get?file=Ground025_2K-JPG.zip",
+  "license": "CC0-1.0",
+  "license_url": "https://docs.ambientcg.com/license/",
+  "downloaded": "2026-11-23",
+  "technique": "surface photogrammetry",
+  "modifications": "Color and OpenGL normal copied unchanged; Unity metallic/smoothness map packs black metallic and inverted roughness in alpha. Puddle geometry and water/ripple meshes are project originals.",
+  "runtime_files": {
+    "Ground025_Color.jpg": "b964d5a69a06eda24ea1ebae0eb74638f6b76924ebea33d22adf8f2e9f82f87b",
+    "Ground025_MetallicSmoothness.png": "e4d5c7c8367358b9047141f0cb1e03a5e8f9bf55948ac6473151a735c4139461",
+    "Ground025_NormalGL.jpg": "cb8e623d6911a7ebfa4dda414ccdd5455fc6f2196655cfd9d569f6275c8830d3"
+  }
+}

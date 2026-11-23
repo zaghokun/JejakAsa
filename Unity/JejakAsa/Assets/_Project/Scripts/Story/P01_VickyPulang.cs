@@ -16,19 +16,19 @@ namespace JejakAsa
             new DialogueLine { speaker = "Ibu", text = "Bagus. Mulai dengan mendengarkan mereka, ya." }
         };
 
-        [SerializeField] private PlayerController playerReference;
+        [SerializeField] private Player_Gerak playerReference;
         [SerializeField] private StoryDialog_InteraksiNPC ibuReference;
-        [SerializeField] private SceneStartFade fadeReference;
+        [SerializeField] private UI_TransisiMasukScene fadeReference;
         [SerializeField] private Camera cameraReference;
 
-        private PlayerController player;
+        private Player_Gerak player;
         private StoryDialog_InteraksiNPC ibu;
         private bool movementWasEnabled;
         private bool started;
         private bool sequenceStarted;
         private bool finishing;
         private bool cameraCaptured;
-        private FixedIsometricCamera cameraFollow;
+        private Camera_IsometrikTetap cameraFollow;
         private bool followWasEnabled;
         private Vector3 originalCameraPosition;
         private Quaternion originalCameraRotation;
@@ -51,7 +51,7 @@ namespace JejakAsa
             if (StoryFlow_PengaturAlur.Instance.CurrentPhase != DayPhase.Prolog)
                 yield break;
 
-            player = playerReference != null ? playerReference : FindFirstObjectByType<PlayerController>();
+            player = playerReference != null ? playerReference : FindFirstObjectByType<Player_Gerak>();
             ibu = ibuReference;
             if (ibu == null)
                 foreach (var npc in FindObjectsByType<StoryDialog_InteraksiNPC>(FindObjectsSortMode.None))
@@ -62,7 +62,7 @@ namespace JejakAsa
                     }
             if (player == null || ibu == null)
             {
-                Debug.LogError("P01 requires a PlayerController and an Ibu StoryDialog_InteraksiNPC.", this);
+                Debug.LogError("P01 requires a Player_Gerak and an Ibu StoryDialog_InteraksiNPC.", this);
                 yield break;
             }
 
@@ -74,7 +74,7 @@ namespace JejakAsa
                 originalCameraPosition = cameraReference.transform.position;
                 originalCameraRotation = cameraReference.transform.rotation;
                 originalCameraSize = cameraReference.orthographicSize;
-                cameraFollow = cameraReference.GetComponent<FixedIsometricCamera>();
+                cameraFollow = cameraReference.GetComponent<Camera_IsometrikTetap>();
                 if (cameraFollow != null)
                 {
                     followWasEnabled = cameraFollow.enabled;

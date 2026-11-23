@@ -33,6 +33,7 @@ namespace JejakAsa
 
         [SerializeField]
         private GameProgressData data = new GameProgressData();
+        private bool sessionInitialized;
 
         public GameProgressData Progress => data;
         public DayPhase CurrentPhase => data.currentPhase;
@@ -66,6 +67,7 @@ namespace JejakAsa
         /// </summary>
         public void StartNewCampaign(bool startAtProlog = false)
         {
+            sessionInitialized = true;
             data = new GameProgressData
             {
                 currentDay = 1,
@@ -82,8 +84,29 @@ namespace JejakAsa
         /// </summary>
         public void SetStateForTesting(GameProgressData customData)
         {
+            sessionInitialized = true;
             data = customData != null ? customData.Clone() : new GameProgressData();
             OnPhaseChanged?.Invoke(data.currentPhase);
+        }
+
+        internal bool EnsureLevelSceneSession(string sceneName)
+        {
+            if (sessionInitialized) return false;
+            int level;
+            if (sceneName == "Kampung") level = 1;
+            else if (!sceneName.StartsWith("Kampung_L", StringComparison.Ordinal) ||
+                !int.TryParse(sceneName.Substring("Kampung_L".Length), out level) || level < 2 || level > 5)
+                return false;
+
+            data = new GameProgressData
+            {
+                currentDay = level, currentLevel = level, currentPhase = DayPhase.DiLevel,
+                isBriefingDone = true, hasPickedUpBansos = true
+            };
+            sessionInitialized = true;
+            LastSpawnPoint = null;
+            OnPhaseChanged?.Invoke(data.currentPhase);
+            return true;
         }
 
         public bool CompleteProlog()
@@ -334,6 +357,7 @@ namespace JejakAsa
                 return false;
 
             data = loaded;
+            sessionInitialized = true;
             OnPhaseChanged?.Invoke(data.currentPhase);
             return true;
         }

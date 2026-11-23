@@ -33,7 +33,7 @@ namespace JejakAsa
         private int dialogueLineIndex;
         private int dialogueAdvanceFrame = -1;
         private DayPhase dialoguePhase;
-        private PlayerController movement;
+        private Player_Gerak movement;
         private bool movementWasEnabled;
         private static StoryDialog_InteraksiNPC activeDialogue;
         private DialogueLine[] activeLines;
@@ -62,7 +62,7 @@ namespace JejakAsa
 
         private void Update()
         {
-            if (playerTransform == null || (SessionMenu.InputBlocked && !isDialogueOpen))
+            if (playerTransform == null || (UI_MenuSesi.InputBlocked && !isDialogueOpen))
                 return;
 
             float dist = Vector3.Distance(transform.position, playerTransform.position);
@@ -72,7 +72,7 @@ namespace JejakAsa
             if (kb == null)
                 return;
 
-            if (StoryFlow_PengaturAlur.Instance.CurrentPhase != DayPhase.Prolog && isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
+            if (StoryFlow_PengaturAlur.Instance.CurrentPhase != DayPhase.Prolog && isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && kb.eKey.wasPressedThisFrame && Interaction_AmbilPaketPosko.IsNearestInteraction(this, playerTransform))
             {
                 OpenDialogue();
             }
@@ -106,7 +106,7 @@ namespace JejakAsa
         {
             if (isDialogueOpen || AnyDialogueOpen)
                 return false;
-            var interaction = playerTransform != null ? playerTransform.GetComponent<PlayerInteraction>() : null;
+            var interaction = playerTransform != null ? playerTransform.GetComponent<Mission_PengantaranBantuan>() : null;
             if (interaction != null && (interaction.IsDialogueOpen || interaction.IsOutcomeOpen))
                 return false;
 
@@ -114,7 +114,7 @@ namespace JejakAsa
             activeDialogue = this;
             activeLines = lines ?? dialogueLines;
             sequenceCompleted = onCompleted;
-            movement = playerTransform != null ? playerTransform.GetComponent<PlayerController>() : null;
+            movement = playerTransform != null ? playerTransform.GetComponent<Player_Gerak>() : null;
             if (movement != null)
             {
                 movementWasEnabled = movement.enabled;
@@ -239,13 +239,13 @@ namespace JejakAsa
 
         private void OnGUI()
         {
-            if (HidePresentation || SessionMenu.InputBlocked) return;
-            CozyGuiTheme.EnsureInitialized();
-            if (isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && PoskoDistributionTrigger.IsNearestInteraction(this, playerTransform))
-                CozyGuiTheme.Prompt("Bicara dengan " + characterName);
+            if (HidePresentation || UI_MenuSesi.InputBlocked) return;
+            UI_TemaVisual.EnsureInitialized();
+            if (isPlayerInRange && !isDialogueOpen && !AnyDialogueOpen && Interaction_AmbilPaketPosko.IsNearestInteraction(this, playerTransform))
+                UI_TemaVisual.Prompt("Bicara dengan " + characterName);
             if (!isDialogueOpen) return;
             GUI.depth = -100;
-            Matrix4x4 old = GUI.matrix; float scale = CozyGuiTheme.Scale;
+            Matrix4x4 old = GUI.matrix; float scale = UI_TemaVisual.Scale;
             GUI.matrix = old * Matrix4x4.Scale(new Vector3(scale, scale, 1));
             float sw = Screen.width / scale, sh = Screen.height / scale;
             bool configured = activeLines != null && activeLines.Length > 0;
@@ -253,20 +253,20 @@ namespace JejakAsa
             string text = configured ? activeLines[dialogueLineIndex].text : currentDialogueText;
             Rect r = new Rect((sw - 1120) / 2, sh - 268, 1120, 236);
             r.y += 12 * (1 - Mathf.SmoothStep(0, 1, Mathf.Clamp01((Time.unscaledTime - dialogueOpenedAt) / .2f)));
-            CozyGuiTheme.Card(r);
+            UI_TemaVisual.Card(r);
 
-            var portrait = StoryDialog_Tampilan.Portrait(speaker);
+            var portrait = UI_DialogDanPotret.Portrait(speaker);
             if (portrait != null) GUI.DrawTexture(new Rect(r.x + 16, r.y - 22, 168, 242), portrait, ScaleMode.ScaleToFit, true);
-            CozyGuiTheme.Fill(new Rect(r.x + 206, r.y + 46, 20, 3), CozyGuiTheme.Clay);
-            GUI.Label(new Rect(r.x + 240, r.y + 35, 620, 32), speaker, CozyGuiTheme.LabelStyle);
+            UI_TemaVisual.Fill(new Rect(r.x + 206, r.y + 46, 20, 3), UI_TemaVisual.Clay);
+            GUI.Label(new Rect(r.x + 240, r.y + 35, 620, 32), speaker, UI_TemaVisual.LabelStyle);
             Color color = GUI.color; GUI.color = new Color(1, 1, 1, Mathf.Lerp(.7f, 1, Mathf.Clamp01((Time.unscaledTime - dialogueLineAt) / .16f)));
-            GUI.Label(new Rect(r.x + 206, r.y + 82, 850, 82), text, CozyGuiTheme.DialogueTextStyle);
+            GUI.Label(new Rect(r.x + 206, r.y + 82, 850, 82), text, UI_TemaVisual.DialogueTextStyle);
             GUI.color = color;
-            CozyGuiTheme.Rule(r.x + 206, r.y + 175, 886);
+            UI_TemaVisual.Rule(r.x + 206, r.y + 175, 886);
             bool next = configured && dialogueLineIndex + 1 < activeLines.Length;
             string counter = configured ? (dialogueLineIndex + 1) + " / " + activeLines.Length + "     ·     " : "";
-            GUI.Label(new Rect(r.x + 206, r.y + 190, 680, 24), counter + "Enter / Spasi / Esc  Lanjut", CozyGuiTheme.Small);
-            if (CozyGuiTheme.Button(new Rect(r.xMax - 174, r.y + 187, 146, 34), next ? "Lanjut  >" : "Selesai", CozyGuiTheme.TealBtnStyle)) CloseDialogue();
+            GUI.Label(new Rect(r.x + 206, r.y + 190, 680, 24), counter + "Enter / Spasi / Esc  Lanjut", UI_TemaVisual.Small);
+            if (UI_TemaVisual.Button(new Rect(r.xMax - 174, r.y + 187, 146, 34), next ? "Lanjut  >" : "Selesai", UI_TemaVisual.TealBtnStyle)) CloseDialogue();
             GUI.matrix = old;
         }
     }

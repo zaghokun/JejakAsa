@@ -2,6 +2,8 @@
 
 **Bantuan sampai, harapan tumbuh.**
 
+Kredit aset: [daftar aset dan sumber](#daftar-aset-dan-sumber).
+
 Game tugas akhir Grafika Komputer: game eksplorasi 3D low-poly tentang lulusan baru yang kembali ke kampung fiktif di Jakarta Utara untuk membantu distribusi bantuan sosial. Pemain mengatur rute dan mengantar bantuan kepada warga sebelum waktu habis.
 
 Tema utama adalah SDG 1 — Tanpa Kemiskinan, didukung SDG 11 — Kota dan Permukiman Berkelanjutan serta SDG 16 — Perdamaian, Keadilan, dan Kelembagaan yang Tangguh. Game tidak mengklaim bahwa bantuan sesaat menyelesaikan kemiskinan atau bahwa warga adalah penerima pasif.
@@ -52,9 +54,15 @@ Tidak termasuk rancangan saat ini: sistem battle, item, weapon dan reward pertem
 
 **Story P03–P05 / SB-03–SB-05 (21 November 2026):** setelah Bu Rina, Jonathan mengenalkan sponsor dan warga menyiapkan posko lewat montage singkat. Persediaan dan daftar warga muncul setelah tahap ini; berikutnya Vicky bertemu kembali dengan Ophelia. P05 otomatis memperlihatkan Mr. Deddy bersama anak buah di gang gelap, lalu Mr. Gas Oke di meja peta rute: kamera mendekat perlahan, cahaya dingin/hangat, jeda dialog, fade dan suara rendah membangun ancaman. Naskah mengikuti storyboard. Setelah selesai, kamera, pencahayaan, volume lingkungan dan gerak dipulihkan untuk briefing harian yang sudah tersedia. Flag campaign terserialisasi dan tidak terhapus oleh reset harian; save lama yang sudah mengantar serta hari berikutnya tidak dipaksa mengulang. Total 28 tes unik Play Mode terkait lulus (24 tes alur, lalu 10 tes pemeriksaan ulang dengan enam tes yang beririsan). Build Windows baru belum dibuat. [Cara mencoba, sumber dan bukti visual](docs/p03-p05-posko.md).
 
+**Tantangan Level 1 (23 November 2026):** tiga penerima tetap, dengan dua preman berpatroli, dua gang pendek berlumpur dan rute kering yang memutar lewat belakang rumah. Preman berputar mengikuti arah gerak, berlari saat mengejar, memerlukan pandangan tanpa penghalang, dan tetap hadir setelah kontak; jeda kontak bersama mencegah penalti ganda. Timer Level 1 dikalibrasi awal ke 50 detik. Genangan memakai material photogrammetry Ground025 2K dari ambientCG (CC0), mesh organik dan batas perlambatan mengikuti tepinya. Sumber, lisensi, hash dan library Blender terpisah sudah didaftarkan. Penerapan layout otomatis saat reload dimatikan. [Detail, cara mengedit dan verifikasi](docs/level1-challenge.md). Build Windows baru belum dibuat.
+
 **GUI revisi:** menu utama memakai latar dari referensi desain, tombol dan teks interaktif; menu jeda memakai clipboard dan catatan misi. Dialog menampilkan potret karakter, sementara HUD menunjukkan tujuan serta hari dan fase. Panel dan pilihan menu memiliki animasi singkat. Penerima graybox tanpa identitas khusus memakai potret warga sementara; penetapan potret sesuai cerita menyusul. Build lama belum memuat revisi GUI ini.
 
 Save lama tetap mempertahankan field inventori/reward untuk kompatibilitas data, tanpa fungsi gameplay. Aset dan visual final belum menjadi bagian penerimaan revisi ini.
+
+**Perbaikan entry level dan HUD (23 November 2026):** Play langsung dari scene Kampung memulai sesi pengantaran sesuai nomor level, sehingga HUD menampilkan paket, jumlah terantar dan timer. Campaign aktif atau progres yang dimuat tetap dipertahankan. Kedua papan petunjuk Level 1 dihapus dari scene dan generator layout.
+
+**Penataan script (23 November 2026):** runtime dikelompokkan ke `Story`, `Player`, `Characters`, `Camera`, `Interaction`, `Mission`, `Obstacles` dan `UI`. Nama komponen memakai awalan sesuai fungsi. Alat Editor dipisah ke `Environment`, `Levels`, `Story` dan `UI`; tes Play Mode juga dikelompokkan. Metadata asli, field Inspector, callback tombol dan format save dipertahankan. 92 kasus tes unik terverifikasi lulus melalui run penuh dan pengujian ulang dua acuan tes lama; 0 Missing Script pada delapan scene. [Peta nama lama–baru, fungsi file dan bahan laporan progres](docs/peta-script-dan-progres.md), [rincian verifikasi](docs/reviews/2026-11-23-script-refactor.md). Build Windows baru belum dibuat.
 
 ## Pembagian tiga role
 
@@ -94,8 +102,8 @@ Paket **AB-D01–AB-D08** melacak pengerjaan core revisi secara terpisah dari U0
 ### AB-D02 — Posko, rumah, dan gerbang graybox · R03–R04
 
 - [x] **A:** buat satu map posko berupa lapangan terbuka graybox (`Posko.unity`, 28×24 m); rumah tetap berupa map interior (`Rumah.unity`, 14×10 m), tanpa map luar rumah.
-- [x] **A:** sediakan satu gerbang bersama di posko (`PoskoGateController.cs`); saat didekati pemain dapat memilih `Pulang ke Rumah`, `Berangkat ke Level`, atau `Batal`. Tujuan yang belum tersedia menunjukkan alasan sesuai progres.
-- [x] **A:** perpindahan rumah → posko memakai pintu/gerbang (`HomeInteractionController.cs`); dari rumah tidak ada akses langsung ke level.
+- [x] **A:** sediakan satu gerbang bersama di posko (`Interaction_GerbangPosko.cs`); saat didekati pemain dapat memilih `Pulang ke Rumah`, `Berangkat ke Level`, atau `Batal`. Tujuan yang belum tersedia menunjukkan alasan sesuai progres.
+- [x] **A:** perpindahan rumah → posko memakai pintu/gerbang (`Interaction_Rumah.cs`); dari rumah tidak ada akses langsung ke level.
 - [x] **A:** sediakan titik interaksi Jonathan, Ophelia, Ibu, tempat tidur (istirahat/save) dan titik transisi menggunakan graybox via `StoryDialog_InteraksiNPC.cs`.
 - [x] **B:** uji kedua arah transisi, batal, tujuan terkunci, input/fokus, collision serta spawn agar tidak memicu perpindahan berulang atau kehilangan state.
 - [x] **Bukti terima:** `Rumah.unity` dan `Posko.unity` terdaftar di Build Settings; transisi gerbang, dialog Pak Jonathan, Ophelia, dan Ibu berfungsi dengan kontrol WASD & E.
@@ -318,22 +326,143 @@ Unity/JejakAsa/
 docs/                             Acuan desain, rencana, presentasi, bukti visual
 ```
 
-- [PlayerController](Unity/JejakAsa/Assets/_Project/Scripts/PlayerController.cs)
-- [FixedIsometricCamera](Unity/JejakAsa/Assets/_Project/Scripts/FixedIsometricCamera.cs)
-- [Tes gerak/collision](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U02MovementTests.cs)
-- [Tes jalur Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U02KampungRouteTests.cs)
-- [PlayerInteraction](Unity/JejakAsa/Assets/_Project/Scripts/PlayerInteraction.cs)
-- [InteractionTarget](Unity/JejakAsa/Assets/_Project/Scripts/InteractionTarget.cs)
-- [Tes interaksi](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U03InteractionTests.cs)
-- [Tes dialog dan mouse di Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/U03KampungInteractionTests.cs)
+- [Player_Gerak](Unity/JejakAsa/Assets/_Project/Scripts/Player/Player_Gerak.cs)
+- [Camera_IsometrikTetap](Unity/JejakAsa/Assets/_Project/Scripts/Camera/Camera_IsometrikTetap.cs)
+- [Tes gerak/collision](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/Movement/U02MovementTests.cs)
+- [Tes jalur Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/Movement/U02KampungRouteTests.cs)
+- [Mission_PengantaranBantuan](Unity/JejakAsa/Assets/_Project/Scripts/Mission/Mission_PengantaranBantuan.cs)
+- [Mission_PenerimaBantuan](Unity/JejakAsa/Assets/_Project/Scripts/Mission/Mission_PenerimaBantuan.cs)
+- [Tes interaksi](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/Interaction/U03InteractionTests.cs)
+- [Tes dialog dan mouse di Kampung](Unity/JejakAsa/Assets/_Project/Tests/PlayMode/Interaction/U03KampungInteractionTests.cs)
 - [Desain game](docs/desain-game.md)
 - [Rencana kerja awal (historis)](docs/rencana-development-jejak-asa.md) dan [presentasi awal](<docs/Kelompok Jejak Asa.pptx>); cakupan gameplay mengikuti revisi pada README dan storyboard.
 
-### Resource UI dan lisensi
+## Daftar aset dan sumber
 
-U03 mengimpor **TMP Essential Resources** dari package uGUI/TextMeshPro yang sudah terpasang, bukan memasang package baru. Folder `Assets/TextMesh Pro` dan file `.meta` harus ikut Git agar font serta UI tampil pada hasil clone.
+Inventaris **23 November 2026**, berdasarkan dependensi delapan scene build (`MainMenu`, `Rumah`, `Posko`, `Kampung`, `Kampung_L2`–`Kampung_L5`), folder `Resources`, source Blender/GLB dan registri staging. Tabel berikut mengelompokkan model, tekstur, material, UI, font dan audio menurut sumbernya. **[Inventaris per file: 260 entri, sumber, status pemakaian dan SHA-256](docs/asset-inventory.csv)** mencakup semua file pada `Art`, `Audio`, `Resources`, `UI`, `Materials`, resource TMP serta source `.blend`/`.glb` di `ArtSource`; file `.meta` tidak dihitung sebagai aset terpisah.
 
-Font Liberation Sans disertai [SIL Open Font License 1.1](<Unity/JejakAsa/Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt>). Pertahankan pemberitahuan hak cipta dan lisensinya pada distribusi aset/build. Ini bukan penetapan lisensi untuk seluruh repository.
+Status `scene_dependency` berarti file direferensikan scene, termasuk dependensi objek yang mungkin nonaktif. `resources_available_dynamic_or_fallback` berarti tersedia untuk pemuatan runtime/fallback, bukan bukti selalu tampil. `editable_source_only` merupakan sumber produksi; `stored_not_found_in_scene_dependencies` merupakan file tersimpan yang tidak ditemukan pada dependensi scene saat pemeriksaan. Geometri yang dibuat langsung di scene dicatat lewat alat pembuatnya di bawah.
+
+### Karakter 3D, rig dan animasi
+
+Model dasar berasal dari generasi **[Meshy](https://www.meshy.ai/)** menggunakan referensi tokoh proyek. Rig/skin dan gerak memakai **[Adobe Mixamo](https://www.mixamo.com/)** dari koleksi lokal `Blender/Animation_References/`. File tekstur `*_BaseColor.jpg` diekstrak dari GLB sumber. Material URP, controller dan penempatan merupakan penataan proyek.
+
+| Aset / peran | Sumber model lokal | Salinan Unity / status |
+| --- | --- | --- |
+| Vicky / pemain | [JejakAsa_MC_Original.glb](ArtSource/Characters/MC_Meshy/JejakAsa_MC_Original.glb) | `Art/Characters/P01/Vicky.fbx` dan `Vicky_BaseColor.jpg`; rumah, posko dan Level 1 |
+| Ibu / Ibu Nur | [Ibu_Original.glb](ArtSource/Characters/Ibu_Meshy/Ibu_Original.glb) | `Art/Characters/P01/Ibu.fbx` dan teksturnya; rumah serta penerima Level 1 |
+| Pak Jonathan | [Jonathan_Original.glb](ArtSource/Characters/Jonathan_Meshy/Jonathan_Original.glb) | `Art/Characters/PoskoP02/Jonathan.fbx` dan teksturnya |
+| Ophelia | [Ophelia_Original.glb](ArtSource/Characters/Ophelia_Meshy/Ophelia_Original.glb) | `Art/Characters/PoskoP02/Ophelia.fbx` dan teksturnya |
+| Bu Rina / warga perempuan | [Warga_Perempuan_Original.glb](ArtSource/Characters/Warga_Perempuan_Meshy/Warga_Perempuan_Original.glb) | `Art/Characters/PoskoP02/BuRina.fbx` dan teksturnya; model warga digunakan ulang |
+| Pak Arif / warga laki-laki | [Warga_Laki_Original.glb](ArtSource/Characters/Warga_Laki_Meshy/Warga_Laki_Original.glb) | `Art/Characters/PoskoP02/PakArif.fbx` dan teksturnya |
+| Preman / anak buah | [Preman_Original.glb](ArtSource/Characters/Preman_Meshy/Preman_Original.glb) | `Art/Characters/PrologueVillains/Preman.fbx` dan teksturnya; P05 dan dua penjaga Level 1 |
+| Mr. Deddy | [Mr_Deddy_Original.glb](ArtSource/Characters/Mr_Deddy_Meshy/Mr_Deddy_Original.glb) | `Art/Characters/PrologueVillains/Mr_Deddy.fbx` dan teksturnya; P05 |
+| Mr. Gas Oke | [Mr_Gas_Oke_Original.glb](ArtSource/Characters/Mr_Gas_Oke_Meshy/Mr_Gas_Oke_Original.glb) | `Art/Characters/PrologueVillains/Mr_Gas_Oke.fbx` dan teksturnya; P05 |
+| Ayah | [Ayah_Original.glb](ArtSource/Characters/Ayah_Meshy/Ayah_Original.glb) | Source model tersimpan; tidak ditemukan sebagai model pada dependensi delapan scene. Potret Ayah tersedia terpisah |
+| Preview MC lama | Source Vicky/Meshy di atas | `Art/Characters/MC/JejakAsa_MC_Unity_Test.fbx`, tekstur, material dan `MC_Meshy_Preview.prefab`; preview tersimpan, tidak ditemukan pada dependensi scene |
+| Animasi idle | Mixamo; koleksi lokal `Blender/Animation_References/Mixamo/` | `Art/Characters/P01/Idle.fbx` |
+| Animasi berjalan | Mixamo; rig Vicky dari koleksi lokal `Mixamo_Rerig_2026/Rigged/` | Klip Walk tertanam pada `Art/Characters/P01/Vicky.fbx` |
+| Animasi lari | Mixamo / koleksi animasi lokal | `Art/Characters/P01/Run.fbx`; ID unduhan klip asal belum dicatat |
+| Animasi mulai bicara | Mixamo / koleksi animasi lokal | `Art/Characters/P01/TalkStart.fbx`; ID unduhan klip asal belum dicatat |
+| Controller animasi dan material karakter | Penataan proyek | `Art/Characters/P01/P01Character.controller`, material karakter di P01/PoskoP02/Prologue dan `Preman_Level1_Daylight.mat` |
+
+Path Unity pada tabel relatif terhadap `Unity/JejakAsa/Assets/_Project/`. [FAQ Adobe](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) menjelaskan penggunaan karakter/animasi Mixamo secara royalty free dalam game. Ketentuan tiap hasil Meshy mengikuti akun/job pembuatannya; bukti plan/job dan izin redistribusi file mentah belum dilampirkan. Model generatif dan Mixamo tidak ditandai sebagai CC0.
+
+### Lingkungan, tanah dan material
+
+| Aset | Sumber / pembuat | Lokasi dan pemakaian |
+| --- | --- | --- |
+| Rumah dasar P01: lantai, dinding, kusen, jendela, ranjang, lemari, sofa, meja, kursi, dapur, lampu dan tanaman sederhana | Geometri asli proyek, dibentuk dari primitive Blender | [P01_Rumah_Original.blend](ArtSource/P01/P01_Rumah_Original.blend) → `Art/Environment/P01/P01_Rumah_Original.fbx`; Rumah |
+| Dekorasi tambahan rumah | Props paket lokal **InteriorModular / FreeLowPolyHouseInterior**; rincian di tabel berikut | [P02_Rumah_Dressed.blend](ArtSource/P01/P02_Rumah_Dressed.blend) → `Art/Environment/P02/P02_Home_Dressing.fbx`, atlas `P02_Home_Dressing.fbm/Main_Texture.png` dan `HomeDressingAtlas.mat` |
+| Rumah kampung sekitar posko, naungan, gerbang, bangku, paving, planter, pohon dan tulisan 3D | Geometri proyek melalui [build_posko.py](ArtSource/P02/build_posko.py) | [P02_Posko.blend](ArtSource/P02/P02_Posko.blend) → `Art/Environment/PoskoP02/PoskoP02.fbx`; props/atlas yang ikut tergabung tetap mengikuti sumber InteriorModular |
+| Meja/kursi posko, papan pengumuman, tanaman pot dan peti bantuan | Paket lokal InteriorModular | Digabung pada `PoskoP02.fbx`; `Textures/atlas_*.png` dan material `Textures.*.mat` merupakan turunannya |
+| Pohon, cabang, daun pisang, semak, bunga, rumput, batu, pondasi dan mesh tanah Rumah/Posko | Geometri dan material proyek melalui [build_landscape.py](ArtSource/P02/build_landscape.py) | [P02_Landscape.blend](ArtSource/P02/P02_Landscape.blend) → `Art/Environment/Landscape/PoskoLandscape.fbx`, `RumahLandscape.fbx`, material `Landscape_*` dan shader `PackedEarth.shader` |
+| Relief lapangan, jalur tanah padat, batu pijakan dan gundukan posko | Geometri proyek melalui [build_posko_surface.py](ArtSource/P02/build_posko_surface.py) | [P02_Posko_Surface.blend](ArtSource/P02/P02_Posko_Surface.blend) → `Art/Environment/PoskoSurface/PoskoSurface.fbx` dan material `Posko_*` |
+| **Brown Mud Dry**, diffuse dan normal OpenGL 2K | **Rob Tuytel / [Poly Haven](https://polyhaven.com/a/brown_mud_dry)** — [CC0](https://polyhaven.com/license) | `Landscape/brown_mud_dry_diff_2k.jpg` dan `PoskoSurface/brown_mud_dry_nor_gl_2k.jpg`; tanah Rumah/Posko |
+| **Ground025**, color, normal OpenGL dan roughness 2K | **Lennart Demes / [ambientCG](https://ambientcg.com/view?id=Ground025)** — [CC0-1.0](https://docs.ambientcg.com/license/) | `Level1Puddles/Ground025_Color.jpg`, `Ground025_NormalGL.jpg`, `Ground025_MetallicSmoothness.png`; roughness dikemas menjadi alpha smoothness. [Registri dan hash sumber](ArtSource/Level1/puddle-source.json) |
+| Bentuk tiga genangan, tepian lumpur, permukaan air, riak dan pagar rute Level 1 | Geometri proyek melalui [Editor_Level1_RuteDanRintangan.cs](Unity/JejakAsa/Assets/_Project/Editor/Levels/Editor_Level1_RuteDanRintangan.cs) | Dua belas mesh `Genangan_*.asset` serta material `Puddle_*`/`Route_*` di `Art/Environment/Level1Puddles/`; material papan `Route_Sign*` masih tersimpan tetapi papan telah dihapus dari map |
+| Rumah, atap genteng, pagar, tiang, jalan dan dekorasi Level 1 | Geometri Unity proyek melalui [Editor_Level1_VisualLingkungan.cs](Unity/JejakAsa/Assets/_Project/Editor/Levels/Editor_Level1_VisualLingkungan.cs); beberapa mesh pohon/planter memakai hasil `build_posko.py` | Tersimpan dalam `Kampung.unity`; mempertahankan rute dan collider gameplay |
+| Gang villain, ruangan Gas Oke, meja, peta rute dan daftar warga P03–P05 | Geometri/material Unity proyek melalui [Editor_P03P05_IntegrasiStory.cs](Unity/JejakAsa/Assets/_Project/Editor/Story/Editor_P03P05_IntegrasiStory.cs) | Root `P03-P05_PrologPosko` pada Posko; material `Threat_*`, `Register_*` dan material karakter di `Art/Environment/Prologue/` |
+| Map graybox Level 2–5, lantai, jalan, dinding dan capsule karakter | Primitive Unity dan material warna proyek | Tersimpan dalam `Scenes/Kampung_L2`–`Kampung_L5`; material `Materials/Graybox_Citizen`, `Graybox_Encounter`, `Graybox_Ground`, `Graybox_House`, `Graybox_Player`, `Graybox_Road`, `Graybox_Wall` serta `Level1_WaterPuddle` dicatat per file/status pada CSV |
+| Lantai, bangunan, pembatas dan capsule graybox; material air lama | Primitive Unity dan material proyek | Lima map Kampung; `Materials/Graybox_Citizen`, `Graybox_Encounter`, `Graybox_Ground`, `Graybox_House`, `Graybox_Player`, `Graybox_Road`, `Graybox_Wall` dan `Level1_WaterPuddle.mat` |
+
+Material warna, variasi material dan atlas bukan paket aset baru. Sumber tekstur/model asalnya tetap berlaku. Geometri asli proyek belum diberi lisensi publik tersendiri melalui README ini.
+
+### Rincian props dari katalog InteriorModular
+
+Sumber lokal tercatat pada properti `source_asset` di Blender dan `source_path` pada katalog `Blender/AssetLibrary_Staging/JejakAsa_Environment_Catalog.blend`. Berkas sumber berada di `Blender/AssetLibrary_Staging/InteriorModular/`. Arsip lokal bernama `FreeLowPolyHouseInterior_Obj.rar` dan `FreeLowPolyHouseInterior_Tex.rar`.
+
+| Props yang dipakai | Nama model sumber | Pemakaian |
+| --- | --- | --- |
+| Rak buku | `SM_Shelf_Book_Taller_1_01` | Rumah: `P02_Bookcase` |
+| Meja belajar | `SM_Desk_1_01` | Rumah: `P02_Study_Desk` |
+| Kursi belajar | `SM_Chair_Office_1_06` | Rumah: `P02_Study_Chair` |
+| Rak sepatu | `SM_Shoes_Furniture_1_03` | Rumah: `P02_Shoe_Rack` |
+| Sandal | `SM_Sandal_Double_1_02` | Rumah: `P02_Slippers` |
+| Gantungan pakaian | `SM_Coat_Hanger_1_01` | Rumah: `P02_Coat_Stand` |
+| Kipas berdiri | `SM_Fan_Standing_1_01` | Rumah: `P02_Living_Fan` |
+| Tanaman pot | `SM_Plant_02` | Rumah dan tiga pot posko |
+| Keranjang kamar | `SM_Basket_Laundry_1_04` | Rumah: `P02_Bedroom_Basket` |
+| Teko | `SM_Tea_Pot_02` | Rumah: `P02_Table_Tea` |
+| Mug | `SM_Coffee_Mug_04` | Dua mug meja makan dan satu mug meja tamu |
+| Keranjang buah | `SM_Fruit_Basket_01` | Rumah: `P02_Kitchen_Fruit` |
+| Panci | `SM_Pan_02` | Rumah: `P02_Stove_Pan` |
+| Tanaman kecil | `SM_Plant_Small_02` | Rumah: `P02_Kitchen_Herb` |
+| Buku terbuka | `SM_Book_Open_1_01` | Rumah: `P02_Coffee_Book` |
+| Meja posko | `SM_Table_Dinning_1_06` | Posko: `P02_Community_Desk` |
+| Kursi posko | `SM_Chair_Dining_1_01` | Posko: `P02_Desk_Chair` |
+| Papan pengumuman | `SM_White_board_1_01` | Posko: `P02_Notice_Board` |
+| Peti bantuan | `SM_Box_Closed_1_01` | Posko: empat peti bantuan |
+
+**Asal penerbit/lisensi paket ini belum terverifikasi.** Ada [halaman CGTrader dengan nama paket yang sama](https://www.cgtrader.com/free-3d-models/interior/house-interior/free-low-poly-house-interior), diterbitkan akun lonemesh, tetapi kecocokan file dan penerbit asal belum terbukti. Tautan tersebut merupakan petunjuk penelusuran, bukan penetapan sumber asli. Salinan lokal belum menyertakan bukti lisensi yang ditemukan dalam pemeriksaan ini; label “free” tidak dipakai sebagai pengganti lisensi.
+
+### GUI, logo, gambar latar dan potret
+
+Path pada tabel relatif terhadap `Unity/JejakAsa/Assets/_Project/`. Nama `.png` yang dikelompokkan tetap mempunyai entri individual di CSV.
+
+| Aset / nama file | Sumber dan pemakaian |
+| --- | --- |
+| `UI/MenuUtama/latar_menu.jpg`, `logo_pixel.png` | Aset menu kontribusi tim/pengguna yang terikat pada MainMenu. Tautan publik, pembuat gambar asli dan lisensi belum dicatat; tidak diganti dalam inventaris ini |
+| `UI/AnimeRounded.png` | Gambar UI proyek yang masih tersimpan; tidak ditemukan pada dependensi scene |
+| `Resources/JejakAsaUI/MenuBackground.jpg` | Latar menu dari aset/referensi yang sudah disediakan untuk proyek; dipakai jalur menu OnGUI. Sumber eksternal asli belum tercatat |
+| `Hybrid/kartu`, `pita_gelap`, `lencana`, `berlian` | Set GUI hybrid kontribusi tim/proyek; panel dialog, menu, label dan aksen. Pembuat individual/link publik belum dicatat |
+| `Hybrid/tombol_krem`, `tombol_teal`, `tombol_tekan`, `tombol_abu`, `tombol_bata`, `tombol_e` | Set tombol dan prompt E GUI hybrid; sumber sama dengan set hybrid |
+| `Hybrid/ikon_awas`, `ikon_balik`, `ikon_gear`, `ikon_hati`, `ikon_kunci`, `ikon_lanjut`, `ikon_layar`, `ikon_muat`, `ikon_paket`, `ikon_pintu`, `ikon_play`, `ikon_timer` | Dua belas ikon set hybrid; sumber sama dengan set hybrid |
+| `Generated/JejakAsaLogo`, `InteractionKeyE`, `JournalPanel`, `MissionReport`, `PaperButton`, `VolunteerButton`, `VolunteerDialogPanel` | Aset dari sesi desain GUI proyek sebelumnya; beberapa dipakai jalur menu/hasil atau tetap tersedia di Resources. Tidak ada tautan katalog publik atau catatan job/prompt yang tersimpan |
+| `Generated/Portraits/Vicky`, `Ibu`, `Ayah`, `Jonathan`, `Ophelia`, `Preman`, `Deddy`, `GasOke`, `WargaLaki`, `WargaPerempuan` | Sepuluh potret dari pengerjaan desain/generasi potret proyek; dipilih sesuai pembicara dialog. Catatan job/prompt dan penerbit eksternal tidak tersedia |
+| `Portraits/Vicky`, `Ibu`, `Ayah`, `Jonathan`, `Ophelia`, `Preman`, `Deddy`, `GasOke`, `WargaLaki`, `WargaPerempuan` | Sepuluh potret versi sebelumnya, dipertahankan sebagai fallback ketika versi Generated tidak ditemukan |
+| `Clipboard`, `DialogPanel`, `TitleBoard`, `MenuButton`, `MenuButtonSelected`, `MissionNote`, `NameRibbon`, `ObjectivePanel` | Delapan gambar GUI versi awal di akar `Resources/JejakAsaUI/`; masih tersedia pada Resources, bukan klaim semuanya tampil dalam GUI hybrid terbaru |
+| Bentuk panel, tekstur rounded dan font atlas yang dibuat saat runtime | Dibuat kode proyek pada `UI_TemaVisual.cs` dan `UI_DialogDanPotret.cs`; tidak diunduh sebagai paket gambar terpisah |
+
+Set hybrid dan gambar kiriman tidak diberi label CC0 tanpa bukti. Kontribusi integrasi UI tidak otomatis berarti pembuat integrasi adalah ilustrator setiap gambar sumber.
+
+### Font
+
+| Font / file | Sumber | Pemakaian dan lisensi lokal |
+| --- | --- | --- |
+| Sniglet Regular — `Sniglet-Regular.ttf` | [Google Fonts / Sniglet](https://github.com/google/fonts/tree/main/ofl/sniglet) | Font isi GUI hybrid; [OFL-Sniglet.txt](Unity/JejakAsa/Assets/_Project/Resources/JejakAsaUI/Hybrid/Font/OFL-Sniglet.txt), SIL OFL 1.1 |
+| Lilita One — `LilitaOne-Regular.ttf` | [Google Fonts / Lilita One](https://github.com/google/fonts/tree/main/ofl/lilitaone) | Font judul GUI hybrid; [OFL-LilitaOne.txt](Unity/JejakAsa/Assets/_Project/Resources/JejakAsaUI/Hybrid/Font/OFL-LilitaOne.txt), SIL OFL 1.1 |
+| Nunito — `Nunito-SemiBold.ttf`, `Nunito-Variable.ttf` | [The Nunito Project / Google Fonts](https://github.com/google/fonts/tree/main/ofl/nunito) | Semibold sebagai fallback isi; variable merupakan sumber font tersimpan; [OFL.txt](Unity/JejakAsa/Assets/_Project/Resources/JejakAsaUI/Fonts/OFL.txt), SIL OFL 1.1 |
+| Bree Serif — `BreeSerif-Regular.ttf` | [TypeTogether / Google Fonts](https://github.com/google/fonts/tree/main/ofl/breeserif) | Fallback judul; [BreeSerif-OFL.txt](Unity/JejakAsa/Assets/_Project/Resources/JejakAsaUI/Fonts/BreeSerif-OFL.txt), SIL OFL 1.1 |
+| Liberation Sans — `LiberationSans.ttf`, aset/material SDF | [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts), dibundel TMP Essential Resources | Font default TextMeshPro; [LiberationSans - OFL.txt](<Unity/JejakAsa/Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt>), SIL OFL 1.1 |
+
+Pertahankan file lisensi dan pemberitahuan hak cipta font ketika membagikan source/build. Shader, material SDF, style sheet, line-breaking rules dan TMP Settings dalam `Assets/TextMesh Pro` berasal dari **TMP Essential Resources** bawaan package Unity. Sprite/atlas **EmojiOne** juga ikut bundel sebagai default resource TMP; [pemberitahuan sumber bawaan](<Unity/JejakAsa/Assets/TextMesh Pro/Sprites/EmojiOne Attribution.txt>) tersedia, tetapi versi/lisensi artwork spesifik belum diidentifikasi. Keberadaannya sebagai dependensi pengaturan tidak berarti emoji dipakai pada dialog game.
+
+### Audio
+
+| Aset | Sumber / pembuat | Lisensi dan pemakaian |
+| --- | --- | --- |
+| `Audio/LoopTown.ogg` — **Loop Town** | **Fupi**, [OpenGameArt](https://opengameart.org/content/loop-town); nama file unduhan `loopcity.ogg` | CC0; musik eksplorasi yang ditemukan pada dependensi scene |
+| `Audio/UrbanBattle.ogg` — **Urban Battle** | **MintoDog**, [OpenGameArt](https://opengameart.org/content/urban-battle); file lokal identik dengan unduhan `urban_battle_bpm135_0.ogg` | CC0; musik battle lama tersimpan, tidak ditemukan pada dependensi delapan scene revisi |
+| `Audio/Prologue/UnderWatch.wav` | Sintesis asli proyek melalui [prepare_assets.py](ArtSource/P03P05/prepare_assets.py) | Suara rendah 24 detik untuk P05; dibuat dari nada/noise deterministik, tanpa rekaman pihak ketiga |
+
+### Library lokal dan kelengkapan sumber
+
+Folder `Blender/`, `AnimationLab/` dan proyek referensi `JejakAsaMenus/` diabaikan Git. Salinan FBX/tekstur/material runtime berada di `Unity/JejakAsa/Assets/_Project/`; source `.blend`/`.glb` terlacak berada di `ArtSource/`. Jangan menganggap katalog lokal ikut clone hanya karena asetnya terdaftar di Blender.
+
+Paket `House20`, `HousePoly`, `InteriorOBJ`, `ForestPack`, `ForestTerrain`, `UrbanCity`, `SuburbanHouses`, library animasi KayKit dan Quaternius berada di staging/referensi lokal; **tidak ditetapkan sebagai sumber aset aktif** pada pemeriksaan ini. Paket [Suburban Houses — Kenney](https://poly.pizza/bundle/Suburban-Houses-Pack-dZQwy8vcDv) memiliki catatan sumber CC0, tetapi tidak ditemukan sebagai ekspor pada dependensi scene saat ini. Lisensi/status paket staging lain tetap mengikuti catatan masing-masing.
+
+Sumber yang masih perlu dilengkapi adalah penerbit/lisensi props InteriorModular, asal asli gambar menu dan set UI kiriman, bukti akun/job model Meshy, serta versi/lisensi artwork EmojiOne bawaan. Inventaris ini mencatat kekurangan tersebut secara terbuka dan **bukan** penetapan lisensi untuk seluruh repository maupun pernyataan bahwa seluruh aset mentah bebas didistribusikan ulang. Paket engine/tool seperti URP, Input System, uGUI/TMP dan MCP dicatat terpisah dalam [manifest package](Unity/JejakAsa/Packages/manifest.json).
 
 ## Aturan kolaborasi dan pembaruan tracker
 
