@@ -11,7 +11,7 @@ public class Editor_UI_ImporGambarHybrid : AssetPostprocessor
         TextureImporter ti = (TextureImporter)assetImporter;
         ti.textureType = TextureImporterType.Sprite;
         ti.spriteImportMode = SpriteImportMode.Single;
-        ti.filterMode = FilterMode.Point;
+        ti.filterMode = FilterMode.Bilinear; // halus, nyambung sama game 3D
         ti.mipmapEnabled = false;
         ti.npotScale = TextureImporterNPOTScale.None;
         ti.alphaIsTransparency = true;
