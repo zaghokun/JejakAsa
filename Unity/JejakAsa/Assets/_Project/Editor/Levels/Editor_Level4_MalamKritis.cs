@@ -187,7 +187,7 @@ internal static class Editor_Level4_MalamKritis
         BuildChallengeLayout(challengeRoot.transform, find, mud, water, ripple, routeTimber, routeFence, ironMat, timberMat, concreteMat, plankMat, sandbagMat, warningMat, drumMat, tarpBlueMat, canvasMat, terracottaRoof, crateTexMat ?? timberMat, barkMat ?? routeTimber, deepGreenMat ?? leafMat0, cableMat, electricSafeMat, electricWarnMat, electricActiveMat, guardMaterial, fbxMeshes, fallbackCanopyMesh);
     }
 
-    private static Material CreateEmissiveMaterial(string path, Color baseColor, Color emissionColor, float smoothness)
+    internal static Material CreateEmissiveMaterial(string path, Color baseColor, Color emissionColor, float smoothness)
     {
         var mat = Editor_Level2_PascaHujan.GetOrCreateMaterial(path, baseColor, smoothness);
         mat.EnableKeyword("_EMISSION");
@@ -435,7 +435,7 @@ internal static class Editor_Level4_MalamKritis
         {
             original.SetActive(false);
             original.transform.SetPositionAndRotation(new Vector3(-11.0f, 1f, -3.5f), Quaternion.Euler(0f, 90f, 0f));
-            ConfigureLevel4Guard(original,
+            ConfigureGuard(original,
                 new[] { new Vector3(-11.0f, 1f, -3.5f), new Vector3(-2.5f, 1f, -3.5f), new Vector3(-2.5f, 1f, -1.8f) },
                 radius: 5.5f, chaseSpeed: 4.2f, patrolSpeed: 1.85f, leash: 7.5f, penalty: 10f, retreatSeconds: 1.3f);
             original.SetActive(true);
@@ -443,7 +443,7 @@ internal static class Editor_Level4_MalamKritis
             var patrolEast = UnityEngine.Object.Instantiate(original, root);
             patrolEast.name = "Preman_02_JagaJembatanTimur";
             patrolEast.transform.SetPositionAndRotation(new Vector3(11.8f, 1f, -2.5f), Quaternion.Euler(0f, 180f, 0f));
-            ConfigureLevel4Guard(patrolEast,
+            ConfigureGuard(patrolEast,
                 new[] { new Vector3(11.0f, 1f, -3.2f), new Vector3(14.5f, 1f, -1.8f), new Vector3(11.2f, 1f, 1.8f) },
                 radius: 6.0f, chaseSpeed: 4.5f, patrolSpeed: 1.95f, leash: 7.8f, penalty: 12f, retreatSeconds: 1.1f);
             Editor_Level2_PascaHujan.ApplyGuardMaterials(patrolEast, guardMaterial);
@@ -459,7 +459,7 @@ internal static class Editor_Level4_MalamKritis
         }
     }
 
-    private static void ConfigureLevel4Guard(GameObject go, Vector3[] patrolRoute, float radius, float chaseSpeed, float patrolSpeed, float leash, float penalty, float retreatSeconds)
+    internal static void ConfigureGuard(GameObject go, Vector3[] patrolRoute, float radius, float chaseSpeed, float patrolSpeed, float leash, float penalty, float retreatSeconds)
     {
         var guard = go.GetComponent<Obstacle_Preman>();
         if (guard == null) return;
@@ -490,7 +490,7 @@ internal static class Editor_Level4_MalamKritis
         }
     }
 
-    private static void BuildDisasterTent(
+    internal static void BuildDisasterTent(
         Transform root,
         string name,
         Vector3 pos,
@@ -536,7 +536,7 @@ internal static class Editor_Level4_MalamKritis
         light.range = 5.5f;
     }
 
-    private static void BuildLogisticsPost(
+    internal static void BuildLogisticsPost(
         Transform root,
         string name,
         Vector3 pos,
@@ -566,7 +566,7 @@ internal static class Editor_Level4_MalamKritis
         Editor_Level1_RuteDanRintangan.Box(post.transform, "Rambu_Barikade", new Vector3(0f, 0.95f, -colliderSize.z * 0.44f), new Vector3(colliderSize.x * 0.78f, 0.18f, 0.06f), warningMat);
     }
 
-    private static void BuildFallenTree(
+    internal static void BuildFallenTree(
         Transform root,
         string name,
         Vector3 pos,
@@ -627,7 +627,7 @@ internal static class Editor_Level4_MalamKritis
         Editor_Level1_RuteDanRintangan.Box(logPivot.transform, "Dahan_Patah", new Vector3(0.25f, 0.22f, 0.24f), new Vector3(0.55f, 0.12f, 0.12f), timberMat);
     }
 
-    private static void BuildChicaneCluster(
+    internal static void BuildChicaneCluster(
         Transform root,
         string name,
         Vector3 pos,
@@ -653,14 +653,14 @@ internal static class Editor_Level4_MalamKritis
         Editor_Level1_RuteDanRintangan.Box(cluster.transform, "Palang_Chicane", new Vector3(0f, 0.78f, 0f), new Vector3(1.1f, 0.14f, 0.06f), warningMat);
     }
 
-    private static void PlaceCrateCluster(Transform parent, Vector3 offset, Material crateMat, Dictionary<string, Mesh> fbxMeshes)
+    internal static void PlaceCrateCluster(Transform parent, Vector3 offset, Material crateMat, Dictionary<string, Mesh> fbxMeshes)
     {
         PlaceFbxCrate(parent, offset + new Vector3(-0.34f, 0f, -0.10f), crateMat, crateMat, fbxMeshes, "P02_Relief_Crate_0", 0.58f);
         PlaceFbxCrate(parent, offset + new Vector3(0.18f, 0f, 0.12f), crateMat, crateMat, fbxMeshes, "P02_Relief_Crate_1", 0.54f);
         PlaceFbxCrate(parent, offset + new Vector3(-0.12f, 0.54f, 0.02f), crateMat, crateMat, fbxMeshes, "P02_Relief_Crate_2", 0.48f);
     }
 
-    private static void PlaceFbxCrate(Transform parent, Vector3 targetBottomCenter, Material fbxMat, Material fallbackMat, Dictionary<string, Mesh> fbxMeshes, string meshKey, float fallbackSize)
+    internal static void PlaceFbxCrate(Transform parent, Vector3 targetBottomCenter, Material fbxMat, Material fallbackMat, Dictionary<string, Mesh> fbxMeshes, string meshKey, float fallbackSize)
     {
         if (fbxMeshes != null && fbxMeshes.TryGetValue(meshKey, out var mesh) && mesh != null)
         {
@@ -681,7 +681,7 @@ internal static class Editor_Level4_MalamKritis
         Editor_Level1_RuteDanRintangan.Box(parent, "Crate_Fallback", targetBottomCenter + Vector3.up * (fallbackSize * 0.5f), Vector3.one * fallbackSize, fallbackMat);
     }
 
-    private static void AddBarrel(Transform parent, Vector3 localPos, Material mat)
+    internal static void AddBarrel(Transform parent, Vector3 localPos, Material mat)
     {
         var drum = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         drum.name = "Drum_Besi";
@@ -692,7 +692,7 @@ internal static class Editor_Level4_MalamKritis
         if (mat != null) drum.GetComponent<Renderer>().sharedMaterial = mat;
     }
 
-    private static void CreateSandbagStack(Transform root, Vector3 pos, Material sandbagMat)
+    internal static void CreateSandbagStack(Transform root, Vector3 pos, Material sandbagMat)
     {
         var stack = new GameObject("KarungPasir");
         stack.transform.SetParent(root, false);
@@ -768,7 +768,7 @@ internal static class Editor_Level4_MalamKritis
         CreateSandbagStack(bridge.transform, new Vector3(11.15f, 0f, 4.25f), sandbagMat);
     }
 
-    private static void BuildElectricShortHazard(
+    internal static void BuildElectricShortHazard(
         Transform root,
         string name,
         Vector3 center,
@@ -779,7 +779,8 @@ internal static class Editor_Level4_MalamKritis
         Material cableMat,
         Material safeMat,
         Material warnMat,
-        Material activeMat)
+        Material activeMat,
+        string ringAssetFolder = Level4PuddlesFolder)
     {
         var go = new GameObject(name);
         go.transform.SetParent(root, false);
@@ -807,7 +808,7 @@ internal static class Editor_Level4_MalamKritis
         var ringGo = new GameObject("Cincin_Listrik");
         ringGo.transform.SetParent(go.transform, false);
         ringGo.transform.localPosition = new Vector3(0f, 0.068f, 0f);
-        var ringMesh = CreateHazardRingMesh(name + "_RingMesh", 1.18f, 1.45f, 36);
+        var ringMesh = CreateHazardRingMesh(name + "_RingMesh", 1.18f, 1.45f, 36, ringAssetFolder);
         ringGo.AddComponent<MeshFilter>().sharedMesh = ringMesh;
         var ringRenderer = ringGo.AddComponent<MeshRenderer>();
         ringRenderer.sharedMaterial = safeMat;
@@ -868,9 +869,9 @@ internal static class Editor_Level4_MalamKritis
         if (mat != null) seg.GetComponent<Renderer>().sharedMaterial = mat;
     }
 
-    private static Mesh CreateHazardRingMesh(string meshName, float innerRadius, float outerRadius, int segments)
+    internal static Mesh CreateHazardRingMesh(string meshName, float innerRadius, float outerRadius, int segments, string ringAssetFolder = Level4PuddlesFolder)
     {
-        string path = Level4PuddlesFolder + meshName + ".asset";
+        string path = ringAssetFolder + meshName + ".asset";
         var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if (mesh == null)
         {

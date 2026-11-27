@@ -126,7 +126,7 @@ public sealed class Level4ChallengeTests
 
         // Stand safely inside center during initial Safe window: zero shock penalty
         Warp(new Vector3(-7.4f, 1f, 1.6f));
-        Assert.That(electric.CurrentState, Is.EqualTo(ElectricHazardState.Safe));
+        Assert.That(electric.CurrentState, Is.EqualTo(TimedHazardState.Safe));
         float beforeWait = mission.TimeRemaining;
         yield return new WaitForSeconds(0.5f);
         float passiveElapsed = beforeWait - mission.TimeRemaining;
@@ -135,12 +135,12 @@ public sealed class Level4ChallengeTests
         // Wait until Active phase arrives and shock fires (-3s penalty)
         float deadline = Time.time + 5f;
         float preActiveTime = mission.TimeRemaining;
-        while (electric.CurrentState != ElectricHazardState.Active && Time.time < deadline)
+        while (electric.CurrentState != TimedHazardState.Active && Time.time < deadline)
         {
             preActiveTime = mission.TimeRemaining;
             yield return null;
         }
-        Assert.That(electric.CurrentState, Is.EqualTo(ElectricHazardState.Active));
+        Assert.That(electric.CurrentState, Is.EqualTo(TimedHazardState.Active));
         yield return null;
         yield return null;
         Assert.That(preActiveTime - mission.TimeRemaining, Is.GreaterThanOrEqualTo(2.9f));
