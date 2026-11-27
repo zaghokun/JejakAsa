@@ -412,7 +412,7 @@ internal static class Editor_Level1_VisualLingkungan
             preman.transform.position = new Vector3(0f, 1f, -3f);
     }
 
-    private static void ConfigureHumanoid(string fbxPath)
+    internal static void ConfigureHumanoid(string fbxPath)
     {
         var importer = AssetImporter.GetAtPath(fbxPath) as ModelImporter;
         if (importer != null && importer.animationType != ModelImporterAnimationType.Human)
@@ -423,7 +423,7 @@ internal static class Editor_Level1_VisualLingkungan
         }
     }
 
-    private static void AddCharacterVisual(GameObject actor, string visualName, string fbxPath, string matPath, float height, string speakerName)
+    internal static void AddCharacterVisual(GameObject actor, string visualName, string fbxPath, string matPath, float height, string speakerName)
     {
         if (actor == null) return;
 
@@ -515,7 +515,7 @@ internal static class Editor_Level1_VisualLingkungan
         return go;
     }
 
-    private static void DressHouse(Transform root, GameObject houseBox, string visualName, Material wallMat, Material roofMat, Material timberMat, Material foundationMat, Vector3 pos, Vector3 size)
+    internal static void DressHouse(Transform root, GameObject houseBox, string visualName, Material wallMat, Material roofMat, Material timberMat, Material foundationMat, Vector3 pos, Vector3 size)
     {
         if (houseBox != null && houseBox.GetComponent<MeshRenderer>() != null)
             houseBox.GetComponent<MeshRenderer>().enabled = false;
@@ -547,7 +547,7 @@ internal static class Editor_Level1_VisualLingkungan
         pt.range = 6f;
     }
 
-    private static void DressPosBantuan(Transform root, GameObject posBantuanBox, Material timberMat, Material concreteMat)
+    internal static void DressPosBantuan(Transform root, GameObject posBantuanBox, Material timberMat, Material concreteMat)
     {
         if (posBantuanBox != null && posBantuanBox.GetComponent<MeshRenderer>() != null)
             posBantuanBox.GetComponent<MeshRenderer>().enabled = false;
@@ -564,7 +564,7 @@ internal static class Editor_Level1_VisualLingkungan
                 CreateCube(shelter.transform, "Post", new Vector3(x, 1.4f, z), new Vector3(0.18f, 2.6f, 0.18f), timberMat);
     }
 
-    private static void AddStreetLamp(Transform root, Vector3 pos, Material timberMat)
+    internal static void AddStreetLamp(Transform root, Vector3 pos, Material timberMat)
     {
         var lamp = new GameObject("StreetLamp");
         lamp.transform.SetParent(root, false);
@@ -584,12 +584,12 @@ internal static class Editor_Level1_VisualLingkungan
         pt.range = 7f;
     }
 
-    private static void AddPropCrate(Transform root, Vector3 pos, Vector3 size, Material woodMat)
+    internal static void AddPropCrate(Transform root, Vector3 pos, Vector3 size, Material woodMat)
     {
         CreateCube(root, "Crate", pos, size, woodMat);
     }
 
-    private static void DressBarricade(Transform root, GameObject pembatasBox, Material timberMat, Material ironMat, Material leafMat, Material flowerMat)
+    internal static void DressBarricade(Transform root, GameObject pembatasBox, Material timberMat, Material ironMat, Material leafMat, Material flowerMat)
     {
         if (pembatasBox == null) return;
         var mr = pembatasBox.GetComponent<MeshRenderer>();
@@ -638,7 +638,7 @@ internal static class Editor_Level1_VisualLingkungan
         CreateCube(barricade.transform, "Crate_R", new Vector3(-startX + 0.4f, 0.35f, 0), new Vector3(0.7f, 0.7f, 0.7f), timberMat);
     }
 
-    private static void DressPerimeter(
+    internal static void DressPerimeter(
         Transform root, 
         Func<string, GameObject> find, 
         Material timberMat, 
@@ -707,7 +707,7 @@ internal static class Editor_Level1_VisualLingkungan
         CreateCube(pole.transform, "CrossArm_Low", new Vector3(0, 5.6f, 0), new Vector3(1.2f, 0.12f, 0.12f), timberMat);
     }
 
-    private static GameObject CreateCube(Transform parent, string name, Vector3 localPos, Vector3 localScale, Material mat)
+    internal static GameObject CreateCube(Transform parent, string name, Vector3 localPos, Vector3 localScale, Material mat)
     {
         var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube.name = name;
@@ -720,7 +720,7 @@ internal static class Editor_Level1_VisualLingkungan
         return cube;
     }
 
-    private static GameObject CreateAuthenticTree(
+    internal static GameObject CreateAuthenticTree(
         Transform parent,
         Vector3 rootPosition,
         float scale,
@@ -803,7 +803,7 @@ internal static class Editor_Level1_VisualLingkungan
         return go;
     }
 
-    private static Mesh CreateFacetedIcosahedronMesh(float radius)
+    internal static Mesh CreateFacetedIcosahedronMesh(float radius)
     {
         var mesh = new Mesh();
         mesh.name = "Procedural_Faceted_Canopy";

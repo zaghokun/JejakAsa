@@ -77,6 +77,14 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                         count++;
                         continue;
                     }
+                    if (level == 2)
+                    {
+                        yield return Level2BridgeAndDryRoute(delivery.transform, resident.transform.position.x);
+                        Vector3 approach = resident.transform.position - delivery.transform.position; approach.y = 0;
+                        Assert.That(approach.magnitude, Is.LessThan(1.8f), resident.name);
+                        count++;
+                        continue;
+                    }
                     yield return WalkTo(delivery.transform, new Vector2(-12f, -3f));
                     float approachZ = resident.transform.position.z - 1.2f;
                     if (Mathf.Abs(resident.transform.position.x) < 7.5f && approachZ > -1f)
@@ -132,6 +140,49 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
         if(recipientX < 6) yield break;
         foreach(var point in new[]{new Vector2(-3.7f,4.7f),new Vector2(-3.7f,12),new Vector2(5.5f,12),new Vector2(5.5f,16.6f),new Vector2(17.3f,16.6f),new Vector2(17.3f,4.3f),new Vector2(13.0f,4.3f)})
             yield return WalkTo(player,point);
+    }
+
+    [UnityTest]
+    public IEnumerator Level2BridgeRouteDeliversAllPackagesWithinItsConfiguredBudget()
+    {
+        var flow = StoryFlow_PengaturAlur.Instance; var previous = flow.Progress.Clone(); string previousSpawn = flow.LastSpawnPoint;
+        try
+        {
+            flow.SetStateForTesting(new GameProgressData { currentDay = 2, currentLevel = 2, currentPhase = DayPhase.DiLevel, isBriefingDone = true, hasPickedUpBansos = true });
+            flow.LastSpawnPoint = null;
+            yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Kampung_L2.unity");
+            var delivery = Object.FindFirstObjectByType<Mission_PengantaranBantuan>();
+            yield return WalkTo(delivery.transform, new Vector2(-12f, -3.5f));
+            yield return WalkTo(delivery.transform, new Vector2(-14f, -3.5f));
+            yield return WalkTo(delivery.transform, new Vector2(-14f, 0.3f));
+            yield return Press(Key.E); yield return Press(Key.Enter);
+            foreach (var point in new[] { new Vector2(-14f, -3.5f), new Vector2(-10f, -3.5f), new Vector2(-10f, 5.2f), new Vector2(2f, 5.2f) })
+                yield return WalkTo(delivery.transform, point);
+            yield return Press(Key.E); yield return Press(Key.Enter);
+            foreach (var point in new[] { new Vector2(8.2f, 5.2f), new Vector2(8.2f, 2.5f), new Vector2(13f, 2.5f) })
+                yield return WalkTo(delivery.transform, point);
+            yield return Press(Key.E); yield return Press(Key.Enter);
+            Assert.That(delivery.DeliveredCount, Is.EqualTo(3));
+            Assert.That(delivery.Outcome, Is.EqualTo(MissionOutcome.Success));
+            Assert.That(delivery.TimeRemaining, Is.GreaterThan(0f));
+        }
+        finally { flow.SetStateForTesting(previous); flow.LastSpawnPoint = previousSpawn; }
+    }
+
+    private IEnumerator Level2BridgeAndDryRoute(Transform player, float recipientX)
+    {
+        yield return WalkTo(player, new Vector2(-12f, -3.5f));
+        if (recipientX < -6f)
+        {
+            yield return WalkTo(player, new Vector2(-14f, -3.5f));
+            yield return WalkTo(player, new Vector2(-14f, 0.3f));
+            yield break;
+        }
+        foreach (var point in new[] { new Vector2(-10f, -3.5f), new Vector2(-10f, 5.2f), new Vector2(2f, 5.2f) })
+            yield return WalkTo(player, point);
+        if (recipientX < 6f) yield break;
+        foreach (var point in new[] { new Vector2(8.2f, 5.2f), new Vector2(8.2f, 2.5f), new Vector2(13f, 2.5f) })
+            yield return WalkTo(player, point);
     }
 
     private IEnumerator WalkTo(Transform player, Vector2 target)
