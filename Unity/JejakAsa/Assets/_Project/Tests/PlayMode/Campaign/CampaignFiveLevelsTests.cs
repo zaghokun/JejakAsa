@@ -93,6 +93,14 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
                         count++;
                         continue;
                     }
+                    if (level == 4)
+                    {
+                        yield return Level4StealthBridgeRoute(delivery.transform, resident.transform.position.x);
+                        Vector3 approach = resident.transform.position - delivery.transform.position; approach.y = 0;
+                        Assert.That(approach.magnitude, Is.LessThan(1.8f), resident.name);
+                        count++;
+                        continue;
+                    }
                     yield return WalkTo(delivery.transform, new Vector2(-12f, -3f));
                     float approachZ = resident.transform.position.z - 1.2f;
                     if (Mathf.Abs(resident.transform.position.x) < 7.5f && approachZ > -1f)
@@ -229,6 +237,68 @@ public sealed class CampaignFiveLevelsTests : InputTestFixture
         if (recipientX < 8f) yield break;
         foreach (var point in new[] { new Vector2(10.4f, 6.2f), new Vector2(10.4f, 2.8f), new Vector2(13.2f, 2.8f) })
             yield return WalkTo(player, point);
+    }
+
+    [UnityTest]
+    public IEnumerator Level4NightRouteDeliversAllPackagesWithinItsConfiguredBudget()
+    {
+        var flow = StoryFlow_PengaturAlur.Instance; var previous = flow.Progress.Clone(); string previousSpawn = flow.LastSpawnPoint;
+        try
+        {
+            flow.SetStateForTesting(new GameProgressData { currentDay = 4, currentLevel = 4, currentPhase = DayPhase.DiLevel, isBriefingDone = true, hasPickedUpBansos = true });
+            flow.LastSpawnPoint = null;
+            yield return SceneManager.LoadSceneAsync("Assets/_Project/Scenes/Kampung_L4.unity");
+            var delivery = Object.FindFirstObjectByType<Mission_PengantaranBantuan>();
+            foreach (var point in new[] { new Vector2(-12.2f, -3.5f), new Vector2(-15.0f, -3.5f), new Vector2(-15.0f, -0.6f) })
+                yield return WalkTo(delivery.transform, point);
+            yield return Press(Key.E); yield return Press(Key.Enter);
+            foreach (var point in new[] { new Vector2(-15.0f, -3.5f), new Vector2(-7.4f, -3.5f), new Vector2(-7.4f, -0.2f) })
+                yield return WalkTo(delivery.transform, point);
+            yield return WaitForSafeElectricZone("Korslet_Utara_Barat");
+            foreach (var point in new[] { new Vector2(-7.4f, 1.6f), new Vector2(-7.6f, 4.5f), new Vector2(-7.6f, 6.7f), new Vector2(-4.8f, 6.7f), new Vector2(-2.0f, 6.4f) })
+                yield return WalkTo(delivery.transform, point);
+            yield return Press(Key.E); yield return Press(Key.Enter);
+            yield return WalkTo(delivery.transform, new Vector2(2.4f, 6.4f));
+            yield return WaitForSafeElectricZone("Korslet_Utara_Timur");
+            foreach (var point in new[] { new Vector2(4.8f, 6.4f), new Vector2(8.4f, 6.4f), new Vector2(8.4f, 3.5f), new Vector2(14.2f, 3.5f), new Vector2(14.2f, 6.0f), new Vector2(12.0f, 6.0f) })
+                yield return WalkTo(delivery.transform, point);
+            yield return Press(Key.E); yield return Press(Key.Enter);
+            Assert.That(delivery.DeliveredCount, Is.EqualTo(3));
+            Assert.That(delivery.Outcome, Is.EqualTo(MissionOutcome.Success));
+            Assert.That(delivery.TimeRemaining, Is.GreaterThan(0f));
+        }
+        finally { flow.SetStateForTesting(previous); flow.LastSpawnPoint = previousSpawn; }
+    }
+
+    private IEnumerator Level4StealthBridgeRoute(Transform player, float recipientX)
+    {
+        yield return WalkTo(player, new Vector2(-12.2f, -3.5f));
+        if (recipientX < -8f)
+        {
+            yield return WalkTo(player, new Vector2(-15.0f, -3.5f));
+            yield return WalkTo(player, new Vector2(-15.0f, -0.6f));
+            yield break;
+        }
+        foreach (var point in new[] { new Vector2(-7.4f, -3.5f), new Vector2(-7.4f, -0.2f) })
+            yield return WalkTo(player, point);
+        yield return WaitForSafeElectricZone("Korslet_Utara_Barat");
+        foreach (var point in new[] { new Vector2(-7.4f, 1.6f), new Vector2(-7.6f, 4.5f), new Vector2(-7.6f, 6.7f), new Vector2(-4.8f, 6.7f), new Vector2(-2.0f, 6.4f) })
+            yield return WalkTo(player, point);
+        if (recipientX < 4f) yield break;
+        yield return WalkTo(player, new Vector2(2.4f, 6.4f));
+        yield return WaitForSafeElectricZone("Korslet_Utara_Timur");
+        foreach (var point in new[] { new Vector2(4.8f, 6.4f), new Vector2(8.4f, 6.4f), new Vector2(8.4f, 3.5f), new Vector2(14.2f, 3.5f), new Vector2(14.2f, 6.0f), new Vector2(12.0f, 6.0f) })
+            yield return WalkTo(player, point);
+    }
+
+    private IEnumerator WaitForSafeElectricZone(string hazardName)
+    {
+        var hazardGo = GameObject.Find(hazardName);
+        var hazard = hazardGo != null ? hazardGo.GetComponent<Obstacle_KorsletingListrik>() : null;
+        if (hazard == null) yield break;
+        float deadline = Time.time + 3.5f;
+        while (hazard.CurrentState != ElectricHazardState.Safe && Time.time < deadline)
+            yield return null;
     }
 
     private IEnumerator WalkTo(Transform player, Vector2 target)
