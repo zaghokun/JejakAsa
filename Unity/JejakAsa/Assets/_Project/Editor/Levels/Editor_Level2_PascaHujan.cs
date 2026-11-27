@@ -20,7 +20,7 @@ internal static class Editor_Level2_PascaHujan
     private const string RootVisualName = "Level2_Visual_Environment";
     private const string RootChallengeName = "Level2_Challenge_Layout";
 
-    private struct ResidentSpec
+    internal struct ResidentSpec
     {
         public string objectName;
         public string visualName;
@@ -200,6 +200,22 @@ internal static class Editor_Level2_PascaHujan
             }
         };
 
+        ApplyResidents(find, residents);
+
+        var preman = find("Preman_Graybox");
+        if (preman != null)
+        {
+            preman.SetActive(false);
+            preman.transform.SetPositionAndRotation(new Vector3(-5.0f, 1f, 4.4f), Quaternion.Euler(0f, 180f, 0f));
+            Editor_Level1_VisualLingkungan.AddCharacterVisual(preman, "Preman_Visual",
+                CharacterFolder + "PrologueVillains/Preman.fbx", PrologueMatFolder + "Preman_Threat.mat", 1.80f, "Preman");
+            ApplyGuardMaterials(preman, guardMaterial);
+            preman.SetActive(true);
+        }
+    }
+
+    internal static void ApplyResidents(Func<string, GameObject> find, ResidentSpec[] residents)
+    {
         foreach (var r in residents)
         {
             var go = find(r.objectName);
@@ -212,19 +228,9 @@ internal static class Editor_Level2_PascaHujan
                 var so = new SerializedObject(recipient);
                 so.FindProperty("displayName").stringValue = r.displayName;
                 so.FindProperty("dialogue").stringValue = r.dialogue;
+                so.FindProperty("deliveredDialogue").stringValue = r.dialogue;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
-        }
-
-        var preman = find("Preman_Graybox");
-        if (preman != null)
-        {
-            preman.SetActive(false);
-            preman.transform.SetPositionAndRotation(new Vector3(-5.0f, 1f, 4.4f), Quaternion.Euler(0f, 180f, 0f));
-            Editor_Level1_VisualLingkungan.AddCharacterVisual(preman, "Preman_Visual",
-                CharacterFolder + "PrologueVillains/Preman.fbx", PrologueMatFolder + "Preman_Threat.mat", 1.80f, "Preman");
-            ApplyGuardMaterials(preman, guardMaterial);
-            preman.SetActive(true);
         }
     }
 
@@ -316,7 +322,7 @@ internal static class Editor_Level2_PascaHujan
         }
     }
 
-    private static void DressExistingHouse(Transform root, GameObject houseBox, string visualName, Material wallMat, Material roofMat, Material timberMat, Material concreteMat)
+    internal static void DressExistingHouse(Transform root, GameObject houseBox, string visualName, Material wallMat, Material roofMat, Material timberMat, Material concreteMat)
     {
         if (houseBox == null) return;
         Vector3 p = houseBox.transform.position;
@@ -439,7 +445,7 @@ internal static class Editor_Level2_PascaHujan
         }
     }
 
-    private static void ApplyGuardMaterials(GameObject guardGo, Material mat)
+    internal static void ApplyGuardMaterials(GameObject guardGo, Material mat)
     {
         if (guardGo == null || mat == null) return;
         foreach (var renderer in guardGo.GetComponentsInChildren<SkinnedMeshRenderer>(true))
@@ -555,7 +561,7 @@ internal static class Editor_Level2_PascaHujan
         }
     }
 
-    private static Material LoadRequiredMaterial(string path)
+    internal static Material LoadRequiredMaterial(string path)
     {
         var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (mat == null)
@@ -563,7 +569,7 @@ internal static class Editor_Level2_PascaHujan
         return mat;
     }
 
-    private static Material GetOrCreateMaterial(string path, Color color, float smoothness)
+    internal static Material GetOrCreateMaterial(string path, Color color, float smoothness)
     {
         var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (mat == null)
@@ -578,7 +584,7 @@ internal static class Editor_Level2_PascaHujan
         return mat;
     }
 
-    private static void EnsureFolderExists(string assetFolder)
+    internal static void EnsureFolderExists(string assetFolder)
     {
         string trimmed = assetFolder.TrimEnd('/');
         if (AssetDatabase.IsValidFolder(trimmed)) return;

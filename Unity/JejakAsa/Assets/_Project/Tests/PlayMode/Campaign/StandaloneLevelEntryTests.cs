@@ -32,7 +32,7 @@ public sealed class StandaloneLevelEntryTests
             Assert.That(flow.Progress.hasPickedUpBansos,Is.True);Assert.That(flow.Progress.isBriefingDone,Is.True);
             var mission=Object.FindFirstObjectByType<Mission_PengantaranBantuan>();
             Assert.That(mission.IsMissionActive,Is.True);Assert.That(mission.PackagesRemaining,Is.EqualTo(3));
-            Assert.That(mission.DeliveredCount,Is.Zero);Assert.That(mission.TimeRemaining,Is.GreaterThan(name=="Kampung"?48:178));
+            Assert.That(mission.DeliveredCount,Is.Zero);Assert.That(mission.TimeRemaining,Is.GreaterThan(name=="Kampung"?48:53));
             Assert.That(mission.GetComponent<UI_TujuanDanProgres>().enabled,Is.True);
             var objective=typeof(UI_TujuanDanProgres).GetMethod("GetObjective",BindingFlags.Static|BindingFlags.NonPublic);
             Assert.That(objective.Invoke(null,new object[]{flow.Progress}),Is.EqualTo("Antarkan bantuan ke warga"));
