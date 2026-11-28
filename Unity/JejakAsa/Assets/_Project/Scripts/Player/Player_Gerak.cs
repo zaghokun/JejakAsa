@@ -17,12 +17,35 @@ namespace JejakAsa
         private float verticalSpeed;
         private Vector3 lastPosition;
         private readonly HashSet<Obstacle_Genangan> puddles = new HashSet<Obstacle_Genangan>();
+        private Mission_PengantaranBantuan mission;
+        private float shockSlowMultiplier = 1f;
+        private float shockSlowRemaining;
 
         internal void EnterPuddle(Obstacle_Genangan puddle) => puddles.Add(puddle);
         internal void ExitPuddle(Obstacle_Genangan puddle) => puddles.Remove(puddle);
 
+        internal void ApplyShockEffect(float speedMultiplier, float durationSeconds, Vector3 knockbackOffset)
+        {
+            shockSlowMultiplier = Mathf.Min(shockSlowMultiplier, Mathf.Clamp(speedMultiplier, 0.1f, 1f));
+            shockSlowRemaining = Mathf.Max(shockSlowRemaining, durationSeconds);
+            if (controller != null && controller.enabled && knockbackOffset.sqrMagnitude > 0.0001f)
+            {
+                knockbackOffset.y = 0f;
+                controller.Move(knockbackOffset);
+                lastPosition = transform.position;
+            }
+        }
+
+        private void ResetShock()
+        {
+            shockSlowMultiplier = 1f;
+            shockSlowRemaining = 0f;
+        }
+
         private void OnDestroy()
         {
+            if (mission != null)
+                mission.MissionReset -= ResetShock;
             foreach (Obstacle_Genangan puddle in puddles)
                 if (puddle != null)
                     puddle.ForgetPlayer(this);
@@ -32,6 +55,8 @@ namespace JejakAsa
         {
             controller = GetComponent<CharacterController>();
             lastPosition = transform.position;
+            if (TryGetComponent(out mission))
+                mission.MissionReset += ResetShock;
             if (movementCamera == null)
             {
                 Debug.LogError("Player_Gerak requires a movement camera.", this);
@@ -61,10 +86,17 @@ namespace JejakAsa
                     - ((keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) ? 1f : 0f);
             }
 
+            if (shockSlowRemaining > 0f)
+            {
+                shockSlowRemaining -= Time.deltaTime;
+                if (shockSlowRemaining <= 0f)
+                    ResetShock();
+            }
+
             input = Vector2.ClampMagnitude(input, 1f);
             float speed = keyboard != null && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed)
                 ? moveSpeed * 2f : moveSpeed;
-            float multiplier = 1f;
+            float multiplier = shockSlowRemaining > 0f ? shockSlowMultiplier : 1f;
             foreach (Obstacle_Genangan puddle in puddles)
                 if (puddle.isActiveAndEnabled && puddle.Overlaps(controller))
                     multiplier = Mathf.Min(multiplier, puddle.SpeedMultiplier);

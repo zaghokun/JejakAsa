@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -108,7 +109,7 @@ internal static class Editor_Level1_RuteDanRintangan
         var ps=new SerializedObject(player);ps.FindProperty("initialTimeSeconds").floatValue=180;ps.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    static void ConfigureGuard(GameObject go,Vector3[] route,float radius,float leash)
+    internal static void ConfigureGuard(GameObject go,Vector3[] route,float radius,float leash)
     {
         var so=new SerializedObject(go.GetComponent<Obstacle_Preman>());
         so.FindProperty("detectionRadius").floatValue=radius;
@@ -128,7 +129,7 @@ internal static class Editor_Level1_RuteDanRintangan
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    static void ConfigureTextures()
+    internal static void ConfigureTextures()
     {
         foreach(string name in new[]{"Ground025_Color.jpg","Ground025_NormalGL.jpg","Ground025_MetallicSmoothness.png"})
         {
@@ -139,18 +140,18 @@ internal static class Editor_Level1_RuteDanRintangan
             imp.textureCompression=TextureImporterCompression.CompressedHQ;imp.SaveAndReimport();
         }
     }
-    static Material Material(string name,Color color,float smoothness)
+    internal static Material Material(string name,Color color,float smoothness)
     {
         var path=Folder+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
         if(m==null){m=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(m,path);}
         m.SetColor("_BaseColor",color);m.SetFloat("_Smoothness",smoothness);EditorUtility.SetDirty(m);return m;
     }
-    static GameObject Box(Transform parent,string name,Vector3 p,Vector3 size,Material mat,bool solid=false)
+    internal static GameObject Box(Transform parent,string name,Vector3 p,Vector3 size,Material mat,bool solid=false)
     {
         var g=GameObject.CreatePrimitive(PrimitiveType.Cube);g.name=name;g.transform.SetParent(parent,false);g.transform.localPosition=p;g.transform.localScale=size;
         if(!solid)UnityEngine.Object.DestroyImmediate(g.GetComponent<Collider>());g.GetComponent<Renderer>().sharedMaterial=mat;return g;
     }
-    static void Fence(Transform parent,string name,Vector3 p,Vector3 size,Material timber,Material panel)
+    internal static void Fence(Transform parent,string name,Vector3 p,Vector3 size,Material timber,Material panel)
     {
         var g=new GameObject(name);g.transform.SetParent(parent,false);g.transform.position=p;
         var col=g.AddComponent<BoxCollider>();col.center=Vector3.up*size.y*.5f;col.size=size;
@@ -160,40 +161,52 @@ internal static class Editor_Level1_RuteDanRintangan
         Box(g.transform,"Papan_Pagar",Vector3.up*.73f,new Vector3(alongX?length:.18f,1.05f,alongX?.18f:length),panel);
         Box(g.transform,"Balok_Atas",Vector3.up*1.28f,new Vector3(alongX?length:.22f,.10f,alongX?.22f:length),timber);
     }
-    static void Road(Transform parent,string name,Vector3 p,Vector3 size,Material fallback)
+    internal static void Road(Transform parent,string name,Vector3 p,Vector3 size,Material fallback)
     {
         var paving=AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Environment/PoskoP02/Materials/Paving_0.002.mat");
         Box(parent,name,p,size,paving!=null?paving:fallback);
     }
-    static void Puddle(Transform parent,string name,Vector3 p,float width,float length,float multiplier,int seed,Material mud,Material water,Material ripple)
+    internal static void Puddle(Transform parent,string name,Vector3 p,float width,float length,float multiplier,int seed,Material mud,Material water,Material ripple,string assetFolder=Folder,bool interactiveTrigger=true,bool addWater=true)
     {
         var g=new GameObject(name);g.SetActive(false);g.transform.SetParent(parent,false);g.transform.position=p;
-        var body=g.AddComponent<Rigidbody>();body.isKinematic=true;body.useGravity=false;
-        var col=g.AddComponent<BoxCollider>();col.isTrigger=true;col.center=Vector3.up*.6f;col.size=new Vector3(width,1.2f,length);
         const int n=36;var points=new Vector2[n];
         for(int i=0;i<n;i++){float a=i*Mathf.PI*2/n;float r=.92f+.045f*Mathf.Sin(a*5+seed)+.025f*Mathf.Sin(a*9+seed*.3f);points[i]=new Vector2(Mathf.Cos(a)*width*.5f*r,Mathf.Sin(a)*length*.5f*r);}
-        var zone=g.AddComponent<Obstacle_Genangan>();var so=new SerializedObject(zone);so.FindProperty("speedMultiplier").floatValue=multiplier;
-        var footprint=so.FindProperty("footprint");footprint.arraySize=n;for(int i=0;i<n;i++)footprint.GetArrayElementAtIndex(i).vector2Value=points[i];so.ApplyModifiedPropertiesWithoutUndo();
-        Surface(g.transform,name+"_Lumpur",points,1,.045f,mud);
-        Surface(g.transform,name+"_Air",points,.77f,.058f,water);
-        for(int r=0;r<2;r++)
+        if(interactiveTrigger)
         {
-            var verts=new Vector3[44];var uv=new Vector2[44];var tris=new int[42*3];
-            for(int i=0;i<22;i++)
-            {float a=(i/21f*1.3f+.1f+r)*Mathf.PI;var dir=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));var center=new Vector3(width*(r==0?-.1f:.1f),.061f,length*(r==0?-.12f:.13f));float radius=.24f+r*.12f;verts[i*2]=center+dir*radius;verts[i*2+1]=center+dir*(radius+.009f);if(i<21){int t=i*6;tris[t]=i*2;tris[t+1]=i*2+2;tris[t+2]=i*2+1;tris[t+3]=i*2+1;tris[t+4]=i*2+2;tris[t+5]=i*2+3;}}
-            MeshObject(g.transform,name+"_Riak"+r,verts,uv,tris,ripple);
+            var body=g.AddComponent<Rigidbody>();body.isKinematic=true;body.useGravity=false;
+            var col=g.AddComponent<BoxCollider>();col.isTrigger=true;col.center=Vector3.up*.6f;col.size=new Vector3(width,1.2f,length);
+            var zone=g.AddComponent<Obstacle_Genangan>();var so=new SerializedObject(zone);so.FindProperty("speedMultiplier").floatValue=multiplier;
+            var footprint=so.FindProperty("footprint");footprint.arraySize=n;for(int i=0;i<n;i++)footprint.GetArrayElementAtIndex(i).vector2Value=points[i];so.ApplyModifiedPropertiesWithoutUndo();
+        }
+        Surface(g.transform,name+"_Lumpur",points,1,interactiveTrigger?.045f:.043f,mud,assetFolder);
+        if(addWater)
+        {
+            Surface(g.transform,name+"_Air",points,.77f,.058f,water,assetFolder);
+            for(int r=0;r<2;r++)
+            {
+                var verts=new Vector3[44];var uv=new Vector2[44];var tris=new int[42*3];
+                for(int i=0;i<22;i++)
+                {float a=(i/21f*1.3f+.1f+r)*Mathf.PI;var dir=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));var center=new Vector3(width*(r==0?-.1f:.1f),.061f,length*(r==0?-.12f:.13f));float radius=.24f+r*.12f;verts[i*2]=center+dir*radius;verts[i*2+1]=center+dir*(radius+.009f);if(i<21){int t=i*6;tris[t]=i*2;tris[t+1]=i*2+2;tris[t+2]=i*2+1;tris[t+3]=i*2+1;tris[t+4]=i*2+2;tris[t+5]=i*2+3;}}
+                MeshObject(g.transform,name+"_Riak"+r,verts,uv,tris,ripple,assetFolder);
+            }
         }
         g.SetActive(true);
     }
-    static void Surface(Transform parent,string name,Vector2[] outline,float scale,float y,Material mat)
+    static void Surface(Transform parent,string name,Vector2[] outline,float scale,float y,Material mat,string assetFolder)
     {
         int n=outline.Length;var v=new Vector3[n+1];var uv=new Vector2[n+1];var tris=new int[n*3];v[0]=Vector3.up*y;
         for(int i=0;i<n;i++){var p=outline[i]*scale;v[i+1]=new Vector3(p.x,y,p.y);uv[i+1]=p*.45f;tris[i*3]=0;tris[i*3+1]=(i+1)%n+1;tris[i*3+2]=i+1;}
-        MeshObject(parent,name,v,uv,tris,mat);
+        MeshObject(parent,name,v,uv,tris,mat,assetFolder);
     }
-    static void MeshObject(Transform parent,string name,Vector3[] vertices,Vector2[] uv,int[] triangles,Material mat)
+    static void MeshObject(Transform parent,string name,Vector3[] vertices,Vector2[] uv,int[] triangles,Material mat,string assetFolder)
     {
-        string path=Folder+name+".asset";var mesh=AssetDatabase.LoadAssetAtPath<Mesh>(path);
+        if(!AssetDatabase.IsValidFolder(assetFolder.TrimEnd('/')))
+        {
+            string parentDir=Path.GetDirectoryName(assetFolder.TrimEnd('/')).Replace('\\','/');
+            string folderName=Path.GetFileName(assetFolder.TrimEnd('/'));
+            AssetDatabase.CreateFolder(parentDir,folderName);
+        }
+        string path=assetFolder+name+".asset";var mesh=AssetDatabase.LoadAssetAtPath<Mesh>(path);
         if(mesh==null){mesh=new Mesh();AssetDatabase.CreateAsset(mesh,path);}mesh.Clear();mesh.name=name;mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=triangles;mesh.RecalculateNormals();mesh.RecalculateBounds();EditorUtility.SetDirty(mesh);
         var g=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer));g.transform.SetParent(parent,false);g.GetComponent<MeshFilter>().sharedMesh=mesh;
         var renderer=g.GetComponent<MeshRenderer>();renderer.sharedMaterial=mat;renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;

@@ -28,36 +28,26 @@ namespace JejakAsa
                 // 1. Dialog saat bantuan SUDAH / BARU SAJA diserahkan (U04)
                 if (isDelivered)
                 {
+                    if (!string.IsNullOrWhiteSpace(deliveredDialogue))
+                        return deliveredDialogue;
                     if (displayName.Contains("Pos"))
-                    {
                         return "Alhamdulillah, terima kasih banyak ya mas. Lancar selalu rejekinya. Beras dan sembakonya langsung kami masak buat anak-anak hari ini.";
-                    }
                     if (displayName.Contains("Tengah"))
-                    {
                         return "Wah makasih banyak loh mas, bantuan ini sangat bermanfaat buat keluarga saya. Titip salam buat teman-teman relawan yang lain ya!";
-                    }
                     if (displayName.Contains("Timur"))
-                    {
                         return "Matur nuwun sanget nggih mas... Semoga kebaikan mas dan teman-teman dibalas berlipat ganda. Hati-hati di jalan ya mas.";
-                    }
-
                     return "Alhamdulillah, terima kasih banyak atas bantuan sembakonya mas! Bantuan ini sangat bermanfaat untuk keluarga kami.";
                 }
 
                 // 2. Dialog sebelum bantuan diserahkan
+                if (!string.IsNullOrWhiteSpace(dialogue))
+                    return dialogue;
                 if (displayName.Contains("Pos"))
-                {
                     return "Saya sedang menunggu bantuan kebutuhan pokok. Semoga masih ada bagian beras untuk dapur kami...";
-                }
                 if (displayName.Contains("Tengah"))
-                {
                     return "Di gang dalam sini banyak lansia yang kesulitan keluar membeli bahan pokok...";
-                }
                 if (displayName.Contains("Timur"))
-                {
                     return "Gang ini sering dijaga preman yang melarang bantuan masuk. Berhati-hatilah kalau lewat sana...";
-                }
-
                 return dialogue;
             }
         }
